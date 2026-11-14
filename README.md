@@ -8,11 +8,11 @@
 - Локально собраны OCaml 4.14.2 и ProVerif 2.05; окружение проверено.
 - P1 baseline регистрации вернул **Observational equivalence is true**, что согласуется с §5.1 статьи ESORICS 2022.
 - Реализован experiment_manager: изолированная генерация через исходный Python API, полный raw/provenance, консервативный parser, CSV/JSON/Markdown snapshots.
-- Выполнены **24 модельных запуска**: 12 основных + baseline/пилот/диагностика/проверки точности. В основной матрице 6 PROVED, 1 false A6 с trace, 5 UNKNOWN. UNKNOWN не считается атакой.
-- **28 тестов прошли**; проверены хеши всех inputs, идентичность библиотеки и чистота upstream.
+- Выполнены **27 модельных запусков**: первоначальные 24 и три дополнительные диагностики достижимости. Первоначальная серия: 12 основных + baseline/пилот/диагностика/проверки точности. В основной матрице 6 PROVED, 1 false A6 с trace, 5 UNKNOWN. UNKNOWN не считается атакой.
+- **34 теста прошли**; проверены хеши всех inputs, идентичность библиотеки и чистота upstream.
 - Подготовлены первоисточники, анализ требований БГУ, сравнение модели 2022 с WebAuthn Level 3 / CTAP 2.3, черновик записки Markdown/DOCX и сценарий демонстрации.
 
-Это законченный ограниченный исследовательский MVP и черновик записки, **не окончательно оформленная работа для сдачи**. Реквизиты, локальные требования, библиография и научные формулировки требуют проверки. Невакуозность части correspondences осталась экспериментально не закрыта; см. docs/results_analysis.md.
+Это законченный ограниченный исследовательский MVP и черновик записки, **не окончательно оформленная работа для сдачи**. Реквизиты, локальные требования, библиография и научные формулировки требуют проверки. Невакуозность доказанных A6 E0/E2 и A1 E0 подтверждена дополнительными положительными single-session traces; см. docs/nonvacuity_witnesses.md. Прежние UNKNOWN не переписываются.
 
 ## Быстрый просмотр
 
@@ -55,6 +55,9 @@ python3 -m venv .venv
 .venv/bin/python -m experiment_manager run experiments/configs/diagnostics.yaml
 .venv/bin/python -m experiment_manager run experiments/configs/precision.yaml
 
+# Три положительных свидетеля достижимости (follow-up, отдельная серия)
+.venv/bin/python -m experiment_manager run experiments/configs/witnesses.yaml
+
 # Новый неизменяемый summary snapshot всех сохранённых raw-журналов
 .venv/bin/python -m experiment_manager summary
 
@@ -72,7 +75,7 @@ python3 -m venv .venv
 
 Один случай: `.venv/bin/python -m experiment_manager run experiments/configs/matrix.yaml --only R05`. Это **дополнительный** запуск, он не подменяет сохранённый исходный R05.
 
-`verify_artifacts.py` сопоставляет все raw с зафиксированным финальным snapshot. После собственных новых прогонов создайте summary и обновите evidence/final-summary-location.txt на новый snapshot; исходные 24 запуска и исторические snapshots сохраняются.
+`verify_artifacts.py` сопоставляет все raw с зафиксированным финальным snapshot. После собственных новых прогонов создайте summary и обновите evidence/final-summary-location.txt на новый snapshot; исходные 24 запуска, три дополнительных witness-запуска и исторические snapshots сохраняются.
 
 ## Формат результата и чтение статусов
 
@@ -87,7 +90,7 @@ Processed summary повторно разбирает raw актуальным p
 
 ## Границы исследования
 
-Исторический S-pintok охватывает несколько bindings; отдельный fresh token не выделялся новым query. E1/E2 — предусмотренные upstream дополнительные сеансы с публичным интерфейсом, а не полный дамп памяти или глобальная публикация CA/CR. Default A1 в основной матрице не завершился за 60 s; preciseActions=true доказал A1 только для E0. Часть reachability диагностик остаётся UNKNOWN, поэтому невакуозность доказанных correspondences независимо установлена не полностью.
+Исторический S-pintok охватывает несколько bindings; отдельный fresh token не выделялся новым query. E1/E2 — предусмотренные upstream дополнительные сеансы с публичным интерфейсом, а не полный дамп памяти или глобальная публикация CA/CR. Default A1 в основной матрице не завершился за 60 s; preciseActions=true доказал A1 только для E0. Несмотря на UNKNOWN исходных reachability диагностик, три исполнимых single-session traces подтверждают достижимость завершающих событий для всех трёх доказанных конфигураций A6 E0/E2 и A1 E0. Положительные traces вкладываются в исходную репликацию; bounded security proofs не применяются.
 
 README upstream упоминает version_1.0, но сервер не возвращает тегов; не заявляется полная идентичность доступного HEAD paper artifact. Внешние спецификации используются только для gap analysis. Современные pinUvAuthToken/permissions/lifecycle, backup и другие механизмы не добавлялись в модель.
 

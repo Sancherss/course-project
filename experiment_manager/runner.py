@@ -56,7 +56,10 @@ def run_experiment(config: ExperimentConfig, executable: str, version: str, *, r
     env['PYTHONPATH'] = str(ROOT) + os.pathsep + env.get('PYTHONPATH', '')
     generator_command = [sys.executable, '-m', 'experiment_manager.upstream', str(raw/'config.json'), str(upstream), str(generated)]
     with tempfile.TemporaryDirectory(prefix='fido2-generate-') as scratch:
-        generation = subprocess.run(generator_command, cwd=scratch, env=env, capture_output=True, timeout=30)
+        try:
+            generation = subprocess.run(generator_command, cwd=scratch, env=env, capture_output=True, timeout=30)
+        except subprocess.TimeoutExpired as exc:
+            generation = subprocess.CompletedProcess(generator_command, 124, exc.stdout or b'', (exc.stderr or b'') + b'Generation timeout\n')
     (raw/'generator_stdout.txt').write_bytes(generation.stdout)
     (raw/'generator_stderr.txt').write_bytes(generation.stderr)
     command = [str(Path(executable).resolve()), '-lib', 'FIDO2.pvl', 'model.pv']
@@ -64,7 +67,7 @@ def run_experiment(config: ExperimentConfig, executable: str, version: str, *, r
     meta = {'run_id': run_id, 'experiment_id': config.id, 'timestamp_utc': datetime.now(timezone.utc).isoformat(),
             'commit': commit, 'manager_commit': subprocess.check_output(['git','-C',str(ROOT),'rev-parse','HEAD'],text=True).strip(),
             'config': config.to_dict(), 'command': command, 'cwd': str(raw), 'generator_command': generator_command,
-            'generator_exit_code': generation.returncode, 'proverif_version': version, 'os': platform.platform(),
+            'generator_exit_code': generation.returncode, 'manager_sources_sha256': {str(p.relative_to(ROOT)): digest(p) for p in sorted((ROOT/'experiment_manager').glob('*.py'))}, 'proverif_version': version, 'os': platform.platform(),
             'python': platform.python_version(), 'executable_sha256': digest(Path(executable)), 'input_sha256': {}}
     if generation.returncode:
         (raw/'stdout.txt').write_text(''); (raw/'stderr.txt').write_bytes(generation.stderr)

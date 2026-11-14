@@ -45,7 +45,7 @@ class ExperimentConfig:
             raise ValueError('Unsupported/duplicate leaked fields')
         if type(self.timeout_seconds) not in (int, float) or not 0 < self.timeout_seconds <= 3600:
             raise ValueError('timeout_seconds must be in (0, 3600]')
-        if self.token_binding not in ('upstream', 'explicit-ctap-token'):
+        if self.token_binding != 'upstream':
             raise ValueError('Unsupported token binding')
 
     @classmethod

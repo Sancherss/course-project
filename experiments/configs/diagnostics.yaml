@@ -1,0 +1,78 @@
+upstream_commit: 2d8eaf326117bd7e4706c48b2d24e27b4a006fa6
+experiments:
+- id: D-reg_client-E0
+  description: 'Reachability of server finish: reg_client/E0'
+  scenario: reg_client
+  ctap: getToken
+  property: D-finish
+  entities: []
+  fields: []
+  changed_assumption: E0
+  expected_comparison: A false RESULT for not event means the finish event IS reachable,
+    not an authentication attack
+  timeout_seconds: 60
+  diagnostic: true
+- id: D-reg_client-E1
+  description: 'Reachability of server finish: reg_client/E1'
+  scenario: reg_client
+  ctap: getToken
+  property: D-finish
+  entities:
+  - 1
+  fields: []
+  changed_assumption: E1
+  expected_comparison: A false RESULT for not event means the finish event IS reachable,
+    not an authentication attack
+  timeout_seconds: 60
+  diagnostic: true
+- id: D-reg_client-E2
+  description: 'Reachability of server finish: reg_client/E2'
+  scenario: reg_client
+  ctap: getToken
+  property: D-finish
+  entities:
+  - 2
+  fields: []
+  changed_assumption: E2
+  expected_comparison: A false RESULT for not event means the finish event IS reachable,
+    not an authentication attack
+  timeout_seconds: 60
+  diagnostic: true
+- id: D-auth_client_em-E0
+  description: 'Reachability of server finish: auth_client_em/E0'
+  scenario: auth_client_em
+  ctap: getToken
+  property: D-finish
+  entities: []
+  fields: []
+  changed_assumption: E0
+  expected_comparison: A false RESULT for not event means the finish event IS reachable,
+    not an authentication attack
+  timeout_seconds: 60
+  diagnostic: true
+- id: D-auth_client_em-E1
+  description: 'Reachability of server finish: auth_client_em/E1'
+  scenario: auth_client_em
+  ctap: getToken
+  property: D-finish
+  entities:
+  - 1
+  fields: []
+  changed_assumption: E1
+  expected_comparison: A false RESULT for not event means the finish event IS reachable,
+    not an authentication attack
+  timeout_seconds: 60
+  diagnostic: true
+- id: D-auth_client_em-E2
+  description: 'Reachability of server finish: auth_client_em/E2'
+  scenario: auth_client_em
+  ctap: getToken
+  property: D-finish
+  entities:
+  - 2
+  fields: []
+  changed_assumption: E2
+  expected_comparison: A false RESULT for not event means the finish event IS reachable,
+    not an authentication attack
+  timeout_seconds: 60
+  diagnostic: true

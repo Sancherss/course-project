@@ -25,27 +25,6 @@ def generate(config: ExperimentConfig, upstream: Path, destination: Path) -> Non
             statement = 'query u:UserHandle, r:RpID, a:AAGUID, c:bitstring; event(Server_Finish_Auth(u,r,a,c)).\n'
         query = module.Query('D-finish', statement)
     if query is None: raise ValueError('Query absent from upstream classes')
-    if config.token_binding == 'explicit-ctap-token':
-        # A narrowly scoped alpha-renaming, enabled only after documented ambiguity diagnosis.
-        library = Path('FIDO2.pvl').read_text()
-        marker = 'new PinToken:bitstring;'
-        if library.count(marker) != 1: raise ValueError('Expected one CTAP token binding')
-        start = library.index('let CTAP_Authnr(')
-        end = library.index('let CTAP_Client(')
-        region = library[start:end]
-        # Exact lexical identifier substitution in this one role; no regex/template surgery.
-        def rename_identifiers(text: str) -> str:
-            output, word = [], ''
-            for char in text:
-                if char.isalnum() or char == '_': word += char
-                else:
-                    output.append('CTAPPinToken' if word == 'PinToken' else word)
-                    output.append(char); word = ''
-            output.append('CTAPPinToken' if word == 'PinToken' else word)
-            return ''.join(output)
-        library = library[:start] + rename_identifiers(region) + library[end:]
-        Path('FIDO2.pvl').write_text(library)
-        if config.property == 'S-pintok': query = module.Query('S-pintok', 'query secret CTAPPinToken.\n')
     ctap = next(c for c in gen.ctap.all_types if c.name == config.ctap)
     fields = module.Fields([f'out(cP,{f});\n' for f in config.fields])
     indexes = tuple(sorted(config.entities))

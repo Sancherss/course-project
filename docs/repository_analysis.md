@@ -127,3 +127,11 @@ proverif -lib "FIDO2.pvl" Reg_unlink.pv
 FILE: README.md; REGION: Verify the unlinkability goals. Параметры уже заданы: ctap_type=getToken, au_type=client, CA/CR private, без добавленных утечек. Проверяется biprocess с различием wrapping key. Ожидание из статьи: P1 удовлетворяется (раздел 5.1 / Privacy Properties), **не результат текущего запуска**. Не подменять это проверкой secret PinToken.
 
 Статус: NOT RUN — отсутствует нативный ProVerif. Команда существует в первоисточнике; её успешность и длительность пока не подтверждены. До начала матрицы нужен raw лог и точный RESULT. `python FIDO2Verif.py -s -t reg_client` — реальная команда, но пакетный анализ и потому не один минимальный baseline.
+
+## Уточнения статического анализа при расширении записки
+
+- В выбранном baseline Reg_unlink.pv / getToken / client различие choice[wk,wk1] относится к аргументу, не используемому client-ветвью Reg_Authnr. Это ограничивает релевантность baseline для общей P1; RESULT true не переопределяется, новых запусков нет.
+- В correspondence A6 последний аргумент события — pkau, credential public key. Pkat используется внутри Reg_Server для checksign, но не является отдельным аргументом A6. Agreement следует формулировать по буквальной сигнатуре query.
+- Auth_Server содержит проверку Incr(xcntr)=cntr и комментарий об отсутствии обновления неизменяемой записи. Это проверка выбранного обмена, а не полная модель долговременного изменения counter.
+
+FILE/REGION: FIDO2.pvl / Reg_Server (378–404), Auth_Server (406–464), Reg_Authnr (578–646); Reg_unlink.pv / ctap_type, au_type, choice; FIDO2Verif.py / RegClientQueries.

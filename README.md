@@ -9,19 +9,19 @@
 - P1 baseline регистрации вернул **Observational equivalence is true**, что согласуется с §5.1 статьи ESORICS 2022.
 - Реализован experiment_manager: изолированная генерация через исходный Python API, полный raw/provenance, консервативный parser, CSV/JSON/Markdown snapshots.
 - Выполнены **27 модельных запусков**: первоначальные 24 и три дополнительные диагностики достижимости. Первоначальная серия: 12 основных + baseline/пилот/диагностика/проверки точности. В основной матрице 6 PROVED, 1 false A6 с trace, 5 UNKNOWN. UNKNOWN не считается атакой.
-- **39 тестов прошли**; проверены хеши всех inputs, идентичность библиотеки и чистота upstream.
+- **40 тестов прошли**; проверены хеши всех inputs, идентичность библиотеки и чистота upstream.
 - Подготовлены первоисточники, анализ требований БГУ, сравнение модели 2022 с WebAuthn Level 3 / CTAP 2.3, черновик записки Markdown/DOCX и сценарий демонстрации.
 
-Это законченный ограниченный исследовательский MVP и черновик записки, **не окончательно оформленная работа для сдачи**. Реквизиты, локальные требования, библиография и научные формулировки требуют проверки. Невакуозность доказанных A6 E0/E2 и A1 E0 подтверждена дополнительными положительными single-session traces; см. docs/nonvacuity_witnesses.md. Прежние UNKNOWN не переписываются.
+Текущая записка расширена до 40 физических страниц и примерно 9,8 тысячи слов; оглавление содержит 44 заголовка. Это законченный ограниченный исследовательский MVP и черновик записки, **не окончательно оформленная работа для сдачи**. Реквизиты, локальные требования, библиография и научные формулировки требуют проверки. Невакуозность доказанных A6 E0/E2 и A1 E0 подтверждена дополнительными положительными single-session traces; см. docs/nonvacuity_witnesses.md. Прежние UNKNOWN не переписываются.
 
 ## Быстрый просмотр
 
 - `docs/results_analysis.md` — результаты и ограничения.
 - `experiments/processed/20261114T175612262785Z/summary.md` — итоговая таблица; рядом CSV/JSON, matrix_results.yaml и parser-provenance.json.
 - `report/coursework_draft.md`, `report/coursework_draft.docx` — редактируемый черновик записки.
-- `report/coursework_draft.pdf` — проверенный 23-страничный макет, `docs/formatting_audit.md` — соответствие приложенной методичке.
+- `report/coursework_draft.pdf` — проверенный 40-страничный макет, `docs/formatting_audit.md` — соответствие приложенной методичке.
 - `evidence/report-layout-audit.json` — проверка страниц, оглавления и SHA256 Word/PDF.
-- `report/figures/matrix.png`, `report/figures/matrix.svg` — проверенная визуальная сводка основной матрицы.
+- `report/figures/architecture.*`, `gettoken.*`, `matrix.*` — схемы архитектуры, исторического getToken и результаты основной матрицы.
 - `docs/baseline_reproduction.md` — один непосредственно сверенный со статьёй baseline.
 - `docs/repository_analysis.md`, `docs/paper_analysis.md`, `docs/specification_gap.md` — код, статья и современные спецификации.
 - `docs/bsu_formatting_requirements.md`, `report/format_checklist.md` — только подтверждённые нормы БГУ и открытые вопросы.

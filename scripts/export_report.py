@@ -94,7 +94,10 @@ def parse_body(source: Path) -> list[tuple]:
             level=1 if n==2 else (3 if re.match(r'^\d+\.\d+\.\d+',title) else 2)
             if level==1:title=title.upper()
             blocks.append(('heading',level,title))
-        elif line.startswith('!['):blocks.append(('image',source.parent/'figures/matrix.png','Рисунок 1 — Результаты основной матрицы в исторической модели'))
+        elif line.startswith('!['):
+            image=re.fullmatch(r'!\[(.*?)\]\((.*?)\)',line)
+            if not image:raise ValueError('Unsupported image syntax')
+            blocks.append(('image',source.parent/image[2],image[1]))
         elif line.strip():
             if blocks and blocks[-1][0]=='heading' and blocks[-1][-1]=='ПЕРЕЧЕНЬ ОБОЗНАЧЕНИЙ':
                 # The BSU guidance calls for an alphabetical list, not a dense semicolon paragraph.

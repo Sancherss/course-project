@@ -49,3 +49,12 @@ def test_layout_audit_matches_published_bytes():
     for kind in ('docx','pdf'):
         assert hashlib.sha256((ROOT/f'report/coursework_draft.{kind}').read_bytes()).hexdigest()==audit[kind+'_sha256']
     assert audit['footer_numbers'][:audit['contents_physical_page']-1]==[[]]*(audit['contents_physical_page']-1)
+
+
+def test_protocol_figures_are_distinct_and_match_the_markdown_paths():
+    from scripts.export_report import parse_body
+    blocks=parse_body(ROOT/'report/coursework_draft.md')
+    images=[b for b in blocks if b[0]=='image']
+    assert [b[1].name for b in images]==['architecture.png','gettoken.png','matrix.png']
+    assert len({hashlib.sha256(b[1].read_bytes()).hexdigest() for b in images})==3
+    assert len(Document(ROOT/'report/coursework_draft.docx').inline_shapes)==3

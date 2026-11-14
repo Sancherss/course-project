@@ -1,0 +1,26 @@
+{
+  "run_id": "20261114T173042063564Z-baseline-05290b45",
+  "experiment_id": "baseline",
+  "description": "Upstream P1 registration/getToken/client",
+  "timestamp_utc": "2026-11-14T17:30:42.065116+00:00",
+  "command": [
+    "/workspace/work/course-project/.tools/proverif/proverif",
+    "-lib",
+    "FIDO2.pvl",
+    "Reg_unlink.pv"
+  ],
+  "cwd": "/workspace/work/course-project/experiments/raw/20261114T173042063564Z-baseline-05290b45",
+  "commit": "2d8eaf326117bd7e4706c48b2d24e27b4a006fa6",
+  "proverif_version": "2.05",
+  "python": "3.12.14",
+  "os": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "timeout_seconds": 60.0,
+  "timed_out": false,
+  "executable_sha256": "379671406a2b12ca6ab461c15068de78763aa7903821fe4717a8d01e905c2fa2",
+  "input_sha256": {
+    "FIDO2.pvl": "ec0728150dca77c616331e5d40e2a6f9767854289b9d68425dabce0ef8a25f47",
+    "Reg_unlink.pv": "8d0027cfc3e81b44f3c9cf31f8f1af96adb893d5a7448effc5f89b674658eeee"
+  },
+  "exit_code": 0,
+  "duration_seconds": 0.16435877599997184
+}

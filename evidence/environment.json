@@ -1,0 +1,14 @@
+{
+  "python": "3.12.14",
+  "python_ok": true,
+  "os": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "upstream": "/workspace/work/course-project/upstream/FIDO2Verif",
+  "missing_files": [],
+  "commit": "2d8eaf326117bd7e4706c48b2d24e27b4a006fa6",
+  "upstream_clean": true,
+  "commit_matches_pin": true,
+  "proverif": "/workspace/work/course-project/.tools/proverif/proverif",
+  "proverif_version": "2.05",
+  "proverif_version_ok": true,
+  "ok": true
+}

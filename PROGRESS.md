@@ -52,3 +52,7 @@ S-pintok исходной модели выполняется без синта�
 ### Тесты — 28 passed
 
 Проверены реальные stdout baseline/R01/R02/R05, hypothesis trace vs UNKNOWN, supplementary RESULT, ошибки/timeout, запрещённые параметры и traversal IDs, повторные запуска/summary без перезаписи, executable path с пробелами, изоляция служебных каталогов и неизменность upstream. Подтверждён дополнительный формат RESULT по src/display.ml ProVerif 2.05. Processed classification пересчитывается из raw; старые metadata остаются историческим артефактом.
+
+### Неопределённые ответы и sensitivity
+
+В матрице появились `cannot be proved` и timeout; они сохраняются как UNKNOWN. Дополнительный supplementary RESULT R05 подтверждает false A6; raw parser старой версии оставлен неизменным, processed исправляет классификацию повторным разбором. По документации ProVerif добавлены четыре separate preciseActions=true проверки (суммарно до 24 запусков), без изменения threat model.

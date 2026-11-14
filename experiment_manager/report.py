@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 from .parser import parse_output
 
-COLUMNS = ['run_id','experiment_id','scenario','ctap','property','entities','fields','token_binding','diagnostic',
+COLUMNS = ['run_id','experiment_id','scenario','ctap','property','entities','fields','token_binding','diagnostic','precise_actions',
            'status','exit_code','timed_out','duration_seconds','proverif_version','commit','reason','raw_directory']
 
 def summarize(raw_root: Path, output: Path) -> Path:
@@ -18,7 +18,7 @@ def summarize(raw_root: Path, output: Path) -> Path:
                                   exit_code=d['exit_code'], timed_out=d['timed_out'])
             d.update(result.to_dict())
         row = {k:d.get(k) for k in COLUMNS}
-        for k in ('scenario','ctap','property','entities','fields','token_binding','diagnostic'): row[k]=c.get(k)
+        for k in ('scenario','ctap','property','entities','fields','token_binding','diagnostic','precise_actions'): row[k]=c.get(k)
         row['raw_directory'] = str(metadata.parent.relative_to(raw_root.parent.parent))
         rows.append(row)
     output.mkdir(parents=True,exist_ok=True)

@@ -63,7 +63,10 @@ def run_experiment(config: ExperimentConfig, executable: str, version: str, *, r
             generation = subprocess.CompletedProcess(generator_command, 124, exc.stdout or b'', (exc.stderr or b'') + b'Generation timeout\n')
     (raw/'generator_stdout.txt').write_bytes(generation.stdout)
     (raw/'generator_stderr.txt').write_bytes(generation.stderr)
-    command = [str(Path(executable).resolve()), '-lib', 'FIDO2.pvl', 'model.pv']
+    command = [str(Path(executable).resolve())]
+    if config.precise_actions:
+        command += ['-set', 'preciseActions', 'true']
+    command += ['-lib', 'FIDO2.pvl', 'model.pv']
     (raw/'command.txt').write_text(shlex.join(command)+'\n')
     meta = {'run_id': run_id, 'experiment_id': config.id, 'timestamp_utc': datetime.now(timezone.utc).isoformat(),
             'commit': commit, 'manager_commit': subprocess.check_output(['git','-C',str(ROOT),'rev-parse','HEAD'],text=True).strip(),

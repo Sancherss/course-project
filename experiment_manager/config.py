@@ -24,6 +24,7 @@ class ExperimentConfig:
     timeout_seconds: float = 60
     diagnostic: bool = False
     token_binding: str = 'upstream'
+    precise_actions: bool = False
 
     def __post_init__(self) -> None:
         if not isinstance(self.id, str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_-]{0,79}', self.id):
@@ -45,6 +46,7 @@ class ExperimentConfig:
             raise ValueError('Unsupported/duplicate leaked fields')
         if type(self.timeout_seconds) not in (int, float) or not 0 < self.timeout_seconds <= 3600:
             raise ValueError('timeout_seconds must be in (0, 3600]')
+        if type(self.precise_actions) is not bool: raise ValueError('precise_actions must be boolean')
         if self.token_binding != 'upstream':
             raise ValueError('Unsupported token binding')
 

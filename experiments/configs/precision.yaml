@@ -1,0 +1,51 @@
+upstream_commit: 2d8eaf326117bd7e4706c48b2d24e27b4a006fa6
+experiments:
+- id: P-A1-E0
+  description: Precision sensitivity check of an inconclusive default run
+  scenario: auth_client_em
+  ctap: getToken
+  property: A1
+  entities: []
+  fields: []
+  changed_assumption: Same protocol assumptions; solver preciseActions=true
+  expected_comparison: Compare with matching default run; improvement is not guaranteed
+  timeout_seconds: 30
+  diagnostic: false
+  precise_actions: true
+- id: P-reach-reg-E0
+  description: Precision sensitivity check of an inconclusive default run
+  scenario: reg_client
+  ctap: getToken
+  property: D-finish
+  entities: []
+  fields: []
+  changed_assumption: Same protocol assumptions; solver preciseActions=true
+  expected_comparison: Compare with matching default run; improvement is not guaranteed
+  timeout_seconds: 30
+  diagnostic: true
+  precise_actions: true
+- id: P-reach-reg-E2
+  description: Precision sensitivity check of an inconclusive default run
+  scenario: reg_client
+  ctap: getToken
+  property: D-finish
+  entities:
+  - 2
+  fields: []
+  changed_assumption: Same protocol assumptions; solver preciseActions=true
+  expected_comparison: Compare with matching default run; improvement is not guaranteed
+  timeout_seconds: 30
+  diagnostic: true
+  precise_actions: true
+- id: P-reach-auth-E0
+  description: Precision sensitivity check of an inconclusive default run
+  scenario: auth_client_em
+  ctap: getToken
+  property: D-finish
+  entities: []
+  fields: []
+  changed_assumption: Same protocol assumptions; solver preciseActions=true
+  expected_comparison: Compare with matching default run; improvement is not guaranteed
+  timeout_seconds: 30
+  diagnostic: true
+  precise_actions: true

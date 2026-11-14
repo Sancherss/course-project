@@ -8,6 +8,18 @@ import sys
 from .config import ExperimentConfig
 
 
+def single_session_model(text: str) -> str:
+    """Restrict the one root replication to one copy for a positive event witness.
+
+    A false reachability-negation result with an executable trace embeds in the
+    replicated process. A true result here never proves unbounded security.
+    """
+    marker = '!system('
+    if text.count(marker) != 1:
+        raise ValueError('Expected exactly one root replication of system')
+    return text.replace(marker, 'system(', 1)
+
+
 def generate(config: ExperimentConfig, upstream: Path, destination: Path) -> None:
     # Caller starts this module in an empty temporary cwd. Import side effects stay there.
     for name in ('Reg.pv', 'Auth.pv', 'FIDO2.pvl'):
@@ -34,6 +46,9 @@ def generate(config: ExperimentConfig, upstream: Path, destination: Path) -> Non
                        gen.lines, gen.type_set_row, gen.fields_set_row, gen.entities_ctap_set_row,
                        gen.entities_ctap_set_row_1, gen.entities_noctap_set_row)
     case.write_file(False)  # retain replication; do not call buggy upstream analyze/proverif.
+    if config.single_session_witness:
+        source = Path(case.query_path)
+        source.write_text(single_session_model(source.read_text()))
     shutil.copy2(case.query_path, destination / 'model.pv')
     shutil.copy2('FIDO2.pvl', destination / 'FIDO2.pvl')
 

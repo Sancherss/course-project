@@ -1,0 +1,51 @@
+upstream_commit: 2d8eaf326117bd7e4706c48b2d24e27b4a006fa6
+experiments:
+- id: W-reg-E0
+  description: 'Follow-up: executable single-session finish witness, not a security
+    proof'
+  scenario: reg_client
+  ctap: getToken
+  property: D-finish
+  entities: []
+  fields: []
+  changed_assumption: Restrict root !system to one system instance for positive reachability
+    only
+  expected_comparison: A false not-event query with an unconditional trace witnesses
+    reachability in the original replicated model
+  timeout_seconds: 15
+  diagnostic: true
+  precise_actions: true
+  single_session_witness: true
+- id: W-reg-E2
+  description: 'Follow-up: executable single-session finish witness, not a security
+    proof'
+  scenario: reg_client
+  ctap: getToken
+  property: D-finish
+  entities:
+  - 2
+  fields: []
+  changed_assumption: Restrict root !system to one system instance for positive reachability
+    only
+  expected_comparison: A false not-event query with an unconditional trace witnesses
+    reachability in the original replicated model
+  timeout_seconds: 15
+  diagnostic: true
+  precise_actions: true
+  single_session_witness: true
+- id: W-auth-E0
+  description: 'Follow-up: executable single-session finish witness, not a security
+    proof'
+  scenario: auth_client_em
+  ctap: getToken
+  property: D-finish
+  entities: []
+  fields: []
+  changed_assumption: Restrict root !system to one system instance for positive reachability
+    only
+  expected_comparison: A false not-event query with an unconditional trace witnesses
+    reachability in the original replicated model
+  timeout_seconds: 15
+  diagnostic: true
+  precise_actions: true
+  single_session_witness: true

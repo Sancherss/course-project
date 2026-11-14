@@ -1,0 +1,16 @@
+{
+  "id": "R02",
+  "description": "registration: S-pintok, E1",
+  "scenario": "reg_client",
+  "ctap": "getToken",
+  "property": "S-pintok",
+  "entities": [
+    1
+  ],
+  "fields": [],
+  "changed_assumption": "Additional client using public CA; CTAP_Client on cP also added by upstream",
+  "expected_comparison": "Compare E1/E2 with E0 in the same phase/query; no preassigned outcome",
+  "timeout_seconds": 60,
+  "diagnostic": false,
+  "token_binding": "upstream"
+}

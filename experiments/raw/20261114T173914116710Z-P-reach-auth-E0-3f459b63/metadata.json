@@ -1,0 +1,68 @@
+{
+  "run_id": "20261114T173914116710Z-P-reach-auth-E0-3f459b63",
+  "experiment_id": "P-reach-auth-E0",
+  "timestamp_utc": "2026-11-14T17:39:14.173095+00:00",
+  "commit": "2d8eaf326117bd7e4706c48b2d24e27b4a006fa6",
+  "manager_commit": "ef480a4cd47d364d1c02a338a405a3a266257f53",
+  "config": {
+    "id": "P-reach-auth-E0",
+    "description": "Precision sensitivity check of an inconclusive default run",
+    "scenario": "auth_client_em",
+    "ctap": "getToken",
+    "property": "D-finish",
+    "entities": [],
+    "fields": [],
+    "changed_assumption": "Same protocol assumptions; solver preciseActions=true",
+    "expected_comparison": "Compare with matching default run; improvement is not guaranteed",
+    "timeout_seconds": 30,
+    "diagnostic": true,
+    "token_binding": "upstream",
+    "precise_actions": true
+  },
+  "command": [
+    "/workspace/work/course-project/.tools/proverif/proverif",
+    "-set",
+    "preciseActions",
+    "true",
+    "-lib",
+    "FIDO2.pvl",
+    "model.pv"
+  ],
+  "cwd": "/workspace/work/course-project/experiments/raw/20261114T173914116710Z-P-reach-auth-E0-3f459b63",
+  "generator_command": [
+    "/workspace/work/course-project/.venv/bin/python",
+    "-m",
+    "experiment_manager.upstream",
+    "/workspace/work/course-project/experiments/raw/20261114T173914116710Z-P-reach-auth-E0-3f459b63/config.json",
+    "/workspace/work/course-project/upstream/FIDO2Verif",
+    "/workspace/work/course-project/experiments/generated/20261114T173914116710Z-P-reach-auth-E0-3f459b63"
+  ],
+  "generator_exit_code": 0,
+  "manager_sources_sha256": {
+    "experiment_manager/__init__.py": "66f942464bc3a1ad36f9954382fbb26fc5daa3aba29b0ac8811e5db75c4ab926",
+    "experiment_manager/__main__.py": "79ee6f134c5c5193377cf9b189cbdcc3e2095e49ba9cec310114441c15a917c4",
+    "experiment_manager/cli.py": "7af490bb51b183a9722517d9f06f4e56b52c627af74aaf62a8a2512b8c6900be",
+    "experiment_manager/config.py": "05562bb513a47ac0ed0355d94a6cf6e5cc5b992c7b99222ae204a672df38c4f1",
+    "experiment_manager/matrix.py": "0d06452f70f684597ae107ab943a03161a2b3fb85fe6c9130b9672629cba8f35",
+    "experiment_manager/parser.py": "23e40308de0991442c1d0b112d7dbcea8566900d7d518f8d3c0178c34c3f6f97",
+    "experiment_manager/report.py": "dfa8a028bdc32e5ae3b3ec3b1f4d7d40c3e791c09384b7f681876f956d20447c",
+    "experiment_manager/results.py": "e53c46bd1d32b8247164cb3dc825b28fdca8b423f2163b49bccf229fd710b68c",
+    "experiment_manager/runner.py": "b40c111cca1d51dffe31d920fb0c819c486f36e0c1d156cc558dde261c9a8c66",
+    "experiment_manager/upstream.py": "e52e16dcbe2e6e1ea2758daefa0f0978d8a2b496425d7dd693bf67e7e544efa6"
+  },
+  "proverif_version": "2.05",
+  "os": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python": "3.12.14",
+  "executable_sha256": "379671406a2b12ca6ab461c15068de78763aa7903821fe4717a8d01e905c2fa2",
+  "input_sha256": {
+    "model.pv": "1944640e9b02562d2251b9a5194416c41061530b5906a468079e9a68ff87d3c9",
+    "FIDO2.pvl": "ec0728150dca77c616331e5d40e2a6f9767854289b9d68425dabce0ef8a25f47"
+  },
+  "exit_code": -9,
+  "timed_out": true,
+  "duration_seconds": 30.006828393999967,
+  "status": "UNKNOWN",
+  "queries": [],
+  "reason": "Timeout: verification incomplete",
+  "warnings": []
+}

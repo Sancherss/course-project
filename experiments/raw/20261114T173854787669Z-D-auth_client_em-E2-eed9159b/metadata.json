@@ -1,0 +1,66 @@
+{
+  "run_id": "20261114T173854787669Z-D-auth_client_em-E2-eed9159b",
+  "experiment_id": "D-auth_client_em-E2",
+  "timestamp_utc": "2026-11-14T17:38:54.869916+00:00",
+  "commit": "2d8eaf326117bd7e4706c48b2d24e27b4a006fa6",
+  "manager_commit": "ef480a4cd47d364d1c02a338a405a3a266257f53",
+  "config": {
+    "id": "D-auth_client_em-E2",
+    "description": "Reachability of server finish: auth_client_em/E2",
+    "scenario": "auth_client_em",
+    "ctap": "getToken",
+    "property": "D-finish",
+    "entities": [
+      2
+    ],
+    "fields": [],
+    "changed_assumption": "E2",
+    "expected_comparison": "A false RESULT for not event means the finish event IS reachable, not an authentication attack",
+    "timeout_seconds": 60,
+    "diagnostic": true,
+    "token_binding": "upstream"
+  },
+  "command": [
+    "/workspace/work/course-project/.tools/proverif/proverif",
+    "-lib",
+    "FIDO2.pvl",
+    "model.pv"
+  ],
+  "cwd": "/workspace/work/course-project/experiments/raw/20261114T173854787669Z-D-auth_client_em-E2-eed9159b",
+  "generator_command": [
+    "/workspace/work/course-project/.venv/bin/python",
+    "-m",
+    "experiment_manager.upstream",
+    "/workspace/work/course-project/experiments/raw/20261114T173854787669Z-D-auth_client_em-E2-eed9159b/config.json",
+    "/workspace/work/course-project/upstream/FIDO2Verif",
+    "/workspace/work/course-project/experiments/generated/20261114T173854787669Z-D-auth_client_em-E2-eed9159b"
+  ],
+  "generator_exit_code": 0,
+  "manager_sources_sha256": {
+    "experiment_manager/__init__.py": "66f942464bc3a1ad36f9954382fbb26fc5daa3aba29b0ac8811e5db75c4ab926",
+    "experiment_manager/__main__.py": "79ee6f134c5c5193377cf9b189cbdcc3e2095e49ba9cec310114441c15a917c4",
+    "experiment_manager/cli.py": "7af490bb51b183a9722517d9f06f4e56b52c627af74aaf62a8a2512b8c6900be",
+    "experiment_manager/config.py": "05562bb513a47ac0ed0355d94a6cf6e5cc5b992c7b99222ae204a672df38c4f1",
+    "experiment_manager/matrix.py": "0d06452f70f684597ae107ab943a03161a2b3fb85fe6c9130b9672629cba8f35",
+    "experiment_manager/parser.py": "23e40308de0991442c1d0b112d7dbcea8566900d7d518f8d3c0178c34c3f6f97",
+    "experiment_manager/report.py": "dfa8a028bdc32e5ae3b3ec3b1f4d7d40c3e791c09384b7f681876f956d20447c",
+    "experiment_manager/results.py": "e53c46bd1d32b8247164cb3dc825b28fdca8b423f2163b49bccf229fd710b68c",
+    "experiment_manager/runner.py": "b40c111cca1d51dffe31d920fb0c819c486f36e0c1d156cc558dde261c9a8c66",
+    "experiment_manager/upstream.py": "e52e16dcbe2e6e1ea2758daefa0f0978d8a2b496425d7dd693bf67e7e544efa6"
+  },
+  "proverif_version": "2.05",
+  "os": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python": "3.12.14",
+  "executable_sha256": "379671406a2b12ca6ab461c15068de78763aa7903821fe4717a8d01e905c2fa2",
+  "input_sha256": {
+    "model.pv": "6a0d8ca8e8eed9e9bf5b12983ee2e25fce2cfbe5b8fa135b296b5596db807a92",
+    "FIDO2.pvl": "ec0728150dca77c616331e5d40e2a6f9767854289b9d68425dabce0ef8a25f47"
+  },
+  "exit_code": -9,
+  "timed_out": true,
+  "duration_seconds": 60.010273504,
+  "status": "UNKNOWN",
+  "queries": [],
+  "reason": "Timeout: verification incomplete",
+  "warnings": []
+}

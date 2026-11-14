@@ -1,0 +1,16 @@
+{
+  "id": "R09",
+  "description": "authentication: S-pintok, E2",
+  "scenario": "auth_client_em",
+  "ctap": "getToken",
+  "property": "S-pintok",
+  "entities": [
+    2
+  ],
+  "fields": [],
+  "changed_assumption": "Additional client using public CR and private CA",
+  "expected_comparison": "Compare E1/E2 with E0 in the same phase/query; no preassigned outcome",
+  "timeout_seconds": 60,
+  "diagnostic": false,
+  "token_binding": "upstream"
+}

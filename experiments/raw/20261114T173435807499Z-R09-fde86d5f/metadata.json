@@ -1,0 +1,72 @@
+{
+  "run_id": "20261114T173435807499Z-R09-fde86d5f",
+  "experiment_id": "R09",
+  "timestamp_utc": "2026-11-14T17:34:35.869423+00:00",
+  "commit": "2d8eaf326117bd7e4706c48b2d24e27b4a006fa6",
+  "manager_commit": "b43f7a04bc35e7f5c2f0404ef41fb05e6de9cc2f",
+  "config": {
+    "id": "R09",
+    "description": "authentication: S-pintok, E2",
+    "scenario": "auth_client_em",
+    "ctap": "getToken",
+    "property": "S-pintok",
+    "entities": [
+      2
+    ],
+    "fields": [],
+    "changed_assumption": "Additional client using public CR and private CA",
+    "expected_comparison": "Compare E1/E2 with E0 in the same phase/query; no preassigned outcome",
+    "timeout_seconds": 60,
+    "diagnostic": false,
+    "token_binding": "upstream"
+  },
+  "command": [
+    "/workspace/work/course-project/.tools/proverif/proverif",
+    "-lib",
+    "FIDO2.pvl",
+    "model.pv"
+  ],
+  "cwd": "/workspace/work/course-project/experiments/raw/20261114T173435807499Z-R09-fde86d5f",
+  "generator_command": [
+    "/workspace/work/course-project/.venv/bin/python",
+    "-m",
+    "experiment_manager.upstream",
+    "/workspace/work/course-project/experiments/raw/20261114T173435807499Z-R09-fde86d5f/config.json",
+    "/workspace/work/course-project/upstream/FIDO2Verif",
+    "/workspace/work/course-project/experiments/generated/20261114T173435807499Z-R09-fde86d5f"
+  ],
+  "generator_exit_code": 0,
+  "manager_sources_sha256": {
+    "experiment_manager/__init__.py": "66f942464bc3a1ad36f9954382fbb26fc5daa3aba29b0ac8811e5db75c4ab926",
+    "experiment_manager/__main__.py": "79ee6f134c5c5193377cf9b189cbdcc3e2095e49ba9cec310114441c15a917c4",
+    "experiment_manager/cli.py": "7af490bb51b183a9722517d9f06f4e56b52c627af74aaf62a8a2512b8c6900be",
+    "experiment_manager/config.py": "e4b107cb2f05e61a22df989f6e97074657ac979fb19c98b52919804490f31f5f",
+    "experiment_manager/matrix.py": "0d06452f70f684597ae107ab943a03161a2b3fb85fe6c9130b9672629cba8f35",
+    "experiment_manager/parser.py": "0eb738ebbdfe4323339dbe1a843bad9919d8db54aa6f1f71be9fb66f37437090",
+    "experiment_manager/report.py": "ebd6b8a77810e2077cc0c694c36372e64758a25c75f9b370dab6b250177f098e",
+    "experiment_manager/results.py": "e53c46bd1d32b8247164cb3dc825b28fdca8b423f2163b49bccf229fd710b68c",
+    "experiment_manager/runner.py": "1385a4f664f0fa3b3c5dd775f2171c586619428555e2bd010ec811677c8042ee",
+    "experiment_manager/upstream.py": "e52e16dcbe2e6e1ea2758daefa0f0978d8a2b496425d7dd693bf67e7e544efa6"
+  },
+  "proverif_version": "2.05",
+  "os": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python": "3.12.14",
+  "executable_sha256": "379671406a2b12ca6ab461c15068de78763aa7903821fe4717a8d01e905c2fa2",
+  "input_sha256": {
+    "model.pv": "95d79be0c1ba0f3c5bacfd23983d92cd48b0a00589ce0c2b7726e652a35e6e9b",
+    "FIDO2.pvl": "ec0728150dca77c616331e5d40e2a6f9767854289b9d68425dabce0ef8a25f47"
+  },
+  "exit_code": 0,
+  "timed_out": false,
+  "duration_seconds": 0.06420204999994894,
+  "status": "PROVED",
+  "queries": [
+    {
+      "query": "secret PinToken_25,PinToken_24,PinToken_23,PinToken_22,PinToken_21,PinToken_20,PinToken_19,PinToken_18,PinToken_17,PinToken_16,PinToken_15,PinToken_14,PinToken_13,PinToken_12,PinToken_11,PinToken_10,PinToken_9,PinToken_8,PinToken_7,PinToken_6,PinToken_5,PinToken_4,PinToken_3,PinToken_2,PinToken_1,PinToken",
+      "status": "PROVED",
+      "raw_line": "RESULT secret PinToken_25,PinToken_24,PinToken_23,PinToken_22,PinToken_21,PinToken_20,PinToken_19,PinToken_18,PinToken_17,PinToken_16,PinToken_15,PinToken_14,PinToken_13,PinToken_12,PinToken_11,PinToken_10,PinToken_9,PinToken_8,PinToken_7,PinToken_6,PinToken_5,PinToken_4,PinToken_3,PinToken_2,PinToken_1,PinToken is true."
+    }
+  ],
+  "reason": "All documented RESULT records are true",
+  "warnings": []
+}

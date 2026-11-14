@@ -1,0 +1,58 @@
+{
+  "run_id": "20261114T173318892199Z-pilot-original-token-14067f66",
+  "experiment_id": "pilot-original-token",
+  "timestamp_utc": "2026-11-14T17:33:18.954502+00:00",
+  "commit": "2d8eaf326117bd7e4706c48b2d24e27b4a006fa6",
+  "manager_commit": "3276ec488098f2f62ed1369f7ebd59989d66a628",
+  "config": {
+    "id": "pilot-original-token",
+    "description": "Check the unmodified upstream token query before the matrix",
+    "scenario": "reg_client",
+    "ctap": "getToken",
+    "property": "S-pintok",
+    "entities": [],
+    "fields": [],
+    "changed_assumption": "None; original binding diagnostic",
+    "expected_comparison": "Determine whether PinToken identifies the intended CTAP binding",
+    "timeout_seconds": 60,
+    "diagnostic": false,
+    "token_binding": "upstream"
+  },
+  "command": [
+    "/workspace/work/course-project/.tools/proverif/proverif",
+    "-lib",
+    "FIDO2.pvl",
+    "model.pv"
+  ],
+  "cwd": "/workspace/work/course-project/experiments/raw/20261114T173318892199Z-pilot-original-token-14067f66",
+  "generator_command": [
+    "/workspace/work/course-project/.venv/bin/python",
+    "-m",
+    "experiment_manager.upstream",
+    "/workspace/work/course-project/experiments/raw/20261114T173318892199Z-pilot-original-token-14067f66/config.json",
+    "/workspace/work/course-project/upstream/FIDO2Verif",
+    "/workspace/work/course-project/experiments/generated/20261114T173318892199Z-pilot-original-token-14067f66"
+  ],
+  "generator_exit_code": 0,
+  "proverif_version": "2.05",
+  "os": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python": "3.12.14",
+  "executable_sha256": "379671406a2b12ca6ab461c15068de78763aa7903821fe4717a8d01e905c2fa2",
+  "input_sha256": {
+    "model.pv": "04feb821b86476d6e2679c0eda61790b94b19505522f9294589bd43bb15ac2eb",
+    "FIDO2.pvl": "ec0728150dca77c616331e5d40e2a6f9767854289b9d68425dabce0ef8a25f47"
+  },
+  "exit_code": 0,
+  "timed_out": false,
+  "duration_seconds": 0.041508190000058676,
+  "status": "PROVED",
+  "queries": [
+    {
+      "query": "secret PinToken_10,PinToken_9,PinToken_8,PinToken_7,PinToken_6,PinToken_5,PinToken_4,PinToken_3,PinToken_2,PinToken_1,PinToken",
+      "status": "PROVED",
+      "raw_line": "RESULT secret PinToken_10,PinToken_9,PinToken_8,PinToken_7,PinToken_6,PinToken_5,PinToken_4,PinToken_3,PinToken_2,PinToken_1,PinToken is true."
+    }
+  ],
+  "reason": "All documented RESULT records are true",
+  "warnings": []
+}

@@ -1,0 +1,14 @@
+{
+  "id": "pilot-original-token",
+  "description": "Check the unmodified upstream token query before the matrix",
+  "scenario": "reg_client",
+  "ctap": "getToken",
+  "property": "S-pintok",
+  "entities": [],
+  "fields": [],
+  "changed_assumption": "None; original binding diagnostic",
+  "expected_comparison": "Determine whether PinToken identifies the intended CTAP binding",
+  "timeout_seconds": 60,
+  "diagnostic": false,
+  "token_binding": "upstream"
+}

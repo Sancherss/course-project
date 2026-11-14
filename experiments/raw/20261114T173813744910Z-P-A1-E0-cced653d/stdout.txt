@@ -1,0 +1,1557 @@
+Linear part:
+associate(a,pk(b,G)) = associate(b,pk(a,G))
+Completing equations...
+Completed equations:
+associate(a,pk(b,G)) = associate(b,pk(a,G))
+Convergent part: No equation.
+Process 0 (that is, the initial process):
+{1}new G: Gen;
+{2}new uHandle: UserHandle;
+{3}new pWord: PassWord;
+{4}new aaguid: AAGUID;
+{5}new rpid: RpID;
+{6}new wk: key;
+{7}new skat: sskey;
+{8}new skau: sskey;
+{9}new cntr: CNTR;
+{10}!
+{11}let G_1: Gen = G in
+{12}let skat_1: sskey = skat in
+{13}let skau_1: sskey = skau in
+{14}let aaguid_1: AAGUID = aaguid in
+{15}let rpid_1: RpID = rpid in
+{16}let uHandle_1: UserHandle = uHandle in
+{17}let authcntr: CNTR = cntr in
+{18}let wk_1: key = wk in
+{19}new Tr: Transaction;
+{20}new PinToken: bitstring;
+{21}new PIN: bitstring;
+{22}let pkat: spkey = spk(skat_1) in
+{23}let pkau: spkey = spk(skau_1) in
+{24}let ctap_type: CTAPType = getToken in
+{25}let au_type: AuType = client in
+{26}let tr_type: TrType = empty in
+{27}new creid: bitstring;
+{28}let testcreid: bitstring = (if (au_type = client) then creid else senc((skau_1,rpid_1,uHandle_1),wk_1)) in
+{29}let creid_1: bitstring = testcreid in
+{30}insert Authnr_Client_Record(creid_1,skau_1,rpid_1,uHandle_1,authcntr);
+{31}insert Authnr_Server_Record(uHandle_1,rpid_1,authcntr);
+{32}insert Server_Reg_Record(uHandle_1,aaguid_1,creid_1,pkau,authcntr);
+{33}out(cP, (G_1,aaguid_1,rpid_1,uHandle_1,pkat,pkau));
+{34}if (ctap_type = noCTAP) then
+    (
+        {35}let CA_1: channel = CA in
+        {36}in(CA_1, msgAuth2: msg);
+        {37}if ((au_type = server) && (tr_type = empty)) then
+        (
+            {38}if (ctap_type = noCTAP) then
+            (
+                {39}let Auth21(creid_2: bitstring,rpid_2: RpID,CHash: bitstring) = msgAuth2 in
+                {40}let (skau_2: sskey,xrpid: RpID,uHandle_2: UserHandle) = sdec(creid_2,wk_1) in
+                {48}get Authnr_Server_Record(=uHandle_2,=rpid_2,xcntr: CNTR) in
+                {41}let RHash: bitstring = hash_r(xrpid) in
+                {42}let cntr_1: CNTR = Incr(xcntr) in
+                {43}let testcntr: CNTR = cntr_1 in
+                {44}let pkau_1: spkey = spk(skau_2) in
+                {45}let s: bitstring = sign((RHash,cntr_1,aaguid_1,creid_2,pkau_1,CHash),skau_2) in
+                {46}event Authnr_Finish_Auth(uHandle_2,xrpid,aaguid_1,creid_2);
+                {47}out(CA_1, Auth3(RHash,cntr_1,aaguid_1,creid_2,pkau_1,s,uHandle_2))
+            )
+            else
+                {61}get Authnr_Token(PinToken_1: bitstring) in
+                {49}let Auth2(creid_3: bitstring,rpid_3: RpID,CHash_1: bitstring,PinAuth: bitstring) = msgAuth2 in
+                {50}let xPinAuth: bitstring = HMAC2(PinToken_1,CHash_1) in
+                {51}if (PinAuth = xPinAuth) then
+                {52}let (skau_3: sskey,xrpid_1: RpID,uHandle_3: UserHandle) = sdec(creid_3,wk_1) in
+                {60}get Authnr_Server_Record(=uHandle_3,=rpid_3,xcntr_1: CNTR) in
+                {53}let RHash_1: bitstring = hash_r(xrpid_1) in
+                {54}let cntr_2: CNTR = Incr(xcntr_1) in
+                {55}let testcntr_1: CNTR = cntr_2 in
+                {56}let pkau_2: spkey = spk(skau_3) in
+                {57}let s_1: bitstring = sign((RHash_1,cntr_2,aaguid_1,creid_3,pkau_2,CHash_1),skau_3) in
+                {58}event Authnr_Finish_Auth(uHandle_3,xrpid_1,aaguid_1,creid_3);
+                {59}out(CA_1, Auth3(RHash_1,cntr_2,aaguid_1,creid_3,pkau_2,s_1,uHandle_3))
+        )
+        else
+            {62}if ((au_type = server) && (tr_type = simple)) then
+            (
+                {63}if (ctap_type = noCTAP) then
+                (
+                    {64}let Trs21(creid_4: bitstring,rpid_4: RpID,CHash_2: bitstring,Tr_1: Transaction) = msgAuth2 in
+                    {65}let (skau_4: sskey,xrpid_2: RpID,uHandle_4: UserHandle) = sdec(creid_4,wk_1) in
+                    {74}get Authnr_Server_Record(=uHandle_4,=rpid_4,xcntr_2: CNTR) in
+                    {66}let RHash_2: bitstring = hash_r(xrpid_2) in
+                    {67}let cntr_3: CNTR = Incr(xcntr_2) in
+                    {68}let testcntr_2: CNTR = cntr_3 in
+                    {69}let pkau_3: spkey = spk(skau_4) in
+                    {70}let s_2: bitstring = sign((RHash_2,cntr_3,aaguid_1,creid_4,pkau_3,CHash_2,Tr_1),skau_4) in
+                    {71}event Authnr_Finish_Auth(uHandle_4,xrpid_2,aaguid_1,creid_4);
+                    {72}event Authnr_Finish_Tr(Tr_1);
+                    {73}out(CA_1, Trs3(RHash_2,cntr_3,aaguid_1,creid_4,pkau_3,s_2,uHandle_4,Tr_1))
+                )
+                else
+                    {88}get Authnr_Token(PinToken_2: bitstring) in
+                    {75}let Trs2(creid_5: bitstring,rpid_5: RpID,CHash_3: bitstring,PinAuth_1: bitstring,Tr_2: Transaction) = msgAuth2 in
+                    {76}let xPinAuth_1: bitstring = HMAC2(PinToken_2,CHash_3) in
+                    {77}if (PinAuth_1 = xPinAuth_1) then
+                    {78}let (skau_5: sskey,xrpid_3: RpID,uHandle_5: UserHandle) = sdec(creid_5,wk_1) in
+                    {87}get Authnr_Server_Record(=uHandle_5,=rpid_5,xcntr_3: CNTR) in
+                    {79}let RHash_3: bitstring = hash_r(xrpid_3) in
+                    {80}let cntr_4: CNTR = Incr(xcntr_3) in
+                    {81}let testcntr_3: CNTR = cntr_4 in
+                    {82}let pkau_4: spkey = spk(skau_5) in
+                    {83}let s_3: bitstring = sign((RHash_3,cntr_4,aaguid_1,creid_5,pkau_4,CHash_3,Tr_2),skau_5) in
+                    {84}event Authnr_Finish_Auth(uHandle_5,xrpid_3,aaguid_1,creid_5);
+                    {85}event Authnr_Finish_Tr(Tr_2);
+                    {86}out(CA_1, Trs3(RHash_3,cntr_4,aaguid_1,creid_5,pkau_4,s_3,uHandle_5,Tr_2))
+            )
+            else
+                {89}if ((au_type = server) && (tr_type = generic)) then
+                (
+                    {90}if (ctap_type = noCTAP) then
+                    (
+                        {91}let Trg21(creid_6: bitstring,rpid_6: RpID,CHash_4: bitstring,Tr_3: Transaction) = msgAuth2 in
+                        {92}let (skau_6: sskey,xrpid_4: RpID,uHandle_6: UserHandle) = sdec(creid_6,wk_1) in
+                        {102}get Authnr_Server_Record(=uHandle_6,=rpid_6,xcntr_4: CNTR) in
+                        {93}let RHash_4: bitstring = hash_r(xrpid_4) in
+                        {94}let cntr_5: CNTR = Incr(xcntr_4) in
+                        {95}let testcntr_4: CNTR = cntr_5 in
+                        {96}let THash: bitstring = hash_t(Tr_3) in
+                        {97}let pkau_5: spkey = spk(skau_6) in
+                        {98}let s_4: bitstring = sign((RHash_4,cntr_5,aaguid_1,creid_6,pkau_5,CHash_4,THash),skau_6) in
+                        {99}event Authnr_Finish_Auth(uHandle_6,xrpid_4,aaguid_1,creid_6);
+                        {100}event Authnr_Finish_Tr(Tr_3);
+                        {101}out(CA_1, Trg3(RHash_4,cntr_5,aaguid_1,creid_6,pkau_5,s_4,uHandle_6,THash))
+                    )
+                    else
+                        {117}get Authnr_Token(PinToken_3: bitstring) in
+                        {103}let Trg2(creid_7: bitstring,rpid_7: RpID,CHash_5: bitstring,PinAuth_2: bitstring,Tr_4: Transaction) = msgAuth2 in
+                        {104}let xPinAuth_2: bitstring = HMAC2(PinToken_3,CHash_5) in
+                        {105}if (PinAuth_2 = xPinAuth_2) then
+                        {106}let (skau_7: sskey,xrpid_5: RpID,uHandle_7: UserHandle) = sdec(creid_7,wk_1) in
+                        {116}get Authnr_Server_Record(=uHandle_7,=rpid_7,xcntr_5: CNTR) in
+                        {107}let RHash_5: bitstring = hash_r(xrpid_5) in
+                        {108}let cntr_6: CNTR = Incr(xcntr_5) in
+                        {109}let testcntr_5: CNTR = cntr_6 in
+                        {110}let THash_1: bitstring = hash_t(Tr_4) in
+                        {111}let pkau_6: spkey = spk(skau_7) in
+                        {112}let s_5: bitstring = sign((RHash_5,cntr_6,aaguid_1,creid_7,pkau_6,CHash_5,THash_1),skau_7) in
+                        {113}event Authnr_Finish_Auth(uHandle_7,xrpid_5,aaguid_1,creid_7);
+                        {114}event Authnr_Finish_Tr(Tr_4);
+                        {115}out(CA_1, Trg3(RHash_5,cntr_6,aaguid_1,creid_7,pkau_6,s_5,uHandle_7,THash_1))
+                )
+                else
+                    {118}if ((au_type = client) && (tr_type = empty)) then
+                    (
+                        {119}if (ctap_type = noCTAP) then
+                        (
+                            {120}let Auth21(creid_8: bitstring,rpid_8: RpID,CHash_6: bitstring) = msgAuth2 in
+                            {128}get Authnr_Client_Record(=creid_8,skau_8: sskey,xrpid_6: RpID,uHandle_8: UserHandle,xcntr_6: CNTR) in
+                            {121}let RHash_6: bitstring = hash_r(xrpid_6) in
+                            {122}let cntr_7: CNTR = Incr(xcntr_6) in
+                            {123}let testcntr_6: CNTR = cntr_7 in
+                            {124}let pkau_7: spkey = spk(skau_8) in
+                            {125}let s_6: bitstring = sign((RHash_6,cntr_7,aaguid_1,creid_8,pkau_7,CHash_6),skau_8) in
+                            {126}event Authnr_Finish_Auth(uHandle_8,xrpid_6,aaguid_1,creid_8);
+                            {127}out(CA_1, Auth3(RHash_6,cntr_7,aaguid_1,creid_8,pkau_7,s_6,uHandle_8))
+                        )
+                        else
+                            {140}get Authnr_Token(PinToken_4: bitstring) in
+                            {129}let Auth2(creid_9: bitstring,rpid_9: RpID,CHash_7: bitstring,PinAuth_3: bitstring) = msgAuth2 in
+                            {130}let xPinAuth_3: bitstring = HMAC2(PinToken_4,CHash_7) in
+                            {131}if (PinAuth_3 = xPinAuth_3) then
+                            {139}get Authnr_Client_Record(=creid_9,skau_9: sskey,xrpid_7: RpID,uHandle_9: UserHandle,xcntr_7: CNTR) in
+                            {132}let RHash_7: bitstring = hash_r(xrpid_7) in
+                            {133}let cntr_8: CNTR = Incr(xcntr_7) in
+                            {134}let testcntr_7: CNTR = cntr_8 in
+                            {135}let pkau_8: spkey = spk(skau_9) in
+                            {136}let s_7: bitstring = sign((RHash_7,cntr_8,aaguid_1,creid_9,pkau_8,CHash_7),skau_9) in
+                            {137}event Authnr_Finish_Auth(uHandle_9,xrpid_7,aaguid_1,creid_9);
+                            {138}out(CA_1, Auth3(RHash_7,cntr_8,aaguid_1,creid_9,pkau_8,s_7,uHandle_9))
+                    )
+                    else
+                        {141}if ((au_type = client) && (tr_type = simple)) then
+                        (
+                            {142}if (ctap_type = noCTAP) then
+                            (
+                                {143}let Trs21(creid_10: bitstring,rpid_10: RpID,CHash_8: bitstring,Tr_5: Transaction) = msgAuth2 in
+                                {152}get Authnr_Client_Record(=creid_10,skau_10: sskey,xrpid_8: RpID,uHandle_10: UserHandle,xcntr_8: CNTR) in
+                                {144}let RHash_8: bitstring = hash_r(xrpid_8) in
+                                {145}let cntr_9: CNTR = Incr(xcntr_8) in
+                                {146}let testcntr_8: CNTR = cntr_9 in
+                                {147}let pkau_9: spkey = spk(skau_10) in
+                                {148}let s_8: bitstring = sign((RHash_8,cntr_9,aaguid_1,creid_10,pkau_9,CHash_8,Tr_5),skau_10) in
+                                {149}event Authnr_Finish_Auth(uHandle_10,xrpid_8,aaguid_1,creid_10);
+                                {150}event Authnr_Finish_Tr(Tr_5);
+                                {151}out(CA_1, Trs3(RHash_8,cntr_9,aaguid_1,creid_10,pkau_9,s_8,uHandle_10,Tr_5))
+                            )
+                            else
+                                {165}get Authnr_Token(PinToken_5: bitstring) in
+                                {153}let Trs2(creid_11: bitstring,rpid_11: RpID,CHash_9: bitstring,PinAuth_4: bitstring,Tr_6: Transaction) = msgAuth2 in
+                                {154}let xPinAuth_4: bitstring = HMAC2(PinToken_5,CHash_9) in
+                                {155}if (PinAuth_4 = xPinAuth_4) then
+                                {164}get Authnr_Client_Record(=creid_11,skau_11: sskey,xrpid_9: RpID,uHandle_11: UserHandle,xcntr_9: CNTR) in
+                                {156}let RHash_9: bitstring = hash_r(xrpid_9) in
+                                {157}let cntr_10: CNTR = Incr(xcntr_9) in
+                                {158}let testcntr_9: CNTR = cntr_10 in
+                                {159}let pkau_10: spkey = spk(skau_11) in
+                                {160}let s_9: bitstring = sign((RHash_9,cntr_10,aaguid_1,creid_11,pkau_10,CHash_9,Tr_6),skau_11) in
+                                {161}event Authnr_Finish_Auth(uHandle_11,xrpid_9,aaguid_1,creid_11);
+                                {162}event Authnr_Finish_Tr(Tr_6);
+                                {163}out(CA_1, Trs3(RHash_9,cntr_10,aaguid_1,creid_11,pkau_10,s_9,uHandle_11,Tr_6))
+                        )
+                        else
+                            {166}if (ctap_type = noCTAP) then
+                            (
+                                {167}let Trg21(creid_12: bitstring,rpid_12: RpID,CHash_10: bitstring,Tr_7: Transaction) = msgAuth2 in
+                                {177}get Authnr_Client_Record(=creid_12,skau_12: sskey,xrpid_10: RpID,uHandle_12: UserHandle,xcntr_10: CNTR) in
+                                {168}let RHash_10: bitstring = hash_r(xrpid_10) in
+                                {169}let cntr_11: CNTR = Incr(xcntr_10) in
+                                {170}let testcntr_10: CNTR = cntr_11 in
+                                {171}let THash_2: bitstring = hash_t(Tr_7) in
+                                {172}let pkau_11: spkey = spk(skau_12) in
+                                {173}let s_10: bitstring = sign((RHash_10,cntr_11,aaguid_1,creid_12,pkau_11,CHash_10,THash_2),skau_12) in
+                                {174}event Authnr_Finish_Auth(uHandle_12,xrpid_10,aaguid_1,creid_12);
+                                {175}event Authnr_Finish_Tr(Tr_7);
+                                {176}out(CA_1, Trg3(RHash_10,cntr_11,aaguid_1,creid_12,pkau_11,s_10,uHandle_12,THash_2))
+                            )
+                            else
+                                {191}get Authnr_Token(PinToken_6: bitstring) in
+                                {178}let Trg2(creid_13: bitstring,rpid_13: RpID,CHash_11: bitstring,PinAuth_5: bitstring,Tr_8: Transaction) = msgAuth2 in
+                                {179}let xPinAuth_5: bitstring = HMAC2(PinToken_6,CHash_11) in
+                                {180}if (PinAuth_5 = xPinAuth_5) then
+                                {190}get Authnr_Client_Record(=creid_13,skau_13: sskey,xrpid_11: RpID,uHandle_13: UserHandle,xcntr_11: CNTR) in
+                                {181}let RHash_11: bitstring = hash_r(xrpid_11) in
+                                {182}let cntr_12: CNTR = Incr(xcntr_11) in
+                                {183}let testcntr_11: CNTR = cntr_12 in
+                                {184}let THash_3: bitstring = hash_t(Tr_8) in
+                                {185}let pkau_12: spkey = spk(skau_13) in
+                                {186}let s_11: bitstring = sign((RHash_11,cntr_12,aaguid_1,creid_13,pkau_12,CHash_11,THash_3),skau_13) in
+                                {187}event Authnr_Finish_Auth(uHandle_13,xrpid_11,aaguid_1,creid_13);
+                                {188}event Authnr_Finish_Tr(Tr_8);
+                                {189}out(CA_1, Trg3(RHash_11,cntr_12,aaguid_1,creid_13,pkau_12,s_11,uHandle_13,THash_3))
+    ) | (
+        {192}let CR_1: channel = CR in
+        {193}let CA_2: channel = CA in
+        {194}let tbinding: bitstring = GetTLSBinding(CR_1) in
+        {195}in(CR_1, msgAuth1: msg);
+        {196}if (tr_type = empty) then
+        (
+            {197}let Auth1(rpid_14: RpID,challenge: Challenge,creid_14: bitstring) = msgAuth1 in
+            {198}event Client_Init_Auth(uHandle_1,rpid_14);
+            {199}let ClientData: bitstring = CD_Cons(challenge,rpid_14,tbinding) in
+            {200}let CHash_12: bitstring = hash(ClientData) in
+            {201}if (ctap_type = noCTAP) then
+            (
+                {202}out(CA_2, Auth21(creid_14,rpid_14,CHash_12));
+                {203}in(CA_2, msgAuth3: msg);
+                {204}let Auth3(RHash_12: bitstring,cntr_13: CNTR,aaguid_2: AAGUID,xcreid: bitstring,pkau_13: spkey,s_12: bitstring,uhandle: UserHandle) = msgAuth3 in
+                {205}out(CR_1, Auth4(RHash_12,cntr_13,aaguid_2,xcreid,pkau_13,s_12,uhandle,ClientData))
+            )
+            else
+                {211}get Client_Token(PinToken_7: bitstring) in
+                {206}let PinAuth_6: bitstring = HMAC2(PinToken_7,CHash_12) in
+                {207}out(CA_2, Auth2(creid_14,rpid_14,CHash_12,PinAuth_6));
+                {208}in(CA_2, msgAuth3_1: msg);
+                {209}let Auth3(RHash_13: bitstring,cntr_14: CNTR,aaguid_3: AAGUID,xcreid_1: bitstring,pkau_14: spkey,s_13: bitstring,uhandle_1: UserHandle) = msgAuth3_1 in
+                {210}out(CR_1, Auth4(RHash_13,cntr_14,aaguid_3,xcreid_1,pkau_14,s_13,uhandle_1,ClientData))
+        )
+        else
+            {212}if (tr_type = simple) then
+            (
+                {213}let Trs1(rpid_15: RpID,challenge_1: Challenge,creid_15: bitstring,xTr: Transaction) = msgAuth1 in
+                {214}event Client_Init_Auth(uHandle_1,rpid_15);
+                {215}event Client_Init_Tr(xTr);
+                {216}let ClientData_1: bitstring = CD_Cons(challenge_1,rpid_15,tbinding) in
+                {217}let CHash_13: bitstring = hash(ClientData_1) in
+                {218}if (ctap_type = noCTAP) then
+                (
+                    {219}out(CA_2, Trs21(creid_15,rpid_15,CHash_13,xTr));
+                    {220}in(CA_2, msgTrs3: msg);
+                    {221}let Trs3(RHash_14: bitstring,cntr_15: CNTR,aaguid_4: AAGUID,xcreid_2: bitstring,pkau_15: spkey,s_14: bitstring,uhandle_2: UserHandle,Tr_9: Transaction) = msgTrs3 in
+                    {222}out(CR_1, Trs4(RHash_14,cntr_15,aaguid_4,xcreid_2,pkau_15,s_14,uhandle_2,ClientData_1,Tr_9))
+                )
+                else
+                    {228}get Client_Token(PinToken_8: bitstring) in
+                    {223}let PinAuth_7: bitstring = HMAC2(PinToken_8,CHash_13) in
+                    {224}out(CA_2, Trs2(creid_15,rpid_15,CHash_13,PinAuth_7,xTr));
+                    {225}in(CA_2, msgAuth3_2: msg);
+                    {226}let Auth3(RHash_15: bitstring,cntr_16: CNTR,aaguid_5: AAGUID,xcreid_3: bitstring,pkau_16: spkey,s_15: bitstring,uhandle_3: UserHandle) = msgAuth3_2 in
+                    {227}out(CR_1, Auth4(RHash_15,cntr_16,aaguid_5,xcreid_3,pkau_16,s_15,uhandle_3,ClientData_1))
+            )
+            else
+                {229}let Trg1(rpid_16: RpID,challenge_2: Challenge,creid_16: bitstring,xTr_1: Transaction) = msgAuth1 in
+                {230}event Client_Init_Auth(uHandle_1,rpid_16);
+                {231}event Client_Init_Tr(xTr_1);
+                {232}let ClientData_2: bitstring = CD_Cons(challenge_2,rpid_16,tbinding) in
+                {233}let CHash_14: bitstring = hash(ClientData_2) in
+                {234}if (ctap_type = noCTAP) then
+                (
+                    {235}out(CA_2, Trg21(creid_16,rpid_16,CHash_14,xTr_1));
+                    {236}in(CA_2, msgTrg3: msg);
+                    {237}let Trg3(RHash_16: bitstring,cntr_17: CNTR,aaguid_6: AAGUID,xcreid_4: bitstring,pkau_17: spkey,s_16: bitstring,uhandle_4: UserHandle,thash: bitstring) = msgTrg3 in
+                    {238}out(CR_1, Trg4(RHash_16,cntr_17,aaguid_6,xcreid_4,pkau_17,s_16,uhandle_4,ClientData_2,thash))
+                )
+                else
+                    {244}get Client_Token(PinToken_9: bitstring) in
+                    {239}let PinAuth_8: bitstring = HMAC2(PinToken_9,CHash_14) in
+                    {240}out(CA_2, Trg2(creid_16,rpid_16,CHash_14,PinAuth_8,xTr_1));
+                    {241}in(CA_2, msgTrg3_1: msg);
+                    {242}let Trg3(RHash_17: bitstring,cntr_18: CNTR,aaguid_7: AAGUID,xcreid_5: bitstring,pkau_18: spkey,s_17: bitstring,uhandle_5: UserHandle,thash_1: bitstring) = msgTrg3_1 in
+                    {243}out(CR_1, Trg4(RHash_17,cntr_18,aaguid_7,xcreid_5,pkau_18,s_17,uhandle_5,ClientData_2,thash_1))
+    ) | (
+        {245}let xTr_2: Transaction = Tr in
+        {246}let CR_2: channel = CR in
+        {247}new challenge_3: Challenge;
+        {248}let tbinding_1: bitstring = GetTLSBinding(CR_2) in
+        {278}get Server_Reg_Record(=uHandle_1,xaaguid: AAGUID,xcreid_6: bitstring,xpkau: spkey,xcntr_12: CNTR) in
+        {249}if (tr_type = empty) then
+        (
+            {250}out(CR_2, Auth1(rpid_1,challenge_3,xcreid_6));
+            {251}in(CR_2, msgAuth4: msg);
+            {252}let Auth4(RHash_18: bitstring,cntr_19: CNTR,aaguid_8: AAGUID,creid_17: bitstring,pkau_19: spkey,s_18: bitstring,xuhandle: UserHandle,ClientData_3: bitstring) = msgAuth4 in
+            {253}let xClientData: bitstring = CD_Cons(challenge_3,rpid_1,tbinding_1) in
+            {254}let xRHash: bitstring = hash_r(rpid_1) in
+            {255}let xCHash: bitstring = hash(ClientData_3) in
+            {256}if ((ClientData_3 = xClientData) && ((RHash_18 = xRHash) && ((Incr(xcntr_12) = cntr_19) && (checksign(s_18,(RHash_18,cntr_19,aaguid_8,creid_17,pkau_19,xCHash),xpkau) = OK)))) then
+            {257}event Server_Finish_Auth(uHandle_1,rpid_1,aaguid_8,xcreid_6)
+        )
+        else
+            {258}if (tr_type = simple) then
+            (
+                {259}out(CR_2, Trs1(rpid_1,challenge_3,xcreid_6,xTr_2));
+                {260}in(CR_2, msgTrs4: msg);
+                {261}let Trs4(RHash_19: bitstring,cntr_20: CNTR,aaguid_9: AAGUID,creid_18: bitstring,pkau_20: spkey,s_19: bitstring,xuhandle_1: UserHandle,ClientData_4: bitstring,Tr_10: Transaction) = msgTrs4 in
+                {262}let xClientData_1: bitstring = CD_Cons(challenge_3,rpid_1,tbinding_1) in
+                {263}let xRHash_1: bitstring = hash_r(rpid_1) in
+                {264}let xCHash_1: bitstring = hash(ClientData_4) in
+                {265}if ((ClientData_4 = xClientData_1) && ((RHash_19 = xRHash_1) && ((Incr(xcntr_12) = cntr_20) && ((Tr_10 = xTr_2) && (checksign(s_19,(xRHash_1,cntr_20,aaguid_9,creid_18,pkau_20,xCHash_1,xTr_2),xpkau) = OK))))) then
+                {266}event Server_Finish_Auth(uHandle_1,rpid_1,aaguid_9,xcreid_6);
+                {267}event Server_Finish_Tr(xTr_2)
+            )
+            else
+                {268}out(CR_2, Trg1(rpid_1,challenge_3,xcreid_6,xTr_2));
+                {269}in(CR_2, msgTrg4: msg);
+                {270}let Trg4(RHash_20: bitstring,cntr_21: CNTR,aaguid_10: AAGUID,creid_19: bitstring,pkau_21: spkey,s_20: bitstring,xuhandle_2: UserHandle,ClientData_5: bitstring,thash_2: bitstring) = msgTrg4 in
+                {271}let xClientData_2: bitstring = CD_Cons(challenge_3,rpid_1,tbinding_1) in
+                {272}let xRHash_2: bitstring = hash_r(rpid_1) in
+                {273}let xCHash_2: bitstring = hash(ClientData_5) in
+                {274}let xthash: bitstring = hash_t(xTr_2) in
+                {275}if ((ClientData_5 = xClientData_2) && ((RHash_20 = xRHash_2) && ((Incr(xcntr_12) = cntr_21) && ((thash_2 = xthash) && (checksign(s_20,(RHash_20,cntr_21,aaguid_10,creid_19,pkau_21,xCHash_2),xpkau) = OK))))) then
+                {276}event Server_Finish_Auth(uHandle_1,rpid_1,aaguid_10,xcreid_6);
+                {277}event Server_Finish_Tr(xTr_2)
+    )
+else
+    (
+        {279}let PIN_1: bitstring = PIN in
+        {280}let CA_3: channel = CA in
+        {281}new PinToken_10: bitstring;
+        {282}insert Authnr_Token(PinToken_10);
+        {283}new a: skey;
+        {284}let aG: pkey = pk(a,G_1) in
+        {285}let xPinHash: bitstring = hash(PIN_1) in
+        {286}in(CA_3, msg1: msg);
+        {287}let CTAP1(getKeyAgreement: bitstring) = msg1 in
+        {288}if (getKeyAgreement = OK) then
+        {289}out(CA_3, CTAP2(aG));
+        {290}if (ctap_type = setPIN) then
+        (
+            {291}in(CA_3, msg3: msg);
+            {292}let CTAP3(bG: pkey,newPinEnc: bitstring,PinAuth_9: bitstring) = msg3 in
+            {293}let SP: bitstring = associate(a,bG) in
+            {294}let SS: key = hash_s(SP) in
+            {295}let xPinAuth_6: bitstring = HMAC(SS,newPinEnc) in
+            {296}if (xPinAuth_6 = PinAuth_9) then
+            {297}let newPin: bitstring = sdec(newPinEnc,SS) in
+            {298}let newPinHash: bitstring = hash(newPin) in
+            {299}out(CA_3, CTAP4(OK));
+            {300}in(CA_3, msg7: msg);
+            {301}let CTAP7(b1G: pkey,PinHashEnc: bitstring) = msg7 in
+            {302}let SP1: bitstring = associate(a,b1G) in
+            {303}let SS1: key = hash_s(SP1) in
+            {304}let PinHash1: bitstring = sdec(PinHashEnc,SS1) in
+            {305}if (PinHash1 = newPinHash) then
+            {306}let PinTokenEnc: bitstring = senc(PinToken_10,SS1) in
+            {307}out(CA_3, CTAP8(PinTokenEnc))
+        )
+        else
+            {308}if (ctap_type = chgPIN) then
+            (
+                {309}in(CA_3, msg5: msg);
+                {310}let CTAP5(bG_1: pkey,PinHashEnc_1: bitstring,newPinEnc_1: bitstring,PinAuth_10: bitstring) = msg5 in
+                {311}let SP_1: bitstring = associate(a,bG_1) in
+                {312}let SS_1: key = hash_s(SP_1) in
+                {313}let xPinAuth_7: bitstring = HMAC1(SS_1,newPinEnc_1,PinHashEnc_1) in
+                {314}if (xPinAuth_7 = PinAuth_10) then
+                {315}let PinHash: bitstring = sdec(PinHashEnc_1,SS_1) in
+                {316}if (xPinHash = PinHash) then
+                {317}let newPin_1: bitstring = sdec(newPinEnc_1,SS_1) in
+                {318}let newPinHash_1: bitstring = hash(newPin_1) in
+                {319}out(CA_3, CTAP6(OK));
+                {320}in(CA_3, msg7_1: msg);
+                {321}let CTAP7(b1G_1: pkey,PinHashEnc1: bitstring) = msg7_1 in
+                {322}let SP1_1: bitstring = associate(a,b1G_1) in
+                {323}let SS1_1: key = hash_s(SP1_1) in
+                {324}let PinHash1_1: bitstring = sdec(PinHashEnc1,SS1_1) in
+                {325}if (PinHash1_1 = newPinHash_1) then
+                {326}let PinTokenEnc_1: bitstring = senc(PinToken_10,SS1_1) in
+                {327}out(CA_3, CTAP8(PinTokenEnc_1))
+            )
+            else
+                {328}in(CA_3, msg7_2: msg);
+                {329}let CTAP7(bG_2: pkey,PinHashEnc_2: bitstring) = msg7_2 in
+                {330}let SP_2: bitstring = associate(a,bG_2) in
+                {331}let SS_2: key = hash_s(SP_2) in
+                {332}let PinHash_1: bitstring = sdec(PinHashEnc_2,SS_2) in
+                {333}if (xPinHash = PinHash_1) then
+                {334}let PinTokenEnc_2: bitstring = senc(PinToken_10,SS_2) in
+                {335}out(CA_3, CTAP8(PinTokenEnc_2))
+    ) | (
+        {336}let PIN_2: bitstring = PIN in
+        {337}let CA_4: channel = CA in
+        {338}new b: skey;
+        {339}new b1: skey;
+        {340}new newPin_2: bitstring;
+        {341}let bG_3: pkey = pk(b,G_1) in
+        {342}let b1G_2: pkey = pk(b1,G_1) in
+        {343}let PinHash_2: bitstring = hash(PIN_2) in
+        {344}out(CA_4, CTAP1(OK));
+        {345}in(CA_4, msg2: msg);
+        {346}let CTAP2(aG_1: pkey) = msg2 in
+        {347}let SP_3: bitstring = associate(b,aG_1) in
+        {348}let SS_3: key = hash_s(SP_3) in
+        {349}let SP1_2: bitstring = associate(b1,aG_1) in
+        {350}let SS1_2: key = hash_s(SP1_2) in
+        {351}if (ctap_type = setPIN) then
+        (
+            {352}let newPinEnc_2: bitstring = senc(newPin_2,SS_3) in
+            {353}let PinAuth_11: bitstring = HMAC(SS_3,newPinEnc_2) in
+            {354}out(CA_4, CTAP3(bG_3,newPinEnc_2,PinAuth_11));
+            {355}in(CA_4, msg4: msg);
+            {356}let CTAP4(CTAP2_OK: bitstring) = msg4 in
+            {357}if (CTAP2_OK = OK) then
+            {358}let PinHashEnc_3: bitstring = senc(PinHash_2,SS_3) in
+            {359}out(CA_4, CTAP7(b1G_2,PinHashEnc_3));
+            {360}in(CA_4, msg8: msg);
+            {361}let CTAP8(PinTokenEnc_3: bitstring) = msg8 in
+            {362}let PinToken_11: bitstring = sdec(PinTokenEnc_3,SS1_2) in
+            {363}insert Client_Token(PinToken_11)
+        )
+        else
+            {364}if (ctap_type = chgPIN) then
+            (
+                {365}let PinHashEnc_4: bitstring = senc(PinHash_2,SS_3) in
+                {366}let newPinEnc_3: bitstring = senc(newPin_2,SS_3) in
+                {367}let PinAuth_12: bitstring = HMAC1(SS_3,newPinEnc_3,PinHashEnc_4) in
+                {368}out(CA_4, CTAP5(bG_3,PinHashEnc_4,newPinEnc_3,PinAuth_12));
+                {369}in(CA_4, msg6: msg);
+                {370}let CTAP6(CTAP2_OK_1: bitstring) = msg6 in
+                {371}if (CTAP2_OK_1 = OK) then
+                {372}let PinHashEnc1_1: bitstring = senc(PinHash_2,SS_3) in
+                {373}out(CA_4, CTAP7(b1G_2,PinHashEnc1_1));
+                {374}in(CA_4, msg8_1: msg);
+                {375}let CTAP8(PinTokenEnc_4: bitstring) = msg8_1 in
+                {376}let PinToken_12: bitstring = sdec(PinTokenEnc_4,SS1_2) in
+                {377}insert Client_Token(PinToken_12)
+            )
+            else
+                {378}let PinHashEnc_5: bitstring = senc(PinHash_2,SS_3) in
+                {379}out(CA_4, CTAP7(bG_3,PinHashEnc_5));
+                {380}in(CA_4, msg8_2: msg);
+                {381}let CTAP8(PinTokenEnc_5: bitstring) = msg8_2 in
+                {382}let PinToken_13: bitstring = sdec(PinTokenEnc_5,SS_3) in
+                {383}insert Client_Token(PinToken_13)
+    ) | (
+        {384}phase 1;
+        (
+            {385}let CA_5: channel = CA in
+            {386}in(CA_5, msgAuth2_1: msg);
+            {387}if ((au_type = server) && (tr_type = empty)) then
+            (
+                {388}if (ctap_type = noCTAP) then
+                (
+                    {389}let Auth21(creid_20: bitstring,rpid_17: RpID,CHash_15: bitstring) = msgAuth2_1 in
+                    {390}let (skau_14: sskey,xrpid_12: RpID,uHandle_14: UserHandle) = sdec(creid_20,wk_1) in
+                    {398}get Authnr_Server_Record(=uHandle_14,=rpid_17,xcntr_13: CNTR) in
+                    {391}let RHash_21: bitstring = hash_r(xrpid_12) in
+                    {392}let cntr_22: CNTR = Incr(xcntr_13) in
+                    {393}let testcntr_12: CNTR = cntr_22 in
+                    {394}let pkau_22: spkey = spk(skau_14) in
+                    {395}let s_21: bitstring = sign((RHash_21,cntr_22,aaguid_1,creid_20,pkau_22,CHash_15),skau_14) in
+                    {396}event Authnr_Finish_Auth(uHandle_14,xrpid_12,aaguid_1,creid_20);
+                    {397}out(CA_5, Auth3(RHash_21,cntr_22,aaguid_1,creid_20,pkau_22,s_21,uHandle_14))
+                )
+                else
+                    {411}get Authnr_Token(PinToken_14: bitstring) in
+                    {399}let Auth2(creid_21: bitstring,rpid_18: RpID,CHash_16: bitstring,PinAuth_13: bitstring) = msgAuth2_1 in
+                    {400}let xPinAuth_8: bitstring = HMAC2(PinToken_14,CHash_16) in
+                    {401}if (PinAuth_13 = xPinAuth_8) then
+                    {402}let (skau_15: sskey,xrpid_13: RpID,uHandle_15: UserHandle) = sdec(creid_21,wk_1) in
+                    {410}get Authnr_Server_Record(=uHandle_15,=rpid_18,xcntr_14: CNTR) in
+                    {403}let RHash_22: bitstring = hash_r(xrpid_13) in
+                    {404}let cntr_23: CNTR = Incr(xcntr_14) in
+                    {405}let testcntr_13: CNTR = cntr_23 in
+                    {406}let pkau_23: spkey = spk(skau_15) in
+                    {407}let s_22: bitstring = sign((RHash_22,cntr_23,aaguid_1,creid_21,pkau_23,CHash_16),skau_15) in
+                    {408}event Authnr_Finish_Auth(uHandle_15,xrpid_13,aaguid_1,creid_21);
+                    {409}out(CA_5, Auth3(RHash_22,cntr_23,aaguid_1,creid_21,pkau_23,s_22,uHandle_15))
+            )
+            else
+                {412}if ((au_type = server) && (tr_type = simple)) then
+                (
+                    {413}if (ctap_type = noCTAP) then
+                    (
+                        {414}let Trs21(creid_22: bitstring,rpid_19: RpID,CHash_17: bitstring,Tr_11: Transaction) = msgAuth2_1 in
+                        {415}let (skau_16: sskey,xrpid_14: RpID,uHandle_16: UserHandle) = sdec(creid_22,wk_1) in
+                        {424}get Authnr_Server_Record(=uHandle_16,=rpid_19,xcntr_15: CNTR) in
+                        {416}let RHash_23: bitstring = hash_r(xrpid_14) in
+                        {417}let cntr_24: CNTR = Incr(xcntr_15) in
+                        {418}let testcntr_14: CNTR = cntr_24 in
+                        {419}let pkau_24: spkey = spk(skau_16) in
+                        {420}let s_23: bitstring = sign((RHash_23,cntr_24,aaguid_1,creid_22,pkau_24,CHash_17,Tr_11),skau_16) in
+                        {421}event Authnr_Finish_Auth(uHandle_16,xrpid_14,aaguid_1,creid_22);
+                        {422}event Authnr_Finish_Tr(Tr_11);
+                        {423}out(CA_5, Trs3(RHash_23,cntr_24,aaguid_1,creid_22,pkau_24,s_23,uHandle_16,Tr_11))
+                    )
+                    else
+                        {438}get Authnr_Token(PinToken_15: bitstring) in
+                        {425}let Trs2(creid_23: bitstring,rpid_20: RpID,CHash_18: bitstring,PinAuth_14: bitstring,Tr_12: Transaction) = msgAuth2_1 in
+                        {426}let xPinAuth_9: bitstring = HMAC2(PinToken_15,CHash_18) in
+                        {427}if (PinAuth_14 = xPinAuth_9) then
+                        {428}let (skau_17: sskey,xrpid_15: RpID,uHandle_17: UserHandle) = sdec(creid_23,wk_1) in
+                        {437}get Authnr_Server_Record(=uHandle_17,=rpid_20,xcntr_16: CNTR) in
+                        {429}let RHash_24: bitstring = hash_r(xrpid_15) in
+                        {430}let cntr_25: CNTR = Incr(xcntr_16) in
+                        {431}let testcntr_15: CNTR = cntr_25 in
+                        {432}let pkau_25: spkey = spk(skau_17) in
+                        {433}let s_24: bitstring = sign((RHash_24,cntr_25,aaguid_1,creid_23,pkau_25,CHash_18,Tr_12),skau_17) in
+                        {434}event Authnr_Finish_Auth(uHandle_17,xrpid_15,aaguid_1,creid_23);
+                        {435}event Authnr_Finish_Tr(Tr_12);
+                        {436}out(CA_5, Trs3(RHash_24,cntr_25,aaguid_1,creid_23,pkau_25,s_24,uHandle_17,Tr_12))
+                )
+                else
+                    {439}if ((au_type = server) && (tr_type = generic)) then
+                    (
+                        {440}if (ctap_type = noCTAP) then
+                        (
+                            {441}let Trg21(creid_24: bitstring,rpid_21: RpID,CHash_19: bitstring,Tr_13: Transaction) = msgAuth2_1 in
+                            {442}let (skau_18: sskey,xrpid_16: RpID,uHandle_18: UserHandle) = sdec(creid_24,wk_1) in
+                            {452}get Authnr_Server_Record(=uHandle_18,=rpid_21,xcntr_17: CNTR) in
+                            {443}let RHash_25: bitstring = hash_r(xrpid_16) in
+                            {444}let cntr_26: CNTR = Incr(xcntr_17) in
+                            {445}let testcntr_16: CNTR = cntr_26 in
+                            {446}let THash_4: bitstring = hash_t(Tr_13) in
+                            {447}let pkau_26: spkey = spk(skau_18) in
+                            {448}let s_25: bitstring = sign((RHash_25,cntr_26,aaguid_1,creid_24,pkau_26,CHash_19,THash_4),skau_18) in
+                            {449}event Authnr_Finish_Auth(uHandle_18,xrpid_16,aaguid_1,creid_24);
+                            {450}event Authnr_Finish_Tr(Tr_13);
+                            {451}out(CA_5, Trg3(RHash_25,cntr_26,aaguid_1,creid_24,pkau_26,s_25,uHandle_18,THash_4))
+                        )
+                        else
+                            {467}get Authnr_Token(PinToken_16: bitstring) in
+                            {453}let Trg2(creid_25: bitstring,rpid_22: RpID,CHash_20: bitstring,PinAuth_15: bitstring,Tr_14: Transaction) = msgAuth2_1 in
+                            {454}let xPinAuth_10: bitstring = HMAC2(PinToken_16,CHash_20) in
+                            {455}if (PinAuth_15 = xPinAuth_10) then
+                            {456}let (skau_19: sskey,xrpid_17: RpID,uHandle_19: UserHandle) = sdec(creid_25,wk_1) in
+                            {466}get Authnr_Server_Record(=uHandle_19,=rpid_22,xcntr_18: CNTR) in
+                            {457}let RHash_26: bitstring = hash_r(xrpid_17) in
+                            {458}let cntr_27: CNTR = Incr(xcntr_18) in
+                            {459}let testcntr_17: CNTR = cntr_27 in
+                            {460}let THash_5: bitstring = hash_t(Tr_14) in
+                            {461}let pkau_27: spkey = spk(skau_19) in
+                            {462}let s_26: bitstring = sign((RHash_26,cntr_27,aaguid_1,creid_25,pkau_27,CHash_20,THash_5),skau_19) in
+                            {463}event Authnr_Finish_Auth(uHandle_19,xrpid_17,aaguid_1,creid_25);
+                            {464}event Authnr_Finish_Tr(Tr_14);
+                            {465}out(CA_5, Trg3(RHash_26,cntr_27,aaguid_1,creid_25,pkau_27,s_26,uHandle_19,THash_5))
+                    )
+                    else
+                        {468}if ((au_type = client) && (tr_type = empty)) then
+                        (
+                            {469}if (ctap_type = noCTAP) then
+                            (
+                                {470}let Auth21(creid_26: bitstring,rpid_23: RpID,CHash_21: bitstring) = msgAuth2_1 in
+                                {478}get Authnr_Client_Record(=creid_26,skau_20: sskey,xrpid_18: RpID,uHandle_20: UserHandle,xcntr_19: CNTR) in
+                                {471}let RHash_27: bitstring = hash_r(xrpid_18) in
+                                {472}let cntr_28: CNTR = Incr(xcntr_19) in
+                                {473}let testcntr_18: CNTR = cntr_28 in
+                                {474}let pkau_28: spkey = spk(skau_20) in
+                                {475}let s_27: bitstring = sign((RHash_27,cntr_28,aaguid_1,creid_26,pkau_28,CHash_21),skau_20) in
+                                {476}event Authnr_Finish_Auth(uHandle_20,xrpid_18,aaguid_1,creid_26);
+                                {477}out(CA_5, Auth3(RHash_27,cntr_28,aaguid_1,creid_26,pkau_28,s_27,uHandle_20))
+                            )
+                            else
+                                {490}get Authnr_Token(PinToken_17: bitstring) in
+                                {479}let Auth2(creid_27: bitstring,rpid_24: RpID,CHash_22: bitstring,PinAuth_16: bitstring) = msgAuth2_1 in
+                                {480}let xPinAuth_11: bitstring = HMAC2(PinToken_17,CHash_22) in
+                                {481}if (PinAuth_16 = xPinAuth_11) then
+                                {489}get Authnr_Client_Record(=creid_27,skau_21: sskey,xrpid_19: RpID,uHandle_21: UserHandle,xcntr_20: CNTR) in
+                                {482}let RHash_28: bitstring = hash_r(xrpid_19) in
+                                {483}let cntr_29: CNTR = Incr(xcntr_20) in
+                                {484}let testcntr_19: CNTR = cntr_29 in
+                                {485}let pkau_29: spkey = spk(skau_21) in
+                                {486}let s_28: bitstring = sign((RHash_28,cntr_29,aaguid_1,creid_27,pkau_29,CHash_22),skau_21) in
+                                {487}event Authnr_Finish_Auth(uHandle_21,xrpid_19,aaguid_1,creid_27);
+                                {488}out(CA_5, Auth3(RHash_28,cntr_29,aaguid_1,creid_27,pkau_29,s_28,uHandle_21))
+                        )
+                        else
+                            {491}if ((au_type = client) && (tr_type = simple)) then
+                            (
+                                {492}if (ctap_type = noCTAP) then
+                                (
+                                    {493}let Trs21(creid_28: bitstring,rpid_25: RpID,CHash_23: bitstring,Tr_15: Transaction) = msgAuth2_1 in
+                                    {502}get Authnr_Client_Record(=creid_28,skau_22: sskey,xrpid_20: RpID,uHandle_22: UserHandle,xcntr_21: CNTR) in
+                                    {494}let RHash_29: bitstring = hash_r(xrpid_20) in
+                                    {495}let cntr_30: CNTR = Incr(xcntr_21) in
+                                    {496}let testcntr_20: CNTR = cntr_30 in
+                                    {497}let pkau_30: spkey = spk(skau_22) in
+                                    {498}let s_29: bitstring = sign((RHash_29,cntr_30,aaguid_1,creid_28,pkau_30,CHash_23,Tr_15),skau_22) in
+                                    {499}event Authnr_Finish_Auth(uHandle_22,xrpid_20,aaguid_1,creid_28);
+                                    {500}event Authnr_Finish_Tr(Tr_15);
+                                    {501}out(CA_5, Trs3(RHash_29,cntr_30,aaguid_1,creid_28,pkau_30,s_29,uHandle_22,Tr_15))
+                                )
+                                else
+                                    {515}get Authnr_Token(PinToken_18: bitstring) in
+                                    {503}let Trs2(creid_29: bitstring,rpid_26: RpID,CHash_24: bitstring,PinAuth_17: bitstring,Tr_16: Transaction) = msgAuth2_1 in
+                                    {504}let xPinAuth_12: bitstring = HMAC2(PinToken_18,CHash_24) in
+                                    {505}if (PinAuth_17 = xPinAuth_12) then
+                                    {514}get Authnr_Client_Record(=creid_29,skau_23: sskey,xrpid_21: RpID,uHandle_23: UserHandle,xcntr_22: CNTR) in
+                                    {506}let RHash_30: bitstring = hash_r(xrpid_21) in
+                                    {507}let cntr_31: CNTR = Incr(xcntr_22) in
+                                    {508}let testcntr_21: CNTR = cntr_31 in
+                                    {509}let pkau_31: spkey = spk(skau_23) in
+                                    {510}let s_30: bitstring = sign((RHash_30,cntr_31,aaguid_1,creid_29,pkau_31,CHash_24,Tr_16),skau_23) in
+                                    {511}event Authnr_Finish_Auth(uHandle_23,xrpid_21,aaguid_1,creid_29);
+                                    {512}event Authnr_Finish_Tr(Tr_16);
+                                    {513}out(CA_5, Trs3(RHash_30,cntr_31,aaguid_1,creid_29,pkau_31,s_30,uHandle_23,Tr_16))
+                            )
+                            else
+                                {516}if (ctap_type = noCTAP) then
+                                (
+                                    {517}let Trg21(creid_30: bitstring,rpid_27: RpID,CHash_25: bitstring,Tr_17: Transaction) = msgAuth2_1 in
+                                    {527}get Authnr_Client_Record(=creid_30,skau_24: sskey,xrpid_22: RpID,uHandle_24: UserHandle,xcntr_23: CNTR) in
+                                    {518}let RHash_31: bitstring = hash_r(xrpid_22) in
+                                    {519}let cntr_32: CNTR = Incr(xcntr_23) in
+                                    {520}let testcntr_22: CNTR = cntr_32 in
+                                    {521}let THash_6: bitstring = hash_t(Tr_17) in
+                                    {522}let pkau_32: spkey = spk(skau_24) in
+                                    {523}let s_31: bitstring = sign((RHash_31,cntr_32,aaguid_1,creid_30,pkau_32,CHash_25,THash_6),skau_24) in
+                                    {524}event Authnr_Finish_Auth(uHandle_24,xrpid_22,aaguid_1,creid_30);
+                                    {525}event Authnr_Finish_Tr(Tr_17);
+                                    {526}out(CA_5, Trg3(RHash_31,cntr_32,aaguid_1,creid_30,pkau_32,s_31,uHandle_24,THash_6))
+                                )
+                                else
+                                    {541}get Authnr_Token(PinToken_19: bitstring) in
+                                    {528}let Trg2(creid_31: bitstring,rpid_28: RpID,CHash_26: bitstring,PinAuth_18: bitstring,Tr_18: Transaction) = msgAuth2_1 in
+                                    {529}let xPinAuth_13: bitstring = HMAC2(PinToken_19,CHash_26) in
+                                    {530}if (PinAuth_18 = xPinAuth_13) then
+                                    {540}get Authnr_Client_Record(=creid_31,skau_25: sskey,xrpid_23: RpID,uHandle_25: UserHandle,xcntr_24: CNTR) in
+                                    {531}let RHash_32: bitstring = hash_r(xrpid_23) in
+                                    {532}let cntr_33: CNTR = Incr(xcntr_24) in
+                                    {533}let testcntr_23: CNTR = cntr_33 in
+                                    {534}let THash_7: bitstring = hash_t(Tr_18) in
+                                    {535}let pkau_33: spkey = spk(skau_25) in
+                                    {536}let s_32: bitstring = sign((RHash_32,cntr_33,aaguid_1,creid_31,pkau_33,CHash_26,THash_7),skau_25) in
+                                    {537}event Authnr_Finish_Auth(uHandle_25,xrpid_23,aaguid_1,creid_31);
+                                    {538}event Authnr_Finish_Tr(Tr_18);
+                                    {539}out(CA_5, Trg3(RHash_32,cntr_33,aaguid_1,creid_31,pkau_33,s_32,uHandle_25,THash_7))
+        ) | (
+            {542}let CR_3: channel = CR in
+            {543}let CA_6: channel = CA in
+            {544}let tbinding_2: bitstring = GetTLSBinding(CR_3) in
+            {545}in(CR_3, msgAuth1_1: msg);
+            {546}if (tr_type = empty) then
+            (
+                {547}let Auth1(rpid_29: RpID,challenge_4: Challenge,creid_32: bitstring) = msgAuth1_1 in
+                {548}event Client_Init_Auth(uHandle_1,rpid_29);
+                {549}let ClientData_6: bitstring = CD_Cons(challenge_4,rpid_29,tbinding_2) in
+                {550}let CHash_27: bitstring = hash(ClientData_6) in
+                {551}if (ctap_type = noCTAP) then
+                (
+                    {552}out(CA_6, Auth21(creid_32,rpid_29,CHash_27));
+                    {553}in(CA_6, msgAuth3_3: msg);
+                    {554}let Auth3(RHash_33: bitstring,cntr_34: CNTR,aaguid_11: AAGUID,xcreid_7: bitstring,pkau_34: spkey,s_33: bitstring,uhandle_6: UserHandle) = msgAuth3_3 in
+                    {555}out(CR_3, Auth4(RHash_33,cntr_34,aaguid_11,xcreid_7,pkau_34,s_33,uhandle_6,ClientData_6))
+                )
+                else
+                    {561}get Client_Token(PinToken_20: bitstring) in
+                    {556}let PinAuth_19: bitstring = HMAC2(PinToken_20,CHash_27) in
+                    {557}out(CA_6, Auth2(creid_32,rpid_29,CHash_27,PinAuth_19));
+                    {558}in(CA_6, msgAuth3_4: msg);
+                    {559}let Auth3(RHash_34: bitstring,cntr_35: CNTR,aaguid_12: AAGUID,xcreid_8: bitstring,pkau_35: spkey,s_34: bitstring,uhandle_7: UserHandle) = msgAuth3_4 in
+                    {560}out(CR_3, Auth4(RHash_34,cntr_35,aaguid_12,xcreid_8,pkau_35,s_34,uhandle_7,ClientData_6))
+            )
+            else
+                {562}if (tr_type = simple) then
+                (
+                    {563}let Trs1(rpid_30: RpID,challenge_5: Challenge,creid_33: bitstring,xTr_3: Transaction) = msgAuth1_1 in
+                    {564}event Client_Init_Auth(uHandle_1,rpid_30);
+                    {565}event Client_Init_Tr(xTr_3);
+                    {566}let ClientData_7: bitstring = CD_Cons(challenge_5,rpid_30,tbinding_2) in
+                    {567}let CHash_28: bitstring = hash(ClientData_7) in
+                    {568}if (ctap_type = noCTAP) then
+                    (
+                        {569}out(CA_6, Trs21(creid_33,rpid_30,CHash_28,xTr_3));
+                        {570}in(CA_6, msgTrs3_1: msg);
+                        {571}let Trs3(RHash_35: bitstring,cntr_36: CNTR,aaguid_13: AAGUID,xcreid_9: bitstring,pkau_36: spkey,s_35: bitstring,uhandle_8: UserHandle,Tr_19: Transaction) = msgTrs3_1 in
+                        {572}out(CR_3, Trs4(RHash_35,cntr_36,aaguid_13,xcreid_9,pkau_36,s_35,uhandle_8,ClientData_7,Tr_19))
+                    )
+                    else
+                        {578}get Client_Token(PinToken_21: bitstring) in
+                        {573}let PinAuth_20: bitstring = HMAC2(PinToken_21,CHash_28) in
+                        {574}out(CA_6, Trs2(creid_33,rpid_30,CHash_28,PinAuth_20,xTr_3));
+                        {575}in(CA_6, msgAuth3_5: msg);
+                        {576}let Auth3(RHash_36: bitstring,cntr_37: CNTR,aaguid_14: AAGUID,xcreid_10: bitstring,pkau_37: spkey,s_36: bitstring,uhandle_9: UserHandle) = msgAuth3_5 in
+                        {577}out(CR_3, Auth4(RHash_36,cntr_37,aaguid_14,xcreid_10,pkau_37,s_36,uhandle_9,ClientData_7))
+                )
+                else
+                    {579}let Trg1(rpid_31: RpID,challenge_6: Challenge,creid_34: bitstring,xTr_4: Transaction) = msgAuth1_1 in
+                    {580}event Client_Init_Auth(uHandle_1,rpid_31);
+                    {581}event Client_Init_Tr(xTr_4);
+                    {582}let ClientData_8: bitstring = CD_Cons(challenge_6,rpid_31,tbinding_2) in
+                    {583}let CHash_29: bitstring = hash(ClientData_8) in
+                    {584}if (ctap_type = noCTAP) then
+                    (
+                        {585}out(CA_6, Trg21(creid_34,rpid_31,CHash_29,xTr_4));
+                        {586}in(CA_6, msgTrg3_2: msg);
+                        {587}let Trg3(RHash_37: bitstring,cntr_38: CNTR,aaguid_15: AAGUID,xcreid_11: bitstring,pkau_38: spkey,s_37: bitstring,uhandle_10: UserHandle,thash_3: bitstring) = msgTrg3_2 in
+                        {588}out(CR_3, Trg4(RHash_37,cntr_38,aaguid_15,xcreid_11,pkau_38,s_37,uhandle_10,ClientData_8,thash_3))
+                    )
+                    else
+                        {594}get Client_Token(PinToken_22: bitstring) in
+                        {589}let PinAuth_21: bitstring = HMAC2(PinToken_22,CHash_29) in
+                        {590}out(CA_6, Trg2(creid_34,rpid_31,CHash_29,PinAuth_21,xTr_4));
+                        {591}in(CA_6, msgTrg3_3: msg);
+                        {592}let Trg3(RHash_38: bitstring,cntr_39: CNTR,aaguid_16: AAGUID,xcreid_12: bitstring,pkau_39: spkey,s_38: bitstring,uhandle_11: UserHandle,thash_4: bitstring) = msgTrg3_3 in
+                        {593}out(CR_3, Trg4(RHash_38,cntr_39,aaguid_16,xcreid_12,pkau_39,s_38,uhandle_11,ClientData_8,thash_4))
+        ) | (
+            {595}let xTr_5: Transaction = Tr in
+            {596}let CR_4: channel = CR in
+            {597}new challenge_7: Challenge;
+            {598}let tbinding_3: bitstring = GetTLSBinding(CR_4) in
+            {628}get Server_Reg_Record(=uHandle_1,xaaguid_1: AAGUID,xcreid_13: bitstring,xpkau_1: spkey,xcntr_25: CNTR) in
+            {599}if (tr_type = empty) then
+            (
+                {600}out(CR_4, Auth1(rpid_1,challenge_7,xcreid_13));
+                {601}in(CR_4, msgAuth4_1: msg);
+                {602}let Auth4(RHash_39: bitstring,cntr_40: CNTR,aaguid_17: AAGUID,creid_35: bitstring,pkau_40: spkey,s_39: bitstring,xuhandle_3: UserHandle,ClientData_9: bitstring) = msgAuth4_1 in
+                {603}let xClientData_3: bitstring = CD_Cons(challenge_7,rpid_1,tbinding_3) in
+                {604}let xRHash_3: bitstring = hash_r(rpid_1) in
+                {605}let xCHash_3: bitstring = hash(ClientData_9) in
+                {606}if ((ClientData_9 = xClientData_3) && ((RHash_39 = xRHash_3) && ((Incr(xcntr_25) = cntr_40) && (checksign(s_39,(RHash_39,cntr_40,aaguid_17,creid_35,pkau_40,xCHash_3),xpkau_1) = OK)))) then
+                {607}event Server_Finish_Auth(uHandle_1,rpid_1,aaguid_17,xcreid_13)
+            )
+            else
+                {608}if (tr_type = simple) then
+                (
+                    {609}out(CR_4, Trs1(rpid_1,challenge_7,xcreid_13,xTr_5));
+                    {610}in(CR_4, msgTrs4_1: msg);
+                    {611}let Trs4(RHash_40: bitstring,cntr_41: CNTR,aaguid_18: AAGUID,creid_36: bitstring,pkau_41: spkey,s_40: bitstring,xuhandle_4: UserHandle,ClientData_10: bitstring,Tr_20: Transaction) = msgTrs4_1 in
+                    {612}let xClientData_4: bitstring = CD_Cons(challenge_7,rpid_1,tbinding_3) in
+                    {613}let xRHash_4: bitstring = hash_r(rpid_1) in
+                    {614}let xCHash_4: bitstring = hash(ClientData_10) in
+                    {615}if ((ClientData_10 = xClientData_4) && ((RHash_40 = xRHash_4) && ((Incr(xcntr_25) = cntr_41) && ((Tr_20 = xTr_5) && (checksign(s_40,(xRHash_4,cntr_41,aaguid_18,creid_36,pkau_41,xCHash_4,xTr_5),xpkau_1) = OK))))) then
+                    {616}event Server_Finish_Auth(uHandle_1,rpid_1,aaguid_18,xcreid_13);
+                    {617}event Server_Finish_Tr(xTr_5)
+                )
+                else
+                    {618}out(CR_4, Trg1(rpid_1,challenge_7,xcreid_13,xTr_5));
+                    {619}in(CR_4, msgTrg4_1: msg);
+                    {620}let Trg4(RHash_41: bitstring,cntr_42: CNTR,aaguid_19: AAGUID,creid_37: bitstring,pkau_42: spkey,s_41: bitstring,xuhandle_5: UserHandle,ClientData_11: bitstring,thash_5: bitstring) = msgTrg4_1 in
+                    {621}let xClientData_5: bitstring = CD_Cons(challenge_7,rpid_1,tbinding_3) in
+                    {622}let xRHash_5: bitstring = hash_r(rpid_1) in
+                    {623}let xCHash_5: bitstring = hash(ClientData_11) in
+                    {624}let xthash_1: bitstring = hash_t(xTr_5) in
+                    {625}if ((ClientData_11 = xClientData_5) && ((RHash_41 = xRHash_5) && ((Incr(xcntr_25) = cntr_42) && ((thash_5 = xthash_1) && (checksign(s_41,(RHash_41,cntr_42,aaguid_19,creid_37,pkau_42,xCHash_5),xpkau_1) = OK))))) then
+                    {626}event Server_Finish_Auth(uHandle_1,rpid_1,aaguid_19,xcreid_13);
+                    {627}event Server_Finish_Tr(xTr_5)
+        )
+    )
+
+--  Process 1 (that is, process 0, with let moved downwards):
+{1}new G: Gen;
+{2}new uHandle: UserHandle;
+{3}new pWord: PassWord;
+{4}new aaguid: AAGUID;
+{5}new rpid: RpID;
+{6}new wk: key;
+{7}new skat: sskey;
+{8}new skau: sskey;
+{9}new cntr: CNTR;
+{10}!
+{19}new Tr: Transaction;
+{20}new PinToken: bitstring;
+{21}new PIN: bitstring;
+{27}new creid: bitstring;
+{25}let au_type: AuType = client in
+{18}let wk_1: key = wk in
+{16}let uHandle_1: UserHandle = uHandle in
+{15}let rpid_1: RpID = rpid in
+{13}let skau_1: sskey = skau in
+{28}let testcreid: bitstring = (if (au_type = client) then creid else senc((skau_1,rpid_1,uHandle_1),wk_1)) in
+{29}let creid_1: bitstring = testcreid in
+{17}let authcntr: CNTR = cntr in
+{30}insert Authnr_Client_Record(creid_1,skau_1,rpid_1,uHandle_1,authcntr);
+{31}insert Authnr_Server_Record(uHandle_1,rpid_1,authcntr);
+{23}let pkau: spkey = spk(skau_1) in
+{14}let aaguid_1: AAGUID = aaguid in
+{32}insert Server_Reg_Record(uHandle_1,aaguid_1,creid_1,pkau,authcntr);
+{12}let skat_1: sskey = skat in
+{22}let pkat: spkey = spk(skat_1) in
+{11}let G_1: Gen = G in
+{33}out(cP, (G_1,aaguid_1,rpid_1,uHandle_1,pkat,pkau));
+{26}let tr_type: TrType = empty in
+{24}let ctap_type: CTAPType = getToken in
+{34}if (ctap_type = noCTAP) then
+    (
+        {35}let CA_1: channel = CA in
+        {36}in(CA_1, msgAuth2: msg);
+        {37}if ((au_type = server) && (tr_type = empty)) then
+        (
+            {38}if (ctap_type = noCTAP) then
+            (
+                {39}let Auth21(creid_2: bitstring,rpid_2: RpID,CHash: bitstring) = msgAuth2 in
+                {40}let (skau_2: sskey,xrpid: RpID,uHandle_2: UserHandle) = sdec(creid_2,wk_1) in
+                {48}get Authnr_Server_Record(=uHandle_2,=rpid_2,xcntr: CNTR) in
+                {46}event Authnr_Finish_Auth(uHandle_2,xrpid,aaguid_1,creid_2);
+                {44}let pkau_1: spkey = spk(skau_2) in
+                {42}let cntr_1: CNTR = Incr(xcntr) in
+                {41}let RHash: bitstring = hash_r(xrpid) in
+                {45}let s: bitstring = sign((RHash,cntr_1,aaguid_1,creid_2,pkau_1,CHash),skau_2) in
+                {47}out(CA_1, Auth3(RHash,cntr_1,aaguid_1,creid_2,pkau_1,s,uHandle_2))
+            )
+            else
+                {61}get Authnr_Token(PinToken_1: bitstring) in
+                {49}let Auth2(creid_3: bitstring,rpid_3: RpID,CHash_1: bitstring,PinAuth: bitstring) = msgAuth2 in
+                {50}let xPinAuth: bitstring = HMAC2(PinToken_1,CHash_1) in
+                {51}if (PinAuth = xPinAuth) then
+                {52}let (skau_3: sskey,xrpid_1: RpID,uHandle_3: UserHandle) = sdec(creid_3,wk_1) in
+                {60}get Authnr_Server_Record(=uHandle_3,=rpid_3,xcntr_1: CNTR) in
+                {58}event Authnr_Finish_Auth(uHandle_3,xrpid_1,aaguid_1,creid_3);
+                {56}let pkau_2: spkey = spk(skau_3) in
+                {54}let cntr_2: CNTR = Incr(xcntr_1) in
+                {53}let RHash_1: bitstring = hash_r(xrpid_1) in
+                {57}let s_1: bitstring = sign((RHash_1,cntr_2,aaguid_1,creid_3,pkau_2,CHash_1),skau_3) in
+                {59}out(CA_1, Auth3(RHash_1,cntr_2,aaguid_1,creid_3,pkau_2,s_1,uHandle_3))
+        )
+        else
+            {62}if ((au_type = server) && (tr_type = simple)) then
+            (
+                {63}if (ctap_type = noCTAP) then
+                (
+                    {64}let Trs21(creid_4: bitstring,rpid_4: RpID,CHash_2: bitstring,Tr_1: Transaction) = msgAuth2 in
+                    {65}let (skau_4: sskey,xrpid_2: RpID,uHandle_4: UserHandle) = sdec(creid_4,wk_1) in
+                    {74}get Authnr_Server_Record(=uHandle_4,=rpid_4,xcntr_2: CNTR) in
+                    {71}event Authnr_Finish_Auth(uHandle_4,xrpid_2,aaguid_1,creid_4);
+                    {72}event Authnr_Finish_Tr(Tr_1);
+                    {69}let pkau_3: spkey = spk(skau_4) in
+                    {67}let cntr_3: CNTR = Incr(xcntr_2) in
+                    {66}let RHash_2: bitstring = hash_r(xrpid_2) in
+                    {70}let s_2: bitstring = sign((RHash_2,cntr_3,aaguid_1,creid_4,pkau_3,CHash_2,Tr_1),skau_4) in
+                    {73}out(CA_1, Trs3(RHash_2,cntr_3,aaguid_1,creid_4,pkau_3,s_2,uHandle_4,Tr_1))
+                )
+                else
+                    {88}get Authnr_Token(PinToken_2: bitstring) in
+                    {75}let Trs2(creid_5: bitstring,rpid_5: RpID,CHash_3: bitstring,PinAuth_1: bitstring,Tr_2: Transaction) = msgAuth2 in
+                    {76}let xPinAuth_1: bitstring = HMAC2(PinToken_2,CHash_3) in
+                    {77}if (PinAuth_1 = xPinAuth_1) then
+                    {78}let (skau_5: sskey,xrpid_3: RpID,uHandle_5: UserHandle) = sdec(creid_5,wk_1) in
+                    {87}get Authnr_Server_Record(=uHandle_5,=rpid_5,xcntr_3: CNTR) in
+                    {84}event Authnr_Finish_Auth(uHandle_5,xrpid_3,aaguid_1,creid_5);
+                    {85}event Authnr_Finish_Tr(Tr_2);
+                    {82}let pkau_4: spkey = spk(skau_5) in
+                    {80}let cntr_4: CNTR = Incr(xcntr_3) in
+                    {79}let RHash_3: bitstring = hash_r(xrpid_3) in
+                    {83}let s_3: bitstring = sign((RHash_3,cntr_4,aaguid_1,creid_5,pkau_4,CHash_3,Tr_2),skau_5) in
+                    {86}out(CA_1, Trs3(RHash_3,cntr_4,aaguid_1,creid_5,pkau_4,s_3,uHandle_5,Tr_2))
+            )
+            else
+                {89}if ((au_type = server) && (tr_type = generic)) then
+                (
+                    {90}if (ctap_type = noCTAP) then
+                    (
+                        {91}let Trg21(creid_6: bitstring,rpid_6: RpID,CHash_4: bitstring,Tr_3: Transaction) = msgAuth2 in
+                        {92}let (skau_6: sskey,xrpid_4: RpID,uHandle_6: UserHandle) = sdec(creid_6,wk_1) in
+                        {102}get Authnr_Server_Record(=uHandle_6,=rpid_6,xcntr_4: CNTR) in
+                        {99}event Authnr_Finish_Auth(uHandle_6,xrpid_4,aaguid_1,creid_6);
+                        {100}event Authnr_Finish_Tr(Tr_3);
+                        {97}let pkau_5: spkey = spk(skau_6) in
+                        {96}let THash: bitstring = hash_t(Tr_3) in
+                        {94}let cntr_5: CNTR = Incr(xcntr_4) in
+                        {93}let RHash_4: bitstring = hash_r(xrpid_4) in
+                        {98}let s_4: bitstring = sign((RHash_4,cntr_5,aaguid_1,creid_6,pkau_5,CHash_4,THash),skau_6) in
+                        {101}out(CA_1, Trg3(RHash_4,cntr_5,aaguid_1,creid_6,pkau_5,s_4,uHandle_6,THash))
+                    )
+                    else
+                        {117}get Authnr_Token(PinToken_3: bitstring) in
+                        {103}let Trg2(creid_7: bitstring,rpid_7: RpID,CHash_5: bitstring,PinAuth_2: bitstring,Tr_4: Transaction) = msgAuth2 in
+                        {104}let xPinAuth_2: bitstring = HMAC2(PinToken_3,CHash_5) in
+                        {105}if (PinAuth_2 = xPinAuth_2) then
+                        {106}let (skau_7: sskey,xrpid_5: RpID,uHandle_7: UserHandle) = sdec(creid_7,wk_1) in
+                        {116}get Authnr_Server_Record(=uHandle_7,=rpid_7,xcntr_5: CNTR) in
+                        {113}event Authnr_Finish_Auth(uHandle_7,xrpid_5,aaguid_1,creid_7);
+                        {114}event Authnr_Finish_Tr(Tr_4);
+                        {111}let pkau_6: spkey = spk(skau_7) in
+                        {110}let THash_1: bitstring = hash_t(Tr_4) in
+                        {108}let cntr_6: CNTR = Incr(xcntr_5) in
+                        {107}let RHash_5: bitstring = hash_r(xrpid_5) in
+                        {112}let s_5: bitstring = sign((RHash_5,cntr_6,aaguid_1,creid_7,pkau_6,CHash_5,THash_1),skau_7) in
+                        {115}out(CA_1, Trg3(RHash_5,cntr_6,aaguid_1,creid_7,pkau_6,s_5,uHandle_7,THash_1))
+                )
+                else
+                    {118}if ((au_type = client) && (tr_type = empty)) then
+                    (
+                        {119}if (ctap_type = noCTAP) then
+                        (
+                            {120}let Auth21(creid_8: bitstring,rpid_8: RpID,CHash_6: bitstring) = msgAuth2 in
+                            {128}get Authnr_Client_Record(=creid_8,skau_8: sskey,xrpid_6: RpID,uHandle_8: UserHandle,xcntr_6: CNTR) in
+                            {126}event Authnr_Finish_Auth(uHandle_8,xrpid_6,aaguid_1,creid_8);
+                            {124}let pkau_7: spkey = spk(skau_8) in
+                            {122}let cntr_7: CNTR = Incr(xcntr_6) in
+                            {121}let RHash_6: bitstring = hash_r(xrpid_6) in
+                            {125}let s_6: bitstring = sign((RHash_6,cntr_7,aaguid_1,creid_8,pkau_7,CHash_6),skau_8) in
+                            {127}out(CA_1, Auth3(RHash_6,cntr_7,aaguid_1,creid_8,pkau_7,s_6,uHandle_8))
+                        )
+                        else
+                            {140}get Authnr_Token(PinToken_4: bitstring) in
+                            {129}let Auth2(creid_9: bitstring,rpid_9: RpID,CHash_7: bitstring,PinAuth_3: bitstring) = msgAuth2 in
+                            {130}let xPinAuth_3: bitstring = HMAC2(PinToken_4,CHash_7) in
+                            {131}if (PinAuth_3 = xPinAuth_3) then
+                            {139}get Authnr_Client_Record(=creid_9,skau_9: sskey,xrpid_7: RpID,uHandle_9: UserHandle,xcntr_7: CNTR) in
+                            {137}event Authnr_Finish_Auth(uHandle_9,xrpid_7,aaguid_1,creid_9);
+                            {135}let pkau_8: spkey = spk(skau_9) in
+                            {133}let cntr_8: CNTR = Incr(xcntr_7) in
+                            {132}let RHash_7: bitstring = hash_r(xrpid_7) in
+                            {136}let s_7: bitstring = sign((RHash_7,cntr_8,aaguid_1,creid_9,pkau_8,CHash_7),skau_9) in
+                            {138}out(CA_1, Auth3(RHash_7,cntr_8,aaguid_1,creid_9,pkau_8,s_7,uHandle_9))
+                    )
+                    else
+                        {141}if ((au_type = client) && (tr_type = simple)) then
+                        (
+                            {142}if (ctap_type = noCTAP) then
+                            (
+                                {143}let Trs21(creid_10: bitstring,rpid_10: RpID,CHash_8: bitstring,Tr_5: Transaction) = msgAuth2 in
+                                {152}get Authnr_Client_Record(=creid_10,skau_10: sskey,xrpid_8: RpID,uHandle_10: UserHandle,xcntr_8: CNTR) in
+                                {149}event Authnr_Finish_Auth(uHandle_10,xrpid_8,aaguid_1,creid_10);
+                                {150}event Authnr_Finish_Tr(Tr_5);
+                                {147}let pkau_9: spkey = spk(skau_10) in
+                                {145}let cntr_9: CNTR = Incr(xcntr_8) in
+                                {144}let RHash_8: bitstring = hash_r(xrpid_8) in
+                                {148}let s_8: bitstring = sign((RHash_8,cntr_9,aaguid_1,creid_10,pkau_9,CHash_8,Tr_5),skau_10) in
+                                {151}out(CA_1, Trs3(RHash_8,cntr_9,aaguid_1,creid_10,pkau_9,s_8,uHandle_10,Tr_5))
+                            )
+                            else
+                                {165}get Authnr_Token(PinToken_5: bitstring) in
+                                {153}let Trs2(creid_11: bitstring,rpid_11: RpID,CHash_9: bitstring,PinAuth_4: bitstring,Tr_6: Transaction) = msgAuth2 in
+                                {154}let xPinAuth_4: bitstring = HMAC2(PinToken_5,CHash_9) in
+                                {155}if (PinAuth_4 = xPinAuth_4) then
+                                {164}get Authnr_Client_Record(=creid_11,skau_11: sskey,xrpid_9: RpID,uHandle_11: UserHandle,xcntr_9: CNTR) in
+                                {161}event Authnr_Finish_Auth(uHandle_11,xrpid_9,aaguid_1,creid_11);
+                                {162}event Authnr_Finish_Tr(Tr_6);
+                                {159}let pkau_10: spkey = spk(skau_11) in
+                                {157}let cntr_10: CNTR = Incr(xcntr_9) in
+                                {156}let RHash_9: bitstring = hash_r(xrpid_9) in
+                                {160}let s_9: bitstring = sign((RHash_9,cntr_10,aaguid_1,creid_11,pkau_10,CHash_9,Tr_6),skau_11) in
+                                {163}out(CA_1, Trs3(RHash_9,cntr_10,aaguid_1,creid_11,pkau_10,s_9,uHandle_11,Tr_6))
+                        )
+                        else
+                            {166}if (ctap_type = noCTAP) then
+                            (
+                                {167}let Trg21(creid_12: bitstring,rpid_12: RpID,CHash_10: bitstring,Tr_7: Transaction) = msgAuth2 in
+                                {177}get Authnr_Client_Record(=creid_12,skau_12: sskey,xrpid_10: RpID,uHandle_12: UserHandle,xcntr_10: CNTR) in
+                                {174}event Authnr_Finish_Auth(uHandle_12,xrpid_10,aaguid_1,creid_12);
+                                {175}event Authnr_Finish_Tr(Tr_7);
+                                {172}let pkau_11: spkey = spk(skau_12) in
+                                {171}let THash_2: bitstring = hash_t(Tr_7) in
+                                {169}let cntr_11: CNTR = Incr(xcntr_10) in
+                                {168}let RHash_10: bitstring = hash_r(xrpid_10) in
+                                {173}let s_10: bitstring = sign((RHash_10,cntr_11,aaguid_1,creid_12,pkau_11,CHash_10,THash_2),skau_12) in
+                                {176}out(CA_1, Trg3(RHash_10,cntr_11,aaguid_1,creid_12,pkau_11,s_10,uHandle_12,THash_2))
+                            )
+                            else
+                                {191}get Authnr_Token(PinToken_6: bitstring) in
+                                {178}let Trg2(creid_13: bitstring,rpid_13: RpID,CHash_11: bitstring,PinAuth_5: bitstring,Tr_8: Transaction) = msgAuth2 in
+                                {179}let xPinAuth_5: bitstring = HMAC2(PinToken_6,CHash_11) in
+                                {180}if (PinAuth_5 = xPinAuth_5) then
+                                {190}get Authnr_Client_Record(=creid_13,skau_13: sskey,xrpid_11: RpID,uHandle_13: UserHandle,xcntr_11: CNTR) in
+                                {187}event Authnr_Finish_Auth(uHandle_13,xrpid_11,aaguid_1,creid_13);
+                                {188}event Authnr_Finish_Tr(Tr_8);
+                                {185}let pkau_12: spkey = spk(skau_13) in
+                                {184}let THash_3: bitstring = hash_t(Tr_8) in
+                                {182}let cntr_12: CNTR = Incr(xcntr_11) in
+                                {181}let RHash_11: bitstring = hash_r(xrpid_11) in
+                                {186}let s_11: bitstring = sign((RHash_11,cntr_12,aaguid_1,creid_13,pkau_12,CHash_11,THash_3),skau_13) in
+                                {189}out(CA_1, Trg3(RHash_11,cntr_12,aaguid_1,creid_13,pkau_12,s_11,uHandle_13,THash_3))
+    ) | (
+        {192}let CR_1: channel = CR in
+        {195}in(CR_1, msgAuth1: msg);
+        {194}let tbinding: bitstring = GetTLSBinding(CR_1) in
+        {193}let CA_2: channel = CA in
+        {196}if (tr_type = empty) then
+        (
+            {197}let Auth1(rpid_14: RpID,challenge: Challenge,creid_14: bitstring) = msgAuth1 in
+            {198}event Client_Init_Auth(uHandle_1,rpid_14);
+            {199}let ClientData: bitstring = CD_Cons(challenge,rpid_14,tbinding) in
+            {200}let CHash_12: bitstring = hash(ClientData) in
+            {201}if (ctap_type = noCTAP) then
+            (
+                {202}out(CA_2, Auth21(creid_14,rpid_14,CHash_12));
+                {203}in(CA_2, msgAuth3: msg);
+                {204}let Auth3(RHash_12: bitstring,cntr_13: CNTR,aaguid_2: AAGUID,xcreid: bitstring,pkau_13: spkey,s_12: bitstring,uhandle: UserHandle) = msgAuth3 in
+                {205}out(CR_1, Auth4(RHash_12,cntr_13,aaguid_2,xcreid,pkau_13,s_12,uhandle,ClientData))
+            )
+            else
+                {211}get Client_Token(PinToken_7: bitstring) in
+                {206}let PinAuth_6: bitstring = HMAC2(PinToken_7,CHash_12) in
+                {207}out(CA_2, Auth2(creid_14,rpid_14,CHash_12,PinAuth_6));
+                {208}in(CA_2, msgAuth3_1: msg);
+                {209}let Auth3(RHash_13: bitstring,cntr_14: CNTR,aaguid_3: AAGUID,xcreid_1: bitstring,pkau_14: spkey,s_13: bitstring,uhandle_1: UserHandle) = msgAuth3_1 in
+                {210}out(CR_1, Auth4(RHash_13,cntr_14,aaguid_3,xcreid_1,pkau_14,s_13,uhandle_1,ClientData))
+        )
+        else
+            {212}if (tr_type = simple) then
+            (
+                {213}let Trs1(rpid_15: RpID,challenge_1: Challenge,creid_15: bitstring,xTr: Transaction) = msgAuth1 in
+                {214}event Client_Init_Auth(uHandle_1,rpid_15);
+                {215}event Client_Init_Tr(xTr);
+                {216}let ClientData_1: bitstring = CD_Cons(challenge_1,rpid_15,tbinding) in
+                {217}let CHash_13: bitstring = hash(ClientData_1) in
+                {218}if (ctap_type = noCTAP) then
+                (
+                    {219}out(CA_2, Trs21(creid_15,rpid_15,CHash_13,xTr));
+                    {220}in(CA_2, msgTrs3: msg);
+                    {221}let Trs3(RHash_14: bitstring,cntr_15: CNTR,aaguid_4: AAGUID,xcreid_2: bitstring,pkau_15: spkey,s_14: bitstring,uhandle_2: UserHandle,Tr_9: Transaction) = msgTrs3 in
+                    {222}out(CR_1, Trs4(RHash_14,cntr_15,aaguid_4,xcreid_2,pkau_15,s_14,uhandle_2,ClientData_1,Tr_9))
+                )
+                else
+                    {228}get Client_Token(PinToken_8: bitstring) in
+                    {223}let PinAuth_7: bitstring = HMAC2(PinToken_8,CHash_13) in
+                    {224}out(CA_2, Trs2(creid_15,rpid_15,CHash_13,PinAuth_7,xTr));
+                    {225}in(CA_2, msgAuth3_2: msg);
+                    {226}let Auth3(RHash_15: bitstring,cntr_16: CNTR,aaguid_5: AAGUID,xcreid_3: bitstring,pkau_16: spkey,s_15: bitstring,uhandle_3: UserHandle) = msgAuth3_2 in
+                    {227}out(CR_1, Auth4(RHash_15,cntr_16,aaguid_5,xcreid_3,pkau_16,s_15,uhandle_3,ClientData_1))
+            )
+            else
+                {229}let Trg1(rpid_16: RpID,challenge_2: Challenge,creid_16: bitstring,xTr_1: Transaction) = msgAuth1 in
+                {230}event Client_Init_Auth(uHandle_1,rpid_16);
+                {231}event Client_Init_Tr(xTr_1);
+                {232}let ClientData_2: bitstring = CD_Cons(challenge_2,rpid_16,tbinding) in
+                {233}let CHash_14: bitstring = hash(ClientData_2) in
+                {234}if (ctap_type = noCTAP) then
+                (
+                    {235}out(CA_2, Trg21(creid_16,rpid_16,CHash_14,xTr_1));
+                    {236}in(CA_2, msgTrg3: msg);
+                    {237}let Trg3(RHash_16: bitstring,cntr_17: CNTR,aaguid_6: AAGUID,xcreid_4: bitstring,pkau_17: spkey,s_16: bitstring,uhandle_4: UserHandle,thash: bitstring) = msgTrg3 in
+                    {238}out(CR_1, Trg4(RHash_16,cntr_17,aaguid_6,xcreid_4,pkau_17,s_16,uhandle_4,ClientData_2,thash))
+                )
+                else
+                    {244}get Client_Token(PinToken_9: bitstring) in
+                    {239}let PinAuth_8: bitstring = HMAC2(PinToken_9,CHash_14) in
+                    {240}out(CA_2, Trg2(creid_16,rpid_16,CHash_14,PinAuth_8,xTr_1));
+                    {241}in(CA_2, msgTrg3_1: msg);
+                    {242}let Trg3(RHash_17: bitstring,cntr_18: CNTR,aaguid_7: AAGUID,xcreid_5: bitstring,pkau_18: spkey,s_17: bitstring,uhandle_5: UserHandle,thash_1: bitstring) = msgTrg3_1 in
+                    {243}out(CR_1, Trg4(RHash_17,cntr_18,aaguid_7,xcreid_5,pkau_18,s_17,uhandle_5,ClientData_2,thash_1))
+    ) | (
+        {247}new challenge_3: Challenge;
+        {278}get Server_Reg_Record(=uHandle_1,xaaguid: AAGUID,xcreid_6: bitstring,xpkau: spkey,xcntr_12: CNTR) in
+        {246}let CR_2: channel = CR in
+        {248}let tbinding_1: bitstring = GetTLSBinding(CR_2) in
+        {249}if (tr_type = empty) then
+        (
+            {250}out(CR_2, Auth1(rpid_1,challenge_3,xcreid_6));
+            {251}in(CR_2, msgAuth4: msg);
+            {252}let Auth4(RHash_18: bitstring,cntr_19: CNTR,aaguid_8: AAGUID,creid_17: bitstring,pkau_19: spkey,s_18: bitstring,xuhandle: UserHandle,ClientData_3: bitstring) = msgAuth4 in
+            {255}let xCHash: bitstring = hash(ClientData_3) in
+            {254}let xRHash: bitstring = hash_r(rpid_1) in
+            {253}let xClientData: bitstring = CD_Cons(challenge_3,rpid_1,tbinding_1) in
+            {256}if ((ClientData_3 = xClientData) && ((RHash_18 = xRHash) && ((Incr(xcntr_12) = cntr_19) && (checksign(s_18,(RHash_18,cntr_19,aaguid_8,creid_17,pkau_19,xCHash),xpkau) = OK)))) then
+            {257}event Server_Finish_Auth(uHandle_1,rpid_1,aaguid_8,xcreid_6)
+        )
+        else
+            {245}let xTr_2: Transaction = Tr in
+            {258}if (tr_type = simple) then
+            (
+                {259}out(CR_2, Trs1(rpid_1,challenge_3,xcreid_6,xTr_2));
+                {260}in(CR_2, msgTrs4: msg);
+                {261}let Trs4(RHash_19: bitstring,cntr_20: CNTR,aaguid_9: AAGUID,creid_18: bitstring,pkau_20: spkey,s_19: bitstring,xuhandle_1: UserHandle,ClientData_4: bitstring,Tr_10: Transaction) = msgTrs4 in
+                {264}let xCHash_1: bitstring = hash(ClientData_4) in
+                {263}let xRHash_1: bitstring = hash_r(rpid_1) in
+                {262}let xClientData_1: bitstring = CD_Cons(challenge_3,rpid_1,tbinding_1) in
+                {265}if ((ClientData_4 = xClientData_1) && ((RHash_19 = xRHash_1) && ((Incr(xcntr_12) = cntr_20) && ((Tr_10 = xTr_2) && (checksign(s_19,(xRHash_1,cntr_20,aaguid_9,creid_18,pkau_20,xCHash_1,xTr_2),xpkau) = OK))))) then
+                {266}event Server_Finish_Auth(uHandle_1,rpid_1,aaguid_9,xcreid_6);
+                {267}event Server_Finish_Tr(xTr_2)
+            )
+            else
+                {268}out(CR_2, Trg1(rpid_1,challenge_3,xcreid_6,xTr_2));
+                {269}in(CR_2, msgTrg4: msg);
+                {270}let Trg4(RHash_20: bitstring,cntr_21: CNTR,aaguid_10: AAGUID,creid_19: bitstring,pkau_21: spkey,s_20: bitstring,xuhandle_2: UserHandle,ClientData_5: bitstring,thash_2: bitstring) = msgTrg4 in
+                {274}let xthash: bitstring = hash_t(xTr_2) in
+                {273}let xCHash_2: bitstring = hash(ClientData_5) in
+                {272}let xRHash_2: bitstring = hash_r(rpid_1) in
+                {271}let xClientData_2: bitstring = CD_Cons(challenge_3,rpid_1,tbinding_1) in
+                {275}if ((ClientData_5 = xClientData_2) && ((RHash_20 = xRHash_2) && ((Incr(xcntr_12) = cntr_21) && ((thash_2 = xthash) && (checksign(s_20,(RHash_20,cntr_21,aaguid_10,creid_19,pkau_21,xCHash_2),xpkau) = OK))))) then
+                {276}event Server_Finish_Auth(uHandle_1,rpid_1,aaguid_10,xcreid_6);
+                {277}event Server_Finish_Tr(xTr_2)
+    )
+else
+    (
+        {281}new PinToken_10: bitstring;
+        {282}insert Authnr_Token(PinToken_10);
+        {283}new a: skey;
+        {280}let CA_3: channel = CA in
+        {286}in(CA_3, msg1: msg);
+        {287}let CTAP1(getKeyAgreement: bitstring) = msg1 in
+        {288}if (getKeyAgreement = OK) then
+        {284}let aG: pkey = pk(a,G_1) in
+        {289}out(CA_3, CTAP2(aG));
+        {290}if (ctap_type = setPIN) then
+        (
+            {291}in(CA_3, msg3: msg);
+            {292}let CTAP3(bG: pkey,newPinEnc: bitstring,PinAuth_9: bitstring) = msg3 in
+            {293}let SP: bitstring = associate(a,bG) in
+            {294}let SS: key = hash_s(SP) in
+            {295}let xPinAuth_6: bitstring = HMAC(SS,newPinEnc) in
+            {296}if (xPinAuth_6 = PinAuth_9) then
+            {297}let newPin: bitstring = sdec(newPinEnc,SS) in
+            {299}out(CA_3, CTAP4(OK));
+            {300}in(CA_3, msg7: msg);
+            {301}let CTAP7(b1G: pkey,PinHashEnc: bitstring) = msg7 in
+            {302}let SP1: bitstring = associate(a,b1G) in
+            {303}let SS1: key = hash_s(SP1) in
+            {304}let PinHash1: bitstring = sdec(PinHashEnc,SS1) in
+            {298}let newPinHash: bitstring = hash(newPin) in
+            {305}if (PinHash1 = newPinHash) then
+            {306}let PinTokenEnc: bitstring = senc(PinToken_10,SS1) in
+            {307}out(CA_3, CTAP8(PinTokenEnc))
+        )
+        else
+            {279}let PIN_1: bitstring = PIN in
+            {285}let xPinHash: bitstring = hash(PIN_1) in
+            {308}if (ctap_type = chgPIN) then
+            (
+                {309}in(CA_3, msg5: msg);
+                {310}let CTAP5(bG_1: pkey,PinHashEnc_1: bitstring,newPinEnc_1: bitstring,PinAuth_10: bitstring) = msg5 in
+                {311}let SP_1: bitstring = associate(a,bG_1) in
+                {312}let SS_1: key = hash_s(SP_1) in
+                {313}let xPinAuth_7: bitstring = HMAC1(SS_1,newPinEnc_1,PinHashEnc_1) in
+                {314}if (xPinAuth_7 = PinAuth_10) then
+                {315}let PinHash: bitstring = sdec(PinHashEnc_1,SS_1) in
+                {316}if (xPinHash = PinHash) then
+                {317}let newPin_1: bitstring = sdec(newPinEnc_1,SS_1) in
+                {319}out(CA_3, CTAP6(OK));
+                {320}in(CA_3, msg7_1: msg);
+                {321}let CTAP7(b1G_1: pkey,PinHashEnc1: bitstring) = msg7_1 in
+                {322}let SP1_1: bitstring = associate(a,b1G_1) in
+                {323}let SS1_1: key = hash_s(SP1_1) in
+                {324}let PinHash1_1: bitstring = sdec(PinHashEnc1,SS1_1) in
+                {318}let newPinHash_1: bitstring = hash(newPin_1) in
+                {325}if (PinHash1_1 = newPinHash_1) then
+                {326}let PinTokenEnc_1: bitstring = senc(PinToken_10,SS1_1) in
+                {327}out(CA_3, CTAP8(PinTokenEnc_1))
+            )
+            else
+                {328}in(CA_3, msg7_2: msg);
+                {329}let CTAP7(bG_2: pkey,PinHashEnc_2: bitstring) = msg7_2 in
+                {330}let SP_2: bitstring = associate(a,bG_2) in
+                {331}let SS_2: key = hash_s(SP_2) in
+                {332}let PinHash_1: bitstring = sdec(PinHashEnc_2,SS_2) in
+                {333}if (xPinHash = PinHash_1) then
+                {334}let PinTokenEnc_2: bitstring = senc(PinToken_10,SS_2) in
+                {335}out(CA_3, CTAP8(PinTokenEnc_2))
+    ) | (
+        {338}new b: skey;
+        {339}new b1: skey;
+        {340}new newPin_2: bitstring;
+        {337}let CA_4: channel = CA in
+        {344}out(CA_4, CTAP1(OK));
+        {345}in(CA_4, msg2: msg);
+        {346}let CTAP2(aG_1: pkey) = msg2 in
+        {349}let SP1_2: bitstring = associate(b1,aG_1) in
+        {350}let SS1_2: key = hash_s(SP1_2) in
+        {347}let SP_3: bitstring = associate(b,aG_1) in
+        {348}let SS_3: key = hash_s(SP_3) in
+        {336}let PIN_2: bitstring = PIN in
+        {343}let PinHash_2: bitstring = hash(PIN_2) in
+        {342}let b1G_2: pkey = pk(b1,G_1) in
+        {341}let bG_3: pkey = pk(b,G_1) in
+        {351}if (ctap_type = setPIN) then
+        (
+            {352}let newPinEnc_2: bitstring = senc(newPin_2,SS_3) in
+            {353}let PinAuth_11: bitstring = HMAC(SS_3,newPinEnc_2) in
+            {354}out(CA_4, CTAP3(bG_3,newPinEnc_2,PinAuth_11));
+            {355}in(CA_4, msg4: msg);
+            {356}let CTAP4(CTAP2_OK: bitstring) = msg4 in
+            {357}if (CTAP2_OK = OK) then
+            {358}let PinHashEnc_3: bitstring = senc(PinHash_2,SS_3) in
+            {359}out(CA_4, CTAP7(b1G_2,PinHashEnc_3));
+            {360}in(CA_4, msg8: msg);
+            {361}let CTAP8(PinTokenEnc_3: bitstring) = msg8 in
+            {362}let PinToken_11: bitstring = sdec(PinTokenEnc_3,SS1_2) in
+            {363}insert Client_Token(PinToken_11)
+        )
+        else
+            {364}if (ctap_type = chgPIN) then
+            (
+                {366}let newPinEnc_3: bitstring = senc(newPin_2,SS_3) in
+                {365}let PinHashEnc_4: bitstring = senc(PinHash_2,SS_3) in
+                {367}let PinAuth_12: bitstring = HMAC1(SS_3,newPinEnc_3,PinHashEnc_4) in
+                {368}out(CA_4, CTAP5(bG_3,PinHashEnc_4,newPinEnc_3,PinAuth_12));
+                {369}in(CA_4, msg6: msg);
+                {370}let CTAP6(CTAP2_OK_1: bitstring) = msg6 in
+                {371}if (CTAP2_OK_1 = OK) then
+                {372}let PinHashEnc1_1: bitstring = senc(PinHash_2,SS_3) in
+                {373}out(CA_4, CTAP7(b1G_2,PinHashEnc1_1));
+                {374}in(CA_4, msg8_1: msg);
+                {375}let CTAP8(PinTokenEnc_4: bitstring) = msg8_1 in
+                {376}let PinToken_12: bitstring = sdec(PinTokenEnc_4,SS1_2) in
+                {377}insert Client_Token(PinToken_12)
+            )
+            else
+                {378}let PinHashEnc_5: bitstring = senc(PinHash_2,SS_3) in
+                {379}out(CA_4, CTAP7(bG_3,PinHashEnc_5));
+                {380}in(CA_4, msg8_2: msg);
+                {381}let CTAP8(PinTokenEnc_5: bitstring) = msg8_2 in
+                {382}let PinToken_13: bitstring = sdec(PinTokenEnc_5,SS_3) in
+                {383}insert Client_Token(PinToken_13)
+    ) | (
+        {384}phase 1;
+        (
+            {385}let CA_5: channel = CA in
+            {386}in(CA_5, msgAuth2_1: msg);
+            {387}if ((au_type = server) && (tr_type = empty)) then
+            (
+                {388}if (ctap_type = noCTAP) then
+                (
+                    {389}let Auth21(creid_20: bitstring,rpid_17: RpID,CHash_15: bitstring) = msgAuth2_1 in
+                    {390}let (skau_14: sskey,xrpid_12: RpID,uHandle_14: UserHandle) = sdec(creid_20,wk_1) in
+                    {398}get Authnr_Server_Record(=uHandle_14,=rpid_17,xcntr_13: CNTR) in
+                    {396}event Authnr_Finish_Auth(uHandle_14,xrpid_12,aaguid_1,creid_20);
+                    {394}let pkau_22: spkey = spk(skau_14) in
+                    {392}let cntr_22: CNTR = Incr(xcntr_13) in
+                    {391}let RHash_21: bitstring = hash_r(xrpid_12) in
+                    {395}let s_21: bitstring = sign((RHash_21,cntr_22,aaguid_1,creid_20,pkau_22,CHash_15),skau_14) in
+                    {397}out(CA_5, Auth3(RHash_21,cntr_22,aaguid_1,creid_20,pkau_22,s_21,uHandle_14))
+                )
+                else
+                    {411}get Authnr_Token(PinToken_14: bitstring) in
+                    {399}let Auth2(creid_21: bitstring,rpid_18: RpID,CHash_16: bitstring,PinAuth_13: bitstring) = msgAuth2_1 in
+                    {400}let xPinAuth_8: bitstring = HMAC2(PinToken_14,CHash_16) in
+                    {401}if (PinAuth_13 = xPinAuth_8) then
+                    {402}let (skau_15: sskey,xrpid_13: RpID,uHandle_15: UserHandle) = sdec(creid_21,wk_1) in
+                    {410}get Authnr_Server_Record(=uHandle_15,=rpid_18,xcntr_14: CNTR) in
+                    {408}event Authnr_Finish_Auth(uHandle_15,xrpid_13,aaguid_1,creid_21);
+                    {406}let pkau_23: spkey = spk(skau_15) in
+                    {404}let cntr_23: CNTR = Incr(xcntr_14) in
+                    {403}let RHash_22: bitstring = hash_r(xrpid_13) in
+                    {407}let s_22: bitstring = sign((RHash_22,cntr_23,aaguid_1,creid_21,pkau_23,CHash_16),skau_15) in
+                    {409}out(CA_5, Auth3(RHash_22,cntr_23,aaguid_1,creid_21,pkau_23,s_22,uHandle_15))
+            )
+            else
+                {412}if ((au_type = server) && (tr_type = simple)) then
+                (
+                    {413}if (ctap_type = noCTAP) then
+                    (
+                        {414}let Trs21(creid_22: bitstring,rpid_19: RpID,CHash_17: bitstring,Tr_11: Transaction) = msgAuth2_1 in
+                        {415}let (skau_16: sskey,xrpid_14: RpID,uHandle_16: UserHandle) = sdec(creid_22,wk_1) in
+                        {424}get Authnr_Server_Record(=uHandle_16,=rpid_19,xcntr_15: CNTR) in
+                        {421}event Authnr_Finish_Auth(uHandle_16,xrpid_14,aaguid_1,creid_22);
+                        {422}event Authnr_Finish_Tr(Tr_11);
+                        {419}let pkau_24: spkey = spk(skau_16) in
+                        {417}let cntr_24: CNTR = Incr(xcntr_15) in
+                        {416}let RHash_23: bitstring = hash_r(xrpid_14) in
+                        {420}let s_23: bitstring = sign((RHash_23,cntr_24,aaguid_1,creid_22,pkau_24,CHash_17,Tr_11),skau_16) in
+                        {423}out(CA_5, Trs3(RHash_23,cntr_24,aaguid_1,creid_22,pkau_24,s_23,uHandle_16,Tr_11))
+                    )
+                    else
+                        {438}get Authnr_Token(PinToken_15: bitstring) in
+                        {425}let Trs2(creid_23: bitstring,rpid_20: RpID,CHash_18: bitstring,PinAuth_14: bitstring,Tr_12: Transaction) = msgAuth2_1 in
+                        {426}let xPinAuth_9: bitstring = HMAC2(PinToken_15,CHash_18) in
+                        {427}if (PinAuth_14 = xPinAuth_9) then
+                        {428}let (skau_17: sskey,xrpid_15: RpID,uHandle_17: UserHandle) = sdec(creid_23,wk_1) in
+                        {437}get Authnr_Server_Record(=uHandle_17,=rpid_20,xcntr_16: CNTR) in
+                        {434}event Authnr_Finish_Auth(uHandle_17,xrpid_15,aaguid_1,creid_23);
+                        {435}event Authnr_Finish_Tr(Tr_12);
+                        {432}let pkau_25: spkey = spk(skau_17) in
+                        {430}let cntr_25: CNTR = Incr(xcntr_16) in
+                        {429}let RHash_24: bitstring = hash_r(xrpid_15) in
+                        {433}let s_24: bitstring = sign((RHash_24,cntr_25,aaguid_1,creid_23,pkau_25,CHash_18,Tr_12),skau_17) in
+                        {436}out(CA_5, Trs3(RHash_24,cntr_25,aaguid_1,creid_23,pkau_25,s_24,uHandle_17,Tr_12))
+                )
+                else
+                    {439}if ((au_type = server) && (tr_type = generic)) then
+                    (
+                        {440}if (ctap_type = noCTAP) then
+                        (
+                            {441}let Trg21(creid_24: bitstring,rpid_21: RpID,CHash_19: bitstring,Tr_13: Transaction) = msgAuth2_1 in
+                            {442}let (skau_18: sskey,xrpid_16: RpID,uHandle_18: UserHandle) = sdec(creid_24,wk_1) in
+                            {452}get Authnr_Server_Record(=uHandle_18,=rpid_21,xcntr_17: CNTR) in
+                            {449}event Authnr_Finish_Auth(uHandle_18,xrpid_16,aaguid_1,creid_24);
+                            {450}event Authnr_Finish_Tr(Tr_13);
+                            {447}let pkau_26: spkey = spk(skau_18) in
+                            {446}let THash_4: bitstring = hash_t(Tr_13) in
+                            {444}let cntr_26: CNTR = Incr(xcntr_17) in
+                            {443}let RHash_25: bitstring = hash_r(xrpid_16) in
+                            {448}let s_25: bitstring = sign((RHash_25,cntr_26,aaguid_1,creid_24,pkau_26,CHash_19,THash_4),skau_18) in
+                            {451}out(CA_5, Trg3(RHash_25,cntr_26,aaguid_1,creid_24,pkau_26,s_25,uHandle_18,THash_4))
+                        )
+                        else
+                            {467}get Authnr_Token(PinToken_16: bitstring) in
+                            {453}let Trg2(creid_25: bitstring,rpid_22: RpID,CHash_20: bitstring,PinAuth_15: bitstring,Tr_14: Transaction) = msgAuth2_1 in
+                            {454}let xPinAuth_10: bitstring = HMAC2(PinToken_16,CHash_20) in
+                            {455}if (PinAuth_15 = xPinAuth_10) then
+                            {456}let (skau_19: sskey,xrpid_17: RpID,uHandle_19: UserHandle) = sdec(creid_25,wk_1) in
+                            {466}get Authnr_Server_Record(=uHandle_19,=rpid_22,xcntr_18: CNTR) in
+                            {463}event Authnr_Finish_Auth(uHandle_19,xrpid_17,aaguid_1,creid_25);
+                            {464}event Authnr_Finish_Tr(Tr_14);
+                            {461}let pkau_27: spkey = spk(skau_19) in
+                            {460}let THash_5: bitstring = hash_t(Tr_14) in
+                            {458}let cntr_27: CNTR = Incr(xcntr_18) in
+                            {457}let RHash_26: bitstring = hash_r(xrpid_17) in
+                            {462}let s_26: bitstring = sign((RHash_26,cntr_27,aaguid_1,creid_25,pkau_27,CHash_20,THash_5),skau_19) in
+                            {465}out(CA_5, Trg3(RHash_26,cntr_27,aaguid_1,creid_25,pkau_27,s_26,uHandle_19,THash_5))
+                    )
+                    else
+                        {468}if ((au_type = client) && (tr_type = empty)) then
+                        (
+                            {469}if (ctap_type = noCTAP) then
+                            (
+                                {470}let Auth21(creid_26: bitstring,rpid_23: RpID,CHash_21: bitstring) = msgAuth2_1 in
+                                {478}get Authnr_Client_Record(=creid_26,skau_20: sskey,xrpid_18: RpID,uHandle_20: UserHandle,xcntr_19: CNTR) in
+                                {476}event Authnr_Finish_Auth(uHandle_20,xrpid_18,aaguid_1,creid_26);
+                                {474}let pkau_28: spkey = spk(skau_20) in
+                                {472}let cntr_28: CNTR = Incr(xcntr_19) in
+                                {471}let RHash_27: bitstring = hash_r(xrpid_18) in
+                                {475}let s_27: bitstring = sign((RHash_27,cntr_28,aaguid_1,creid_26,pkau_28,CHash_21),skau_20) in
+                                {477}out(CA_5, Auth3(RHash_27,cntr_28,aaguid_1,creid_26,pkau_28,s_27,uHandle_20))
+                            )
+                            else
+                                {490}get Authnr_Token(PinToken_17: bitstring) in
+                                {479}let Auth2(creid_27: bitstring,rpid_24: RpID,CHash_22: bitstring,PinAuth_16: bitstring) = msgAuth2_1 in
+                                {480}let xPinAuth_11: bitstring = HMAC2(PinToken_17,CHash_22) in
+                                {481}if (PinAuth_16 = xPinAuth_11) then
+                                {489}get Authnr_Client_Record(=creid_27,skau_21: sskey,xrpid_19: RpID,uHandle_21: UserHandle,xcntr_20: CNTR) in
+                                {487}event Authnr_Finish_Auth(uHandle_21,xrpid_19,aaguid_1,creid_27);
+                                {485}let pkau_29: spkey = spk(skau_21) in
+                                {483}let cntr_29: CNTR = Incr(xcntr_20) in
+                                {482}let RHash_28: bitstring = hash_r(xrpid_19) in
+                                {486}let s_28: bitstring = sign((RHash_28,cntr_29,aaguid_1,creid_27,pkau_29,CHash_22),skau_21) in
+                                {488}out(CA_5, Auth3(RHash_28,cntr_29,aaguid_1,creid_27,pkau_29,s_28,uHandle_21))
+                        )
+                        else
+                            {491}if ((au_type = client) && (tr_type = simple)) then
+                            (
+                                {492}if (ctap_type = noCTAP) then
+                                (
+                                    {493}let Trs21(creid_28: bitstring,rpid_25: RpID,CHash_23: bitstring,Tr_15: Transaction) = msgAuth2_1 in
+                                    {502}get Authnr_Client_Record(=creid_28,skau_22: sskey,xrpid_20: RpID,uHandle_22: UserHandle,xcntr_21: CNTR) in
+                                    {499}event Authnr_Finish_Auth(uHandle_22,xrpid_20,aaguid_1,creid_28);
+                                    {500}event Authnr_Finish_Tr(Tr_15);
+                                    {497}let pkau_30: spkey = spk(skau_22) in
+                                    {495}let cntr_30: CNTR = Incr(xcntr_21) in
+                                    {494}let RHash_29: bitstring = hash_r(xrpid_20) in
+                                    {498}let s_29: bitstring = sign((RHash_29,cntr_30,aaguid_1,creid_28,pkau_30,CHash_23,Tr_15),skau_22) in
+                                    {501}out(CA_5, Trs3(RHash_29,cntr_30,aaguid_1,creid_28,pkau_30,s_29,uHandle_22,Tr_15))
+                                )
+                                else
+                                    {515}get Authnr_Token(PinToken_18: bitstring) in
+                                    {503}let Trs2(creid_29: bitstring,rpid_26: RpID,CHash_24: bitstring,PinAuth_17: bitstring,Tr_16: Transaction) = msgAuth2_1 in
+                                    {504}let xPinAuth_12: bitstring = HMAC2(PinToken_18,CHash_24) in
+                                    {505}if (PinAuth_17 = xPinAuth_12) then
+                                    {514}get Authnr_Client_Record(=creid_29,skau_23: sskey,xrpid_21: RpID,uHandle_23: UserHandle,xcntr_22: CNTR) in
+                                    {511}event Authnr_Finish_Auth(uHandle_23,xrpid_21,aaguid_1,creid_29);
+                                    {512}event Authnr_Finish_Tr(Tr_16);
+                                    {509}let pkau_31: spkey = spk(skau_23) in
+                                    {507}let cntr_31: CNTR = Incr(xcntr_22) in
+                                    {506}let RHash_30: bitstring = hash_r(xrpid_21) in
+                                    {510}let s_30: bitstring = sign((RHash_30,cntr_31,aaguid_1,creid_29,pkau_31,CHash_24,Tr_16),skau_23) in
+                                    {513}out(CA_5, Trs3(RHash_30,cntr_31,aaguid_1,creid_29,pkau_31,s_30,uHandle_23,Tr_16))
+                            )
+                            else
+                                {516}if (ctap_type = noCTAP) then
+                                (
+                                    {517}let Trg21(creid_30: bitstring,rpid_27: RpID,CHash_25: bitstring,Tr_17: Transaction) = msgAuth2_1 in
+                                    {527}get Authnr_Client_Record(=creid_30,skau_24: sskey,xrpid_22: RpID,uHandle_24: UserHandle,xcntr_23: CNTR) in
+                                    {524}event Authnr_Finish_Auth(uHandle_24,xrpid_22,aaguid_1,creid_30);
+                                    {525}event Authnr_Finish_Tr(Tr_17);
+                                    {522}let pkau_32: spkey = spk(skau_24) in
+                                    {521}let THash_6: bitstring = hash_t(Tr_17) in
+                                    {519}let cntr_32: CNTR = Incr(xcntr_23) in
+                                    {518}let RHash_31: bitstring = hash_r(xrpid_22) in
+                                    {523}let s_31: bitstring = sign((RHash_31,cntr_32,aaguid_1,creid_30,pkau_32,CHash_25,THash_6),skau_24) in
+                                    {526}out(CA_5, Trg3(RHash_31,cntr_32,aaguid_1,creid_30,pkau_32,s_31,uHandle_24,THash_6))
+                                )
+                                else
+                                    {541}get Authnr_Token(PinToken_19: bitstring) in
+                                    {528}let Trg2(creid_31: bitstring,rpid_28: RpID,CHash_26: bitstring,PinAuth_18: bitstring,Tr_18: Transaction) = msgAuth2_1 in
+                                    {529}let xPinAuth_13: bitstring = HMAC2(PinToken_19,CHash_26) in
+                                    {530}if (PinAuth_18 = xPinAuth_13) then
+                                    {540}get Authnr_Client_Record(=creid_31,skau_25: sskey,xrpid_23: RpID,uHandle_25: UserHandle,xcntr_24: CNTR) in
+                                    {537}event Authnr_Finish_Auth(uHandle_25,xrpid_23,aaguid_1,creid_31);
+                                    {538}event Authnr_Finish_Tr(Tr_18);
+                                    {535}let pkau_33: spkey = spk(skau_25) in
+                                    {534}let THash_7: bitstring = hash_t(Tr_18) in
+                                    {532}let cntr_33: CNTR = Incr(xcntr_24) in
+                                    {531}let RHash_32: bitstring = hash_r(xrpid_23) in
+                                    {536}let s_32: bitstring = sign((RHash_32,cntr_33,aaguid_1,creid_31,pkau_33,CHash_26,THash_7),skau_25) in
+                                    {539}out(CA_5, Trg3(RHash_32,cntr_33,aaguid_1,creid_31,pkau_33,s_32,uHandle_25,THash_7))
+        ) | (
+            {542}let CR_3: channel = CR in
+            {545}in(CR_3, msgAuth1_1: msg);
+            {544}let tbinding_2: bitstring = GetTLSBinding(CR_3) in
+            {543}let CA_6: channel = CA in
+            {546}if (tr_type = empty) then
+            (
+                {547}let Auth1(rpid_29: RpID,challenge_4: Challenge,creid_32: bitstring) = msgAuth1_1 in
+                {548}event Client_Init_Auth(uHandle_1,rpid_29);
+                {549}let ClientData_6: bitstring = CD_Cons(challenge_4,rpid_29,tbinding_2) in
+                {550}let CHash_27: bitstring = hash(ClientData_6) in
+                {551}if (ctap_type = noCTAP) then
+                (
+                    {552}out(CA_6, Auth21(creid_32,rpid_29,CHash_27));
+                    {553}in(CA_6, msgAuth3_3: msg);
+                    {554}let Auth3(RHash_33: bitstring,cntr_34: CNTR,aaguid_11: AAGUID,xcreid_7: bitstring,pkau_34: spkey,s_33: bitstring,uhandle_6: UserHandle) = msgAuth3_3 in
+                    {555}out(CR_3, Auth4(RHash_33,cntr_34,aaguid_11,xcreid_7,pkau_34,s_33,uhandle_6,ClientData_6))
+                )
+                else
+                    {561}get Client_Token(PinToken_20: bitstring) in
+                    {556}let PinAuth_19: bitstring = HMAC2(PinToken_20,CHash_27) in
+                    {557}out(CA_6, Auth2(creid_32,rpid_29,CHash_27,PinAuth_19));
+                    {558}in(CA_6, msgAuth3_4: msg);
+                    {559}let Auth3(RHash_34: bitstring,cntr_35: CNTR,aaguid_12: AAGUID,xcreid_8: bitstring,pkau_35: spkey,s_34: bitstring,uhandle_7: UserHandle) = msgAuth3_4 in
+                    {560}out(CR_3, Auth4(RHash_34,cntr_35,aaguid_12,xcreid_8,pkau_35,s_34,uhandle_7,ClientData_6))
+            )
+            else
+                {562}if (tr_type = simple) then
+                (
+                    {563}let Trs1(rpid_30: RpID,challenge_5: Challenge,creid_33: bitstring,xTr_3: Transaction) = msgAuth1_1 in
+                    {564}event Client_Init_Auth(uHandle_1,rpid_30);
+                    {565}event Client_Init_Tr(xTr_3);
+                    {566}let ClientData_7: bitstring = CD_Cons(challenge_5,rpid_30,tbinding_2) in
+                    {567}let CHash_28: bitstring = hash(ClientData_7) in
+                    {568}if (ctap_type = noCTAP) then
+                    (
+                        {569}out(CA_6, Trs21(creid_33,rpid_30,CHash_28,xTr_3));
+                        {570}in(CA_6, msgTrs3_1: msg);
+                        {571}let Trs3(RHash_35: bitstring,cntr_36: CNTR,aaguid_13: AAGUID,xcreid_9: bitstring,pkau_36: spkey,s_35: bitstring,uhandle_8: UserHandle,Tr_19: Transaction) = msgTrs3_1 in
+                        {572}out(CR_3, Trs4(RHash_35,cntr_36,aaguid_13,xcreid_9,pkau_36,s_35,uhandle_8,ClientData_7,Tr_19))
+                    )
+                    else
+                        {578}get Client_Token(PinToken_21: bitstring) in
+                        {573}let PinAuth_20: bitstring = HMAC2(PinToken_21,CHash_28) in
+                        {574}out(CA_6, Trs2(creid_33,rpid_30,CHash_28,PinAuth_20,xTr_3));
+                        {575}in(CA_6, msgAuth3_5: msg);
+                        {576}let Auth3(RHash_36: bitstring,cntr_37: CNTR,aaguid_14: AAGUID,xcreid_10: bitstring,pkau_37: spkey,s_36: bitstring,uhandle_9: UserHandle) = msgAuth3_5 in
+                        {577}out(CR_3, Auth4(RHash_36,cntr_37,aaguid_14,xcreid_10,pkau_37,s_36,uhandle_9,ClientData_7))
+                )
+                else
+                    {579}let Trg1(rpid_31: RpID,challenge_6: Challenge,creid_34: bitstring,xTr_4: Transaction) = msgAuth1_1 in
+                    {580}event Client_Init_Auth(uHandle_1,rpid_31);
+                    {581}event Client_Init_Tr(xTr_4);
+                    {582}let ClientData_8: bitstring = CD_Cons(challenge_6,rpid_31,tbinding_2) in
+                    {583}let CHash_29: bitstring = hash(ClientData_8) in
+                    {584}if (ctap_type = noCTAP) then
+                    (
+                        {585}out(CA_6, Trg21(creid_34,rpid_31,CHash_29,xTr_4));
+                        {586}in(CA_6, msgTrg3_2: msg);
+                        {587}let Trg3(RHash_37: bitstring,cntr_38: CNTR,aaguid_15: AAGUID,xcreid_11: bitstring,pkau_38: spkey,s_37: bitstring,uhandle_10: UserHandle,thash_3: bitstring) = msgTrg3_2 in
+                        {588}out(CR_3, Trg4(RHash_37,cntr_38,aaguid_15,xcreid_11,pkau_38,s_37,uhandle_10,ClientData_8,thash_3))
+                    )
+                    else
+                        {594}get Client_Token(PinToken_22: bitstring) in
+                        {589}let PinAuth_21: bitstring = HMAC2(PinToken_22,CHash_29) in
+                        {590}out(CA_6, Trg2(creid_34,rpid_31,CHash_29,PinAuth_21,xTr_4));
+                        {591}in(CA_6, msgTrg3_3: msg);
+                        {592}let Trg3(RHash_38: bitstring,cntr_39: CNTR,aaguid_16: AAGUID,xcreid_12: bitstring,pkau_39: spkey,s_38: bitstring,uhandle_11: UserHandle,thash_4: bitstring) = msgTrg3_3 in
+                        {593}out(CR_3, Trg4(RHash_38,cntr_39,aaguid_16,xcreid_12,pkau_39,s_38,uhandle_11,ClientData_8,thash_4))
+        ) | (
+            {597}new challenge_7: Challenge;
+            {628}get Server_Reg_Record(=uHandle_1,xaaguid_1: AAGUID,xcreid_13: bitstring,xpkau_1: spkey,xcntr_25: CNTR) in
+            {596}let CR_4: channel = CR in
+            {598}let tbinding_3: bitstring = GetTLSBinding(CR_4) in
+            {599}if (tr_type = empty) then
+            (
+                {600}out(CR_4, Auth1(rpid_1,challenge_7,xcreid_13));
+                {601}in(CR_4, msgAuth4_1: msg);
+                {602}let Auth4(RHash_39: bitstring,cntr_40: CNTR,aaguid_17: AAGUID,creid_35: bitstring,pkau_40: spkey,s_39: bitstring,xuhandle_3: UserHandle,ClientData_9: bitstring) = msgAuth4_1 in
+                {605}let xCHash_3: bitstring = hash(ClientData_9) in
+                {604}let xRHash_3: bitstring = hash_r(rpid_1) in
+                {603}let xClientData_3: bitstring = CD_Cons(challenge_7,rpid_1,tbinding_3) in
+                {606}if ((ClientData_9 = xClientData_3) && ((RHash_39 = xRHash_3) && ((Incr(xcntr_25) = cntr_40) && (checksign(s_39,(RHash_39,cntr_40,aaguid_17,creid_35,pkau_40,xCHash_3),xpkau_1) = OK)))) then
+                {607}event Server_Finish_Auth(uHandle_1,rpid_1,aaguid_17,xcreid_13)
+            )
+            else
+                {595}let xTr_5: Transaction = Tr in
+                {608}if (tr_type = simple) then
+                (
+                    {609}out(CR_4, Trs1(rpid_1,challenge_7,xcreid_13,xTr_5));
+                    {610}in(CR_4, msgTrs4_1: msg);
+                    {611}let Trs4(RHash_40: bitstring,cntr_41: CNTR,aaguid_18: AAGUID,creid_36: bitstring,pkau_41: spkey,s_40: bitstring,xuhandle_4: UserHandle,ClientData_10: bitstring,Tr_20: Transaction) = msgTrs4_1 in
+                    {614}let xCHash_4: bitstring = hash(ClientData_10) in
+                    {613}let xRHash_4: bitstring = hash_r(rpid_1) in
+                    {612}let xClientData_4: bitstring = CD_Cons(challenge_7,rpid_1,tbinding_3) in
+                    {615}if ((ClientData_10 = xClientData_4) && ((RHash_40 = xRHash_4) && ((Incr(xcntr_25) = cntr_41) && ((Tr_20 = xTr_5) && (checksign(s_40,(xRHash_4,cntr_41,aaguid_18,creid_36,pkau_41,xCHash_4,xTr_5),xpkau_1) = OK))))) then
+                    {616}event Server_Finish_Auth(uHandle_1,rpid_1,aaguid_18,xcreid_13);
+                    {617}event Server_Finish_Tr(xTr_5)
+                )
+                else
+                    {618}out(CR_4, Trg1(rpid_1,challenge_7,xcreid_13,xTr_5));
+                    {619}in(CR_4, msgTrg4_1: msg);
+                    {620}let Trg4(RHash_41: bitstring,cntr_42: CNTR,aaguid_19: AAGUID,creid_37: bitstring,pkau_42: spkey,s_41: bitstring,xuhandle_5: UserHandle,ClientData_11: bitstring,thash_5: bitstring) = msgTrg4_1 in
+                    {624}let xthash_1: bitstring = hash_t(xTr_5) in
+                    {623}let xCHash_5: bitstring = hash(ClientData_11) in
+                    {622}let xRHash_5: bitstring = hash_r(rpid_1) in
+                    {621}let xClientData_5: bitstring = CD_Cons(challenge_7,rpid_1,tbinding_3) in
+                    {625}if ((ClientData_11 = xClientData_5) && ((RHash_41 = xRHash_5) && ((Incr(xcntr_25) = cntr_42) && ((thash_5 = xthash_1) && (checksign(s_41,(RHash_41,cntr_42,aaguid_19,creid_37,pkau_42,xCHash_5),xpkau_1) = OK))))) then
+                    {626}event Server_Finish_Auth(uHandle_1,rpid_1,aaguid_19,xcreid_13);
+                    {627}event Server_Finish_Tr(xTr_5)
+        )
+    )
+
+-- Query inj-event(Server_Finish_Auth(u,r,a_1,c)) ==> inj-event(Authnr_Finish_Auth(u,r,a_1,c)) in process 1.
+Translating the process into Horn clauses...
+Completing...
+200 rules inserted. Base: 200 rules (61 with conclusion selected). Queue: 259 rules.
+400 rules inserted. Base: 400 rules (121 with conclusion selected). Queue: 60 rules.
+600 rules inserted. Base: 568 rules (162 with conclusion selected). Queue: 7 rules.
+Starting query inj-event(Server_Finish_Auth(u,r,a_1,c)) ==> inj-event(Authnr_Finish_Auth(u,r,a_1,c))
+goal reachable: b-inj-event(Authnr_Finish_Auth(uHandle[],rpid[],aaguid[],creid_38),@occ487_1) && b-event(@p_act(@occ489_1,Authnr_Client_Record(creid_38,skau[],rpid[],uHandle[],cntr[]))) && b-event(@p_act(@occ490_1,Authnr_Token(PinToken_23))) && b-event(@p_act(@occ328_1,CTAP7(pk(b_1,G[]),senc(hash(PIN_3),hash_s(associate(b_1,pk(a_1,G[]))))))) && b-event(@p_act(@occ380_1,CTAP8(senc(PinToken_23,hash_s(associate(b_1,pk(a_1,G[]))))))) && b-event(@p_act(@occ286_1,CTAP1(OK))) && b-event(@p_act(@occ345_1,CTAP2(pk(a_1,G[])))) && b-event(@p_act(@occ561_1,Client_Token(PinToken_23))) && b-event(@p_act(@occ545_1,Auth1(rpid[],challenge_8,creid_38))) && b-event(@p_act(@occ386_1,Auth2(creid_38,rpid[],hash(CD_Cons(challenge_8,rpid[],GetTLSBinding(CR[]))),HMAC2(PinToken_23,hash(CD_Cons(challenge_8,rpid[],GetTLSBinding(CR[]))))))) && b-event(@p_act(@occ558_1,Auth3(hash_r(rpid[]),Incr(cntr[]),aaguid[],creid_38,spk(skau[]),sign((hash_r(rpid[]),Incr(cntr[]),aaguid[],creid_38,spk(skau[]),hash(CD_Cons(challenge_8,rpid[],GetTLSBinding(CR[])))),skau[]),uHandle[]))) && b-event(@p_act(@occ328_2,CTAP7(pk(b_2,G[]),senc(hash(PIN_4),hash_s(associate(a_2,pk(b_2,G[]))))))) && b-event(@p_act(@occ380_2,CTAP8(senc(PinToken_24,hash_s(associate(a_2,pk(b_2,G[]))))))) && b-event(@p_act(@occ286_2,CTAP1(OK))) && b-event(@p_act(@occ345_2,CTAP2(pk(a_2,G[])))) && b-event(@p_act(@occ561_2,Client_Token(PinToken_24))) && b-event(@p_act(@occ545_2,Auth1(rpid[],challenge_8,creid_38))) && b-event(@p_act(@occ601_1,Auth4(hash_r(rpid[]),Incr(cntr[]),aaguid[],creid_38,spk(skau[]),sign((hash_r(rpid[]),Incr(cntr[]),aaguid[],creid_38,spk(skau[]),hash(CD_Cons(challenge_8,rpid[],GetTLSBinding(CR[])))),skau[]),uHandle[],CD_Cons(challenge_8,rpid[],GetTLSBinding(CR[]))))) && b-event(@p_act(@occ628_1,Server_Reg_Record(uHandle[],aaguid[],creid_38,spk(skau[]),cntr[]))) -> inj-event(Server_Finish_Auth(uHandle[],rpid[],aaguid[],creid_38),@occ607_1)
+The 1st, 2nd, 3rd, 4th, 5th, 6th, 7th, 8th, 9th, 10th, 11th, 12th, 13th, 14th, 15th, 16th, 17th, 18th, 19th hypotheses occur strictly before the conclusion.
+Abbreviations:
+creid_38 = creid[!1 = @sid]
+challenge_8 = challenge_7[!1 = @sid_1]
+@occ607_1 = @occ607[msgAuth4_1 = Auth4(hash_r(rpid[]),Incr(cntr[]),aaguid[],creid_38,spk(skau[]),sign((hash_r(rpid[]),Incr(cntr[]),aaguid[],creid_38,spk(skau[]),hash(CD_Cons(challenge_8,rpid[],GetTLSBinding(CR[])))),skau[]),uHandle[],CD_Cons(challenge_8,rpid[],GetTLSBinding(CR[]))),xcntr_25 = cntr[],xpkau_1 = spk(skau[]),xcreid_13 = creid_38,xaaguid_1 = aaguid[],!1 = @sid_1]
+PinToken_23 = PinToken_10[!1 = @sid_2]
+@occ487_1 = @occ487[xcntr_20 = cntr[],uHandle_21 = uHandle[],xrpid_19 = rpid[],skau_21 = skau[],PinToken_17 = PinToken_23,msgAuth2_1 = Auth2(creid_38,rpid[],hash(CD_Cons(challenge_8,rpid[],GetTLSBinding(CR[]))),HMAC2(PinToken_23,hash(CD_Cons(challenge_8,rpid[],GetTLSBinding(CR[]))))),!1 = @sid_3]
+@occ489_1 = @occ489[!1 = @sid_3]
+@occ490_1 = @occ490[!1 = @sid_3]
+@occ328_1 = @occ328[!1 = @sid_2]
+b_1 = b[!1 = @sid_2]
+PIN_3 = PIN[!1 = @sid_2]
+a_1 = a[!1 = @sid_2]
+@occ380_1 = @occ380[!1 = @sid_2]
+@occ286_1 = @occ286[!1 = @sid_2]
+@occ345_1 = @occ345[!1 = @sid_2]
+@occ561_1 = @occ561[!1 = @sid_4]
+@occ545_1 = @occ545[!1 = @sid_4]
+@occ386_1 = @occ386[!1 = @sid_3]
+@occ558_1 = @occ558[!1 = @sid_5]
+@occ328_2 = @occ328[!1 = @sid_6]
+b_2 = b[!1 = @sid_6]
+PIN_4 = PIN[!1 = @sid_6]
+a_2 = a[!1 = @sid_6]
+@occ380_2 = @occ380[!1 = @sid_6]
+PinToken_24 = PinToken_10[!1 = @sid_6]
+@occ286_2 = @occ286[!1 = @sid_6]
+@occ345_2 = @occ345[!1 = @sid_6]
+@occ561_2 = @occ561[!1 = @sid_5]
+@occ545_2 = @occ545[!1 = @sid_5]
+@occ601_1 = @occ601[!1 = @sid_1]
+@occ628_1 = @occ628[!1 = @sid_1]
+RESULT inj-event(Server_Finish_Auth(u,r,a_1,c)) ==> inj-event(Authnr_Finish_Auth(u,r,a_1,c)) is true.
+
+--------------------------------------------------------------
+Verification summary:
+
+Query inj-event(Server_Finish_Auth(u,r,a_1,c)) ==> inj-event(Authnr_Finish_Auth(u,r,a_1,c)) is true.
+
+--------------------------------------------------------------
+

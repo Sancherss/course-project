@@ -56,3 +56,7 @@ S-pintok исходной модели выполняется без синта�
 ### Неопределённые ответы и sensitivity
 
 В матрице появились `cannot be proved` и timeout; они сохраняются как UNKNOWN. Дополнительный supplementary RESULT R05 подтверждает false A6; raw parser старой версии оставлен неизменным, processed исправляет классификацию повторным разбором. По документации ProVerif добавлены четыре separate preciseActions=true проверки (суммарно до 24 запусков), без изменения threat model.
+
+### Результаты — 24 завершённых модельных запуска
+
+Основная матрица: 6 PROVED, 1 false A6 (R05, реальный trace без hypothesis), 5 UNKNOWN. Отдельно preciseActions=true доказал A1 E0; остальные precision-диагностики по timeout. Полная сводка: 9 PROVED, 2 ATTACK_OR_FALSE, 13 UNKNOWN, 0 ERROR. Один из двух false относится к диагностике not event и подтверждает достижимость, а не атаку. Невакуозность ряда доказанных correspondences остаётся открытой; это явно описано в docs/results_analysis.md. Raw не переписывался, processed пересчитан актуальным parser.

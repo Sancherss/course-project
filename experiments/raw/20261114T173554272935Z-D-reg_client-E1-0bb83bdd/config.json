@@ -1,0 +1,16 @@
+{
+  "id": "D-reg_client-E1",
+  "description": "Reachability of server finish: reg_client/E1",
+  "scenario": "reg_client",
+  "ctap": "getToken",
+  "property": "D-finish",
+  "entities": [
+    1
+  ],
+  "fields": [],
+  "changed_assumption": "E1",
+  "expected_comparison": "A false RESULT for not event means the finish event IS reachable, not an authentication attack",
+  "timeout_seconds": 60,
+  "diagnostic": true,
+  "token_binding": "upstream"
+}

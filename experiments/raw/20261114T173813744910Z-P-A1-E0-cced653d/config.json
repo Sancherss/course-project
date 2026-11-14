@@ -1,0 +1,15 @@
+{
+  "id": "P-A1-E0",
+  "description": "Precision sensitivity check of an inconclusive default run",
+  "scenario": "auth_client_em",
+  "ctap": "getToken",
+  "property": "A1",
+  "entities": [],
+  "fields": [],
+  "changed_assumption": "Same protocol assumptions; solver preciseActions=true",
+  "expected_comparison": "Compare with matching default run; improvement is not guaranteed",
+  "timeout_seconds": 30,
+  "diagnostic": false,
+  "token_binding": "upstream",
+  "precise_actions": true
+}

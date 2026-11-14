@@ -1,0 +1,15 @@
+{
+  "id": "P-reach-reg-E0",
+  "description": "Precision sensitivity check of an inconclusive default run",
+  "scenario": "reg_client",
+  "ctap": "getToken",
+  "property": "D-finish",
+  "entities": [],
+  "fields": [],
+  "changed_assumption": "Same protocol assumptions; solver preciseActions=true",
+  "expected_comparison": "Compare with matching default run; improvement is not guaranteed",
+  "timeout_seconds": 30,
+  "diagnostic": true,
+  "token_binding": "upstream",
+  "precise_actions": true
+}

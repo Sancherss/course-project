@@ -53,6 +53,7 @@ def run_experiment(config: ExperimentConfig, executable: str, version: str, *, r
     raw.mkdir(parents=True, exist_ok=False); generated.mkdir(parents=True, exist_ok=False)
     (raw / 'config.json').write_text(json.dumps(config.to_dict(), ensure_ascii=False, indent=2)+'\n')
     env = dict(os.environ)
+    env['PYTHONDONTWRITEBYTECODE'] = '1'
     env['PYTHONPATH'] = str(ROOT) + os.pathsep + env.get('PYTHONPATH', '')
     generator_command = [sys.executable, '-m', 'experiment_manager.upstream', str(raw/'config.json'), str(upstream), str(generated)]
     with tempfile.TemporaryDirectory(prefix='fido2-generate-') as scratch:

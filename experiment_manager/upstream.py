@@ -12,6 +12,7 @@ def generate(config: ExperimentConfig, upstream: Path, destination: Path) -> Non
     # Caller starts this module in an empty temporary cwd. Import side effects stay there.
     for name in ('Reg.pv', 'Auth.pv', 'FIDO2.pvl'):
         shutil.copy2(upstream / name, Path.cwd() / name)
+    sys.dont_write_bytecode = True
     spec = importlib.util.spec_from_file_location('historical_fido2verif', upstream / 'FIDO2Verif.py')
     assert spec and spec.loader
     module = importlib.util.module_from_spec(spec)

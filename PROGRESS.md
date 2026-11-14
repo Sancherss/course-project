@@ -40,3 +40,7 @@ VERIFIED FROM SOURCE: реальные queries и дополнительные �
 ### Baseline — VERIFIED EXPERIMENTALLY
 
 ProVerif 2.05 собран с OCaml 4.14.2. Прямой baseline Reg_unlink.pv завершился за 0.16436 s, exit 0: `RESULT Observational equivalence is true.`. Сверено с §5.1 статьи (P1 регистрации). Полный raw сохранён в 20261114T173042063564Z-baseline-05290b45. Начинается реализация надстройки; исходные historical NOT RUN относятся к прошлому этапу.
+
+### Надстройка: реализация до пилота
+
+Добавлены конфигурация с проверкой поддерживаемых параметров, отдельный процесс генерации через upstream Case.write_file(False), вызов ProVerif списком аргументов, полный raw/provenance, консервативный parser RESULT и неизменяемые summary snapshots. Следующий запуск — только пилот оригинального S-pintok: привязка токена проверяется до матрицы.

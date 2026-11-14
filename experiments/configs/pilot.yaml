@@ -1,0 +1,12 @@
+upstream_commit: 2d8eaf326117bd7e4706c48b2d24e27b4a006fa6
+experiments:
+  - id: pilot-original-token
+    description: Check the unmodified upstream token query before the matrix
+    scenario: reg_client
+    ctap: getToken
+    property: S-pintok
+    entities: []
+    fields: []
+    changed_assumption: None; original binding diagnostic
+    expected_comparison: Determine whether PinToken identifies the intended CTAP binding
+    timeout_seconds: 60

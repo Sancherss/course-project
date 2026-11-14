@@ -1,0 +1,139 @@
+[
+  {
+    "query": "On the security of public key protocols",
+    "title": [
+      "On the security of public key protocols"
+    ],
+    "DOI": "10.1109/tit.1983.1056650",
+    "author": [
+      {
+        "given": "D.",
+        "family": "Dolev",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      },
+      {
+        "given": "A.",
+        "family": "Yao",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "container-title": [
+      "IEEE Transactions on Information Theory"
+    ],
+    "volume": "29",
+    "issue": "2",
+    "page": "198-208",
+    "article-number": null,
+    "published": {
+      "date-parts": [
+        [
+          1983,
+          3
+        ]
+      ]
+    },
+    "published-print": {
+      "date-parts": [
+        [
+          1983,
+          3
+        ]
+      ]
+    },
+    "published-online": null
+  },
+  {
+    "query": "Modeling and Verifying Security Protocols with the Applied Pi Calculus and ProVerif",
+    "title": [
+      "Modeling and Verifying Security Protocols with the Applied Pi Calculus and ProVerif"
+    ],
+    "DOI": "10.1561/9781680832075",
+    "author": [
+      {
+        "given": "Bruno",
+        "family": "Blanchet",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "container-title": null,
+    "volume": null,
+    "issue": null,
+    "page": null,
+    "article-number": null,
+    "published": {
+      "date-parts": [
+        [
+          2016
+        ]
+      ]
+    },
+    "published-print": {
+      "date-parts": [
+        [
+          2016
+        ]
+      ]
+    },
+    "published-online": null
+  },
+  {
+    "query": "The Applied Pi Calculus: Mobile Values, New Names, and Secure Communication",
+    "error": "HTTP Error 429: Too Many Requests"
+  },
+  {
+    "query": "A hierarchy of authentication specifications",
+    "title": [
+      "A hierarchy of authentication specifications"
+    ],
+    "DOI": "10.1109/csfw.1997.596782",
+    "author": [
+      {
+        "given": "G.",
+        "family": "Lowe",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "vocabulary": "crossref",
+            "role": "author"
+          }
+        ]
+      }
+    ],
+    "container-title": [
+      "Proceedings 10th Computer Security Foundations Workshop"
+    ],
+    "volume": null,
+    "issue": null,
+    "page": "31-43",
+    "article-number": null,
+    "published": null,
+    "published-print": null,
+    "published-online": null
+  },
+  {
+    "query": "FIDO Gets Verified: A Formal Analysis of the Universal Authentication Framework Protocol",
+    "error": "HTTP Error 429: Too Many Requests"
+  }
+]

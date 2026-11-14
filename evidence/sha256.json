@@ -16,11 +16,19 @@
   "evidence/pv-install.html": "316eecaf5d5400a9b609242b0444f00c3051835db2637ee9be64f5d307af6a90",
   "evidence/webauthn.html": "157030c980d44a3ce4b1ec5bcfaa16790c7dfefac20709af6ed2b11c7120970b",
   "evidence/environment.json": "baefb79f80ed8db3b6abe3bcb4da479518b0f3839798a8e3baff7206a92cfdd5",
-  "evidence/python-packages.txt": "24698f51826eaef9c98f0bbacb4ec7925dddf7da002fc1e976a7de58b4b9bb79",
+  "evidence/python-packages.txt": "b68bb2526e346dce1ce7ced83c3ec530d29501ec0a8951a253a47fa11b49a883",
   "evidence/ocaml-configure.log": "38b35c60ff35928650020da3d58a728d7e50ebaafc002151d6d41ba8edb39b7b",
   "evidence/ocaml-version.txt": "adb2e521b42258280c3d33f0baa7a21ec82c893443fcd1b44ebda0e92af5dd2d",
   "evidence/proverif-build.log": "6e9aaa0cbaf8aa0740a197f4db1e259615929108485b41fd027272b4f2105f77",
   "evidence/proverif-help.txt": "46b498c4b3d698a4cbc97efca5fdf6ff4c8d89bbaaa4a234bacb9bef2e1771da",
-  "evidence/pytest.txt": "e6293fb57ca544ea9e6c7a3dd195f6692d53ceda2b850632f9d38d0c2a4791ca",
-  "evidence/final-audit.json": "14c647d1b64a12c488006849d88eed79f32373e4ddad81f48350977bc2024bb1"
+  "evidence/pytest.txt": "48b8c70868190faf0db987106acb37728d88cc8d60589178841b51ff8d8498bc",
+  "evidence/final-audit.json": "14c647d1b64a12c488006849d88eed79f32373e4ddad81f48350977bc2024bb1",
+  "evidence/AbadiBlanchetFournet.pdf": "5ea765e7d13ad08eec12630ac55544669f76bb0ffceca1d47352c24e2e3c1ed2",
+  "evidence/feng-uaf.pdf": "9fe1ceb2c3b9772632fe8ac694f2d5d36853ccbaf083dd4d26e32e8b890d8e8b",
+  "evidence/BlanchetFnTPS16.html": "26c361d9eecc5758aec7e385dea8ea7f363ec6d368be4d5fd4dcc1f69461edd6",
+  "evidence/bibliography-crossref.json": "bc6900c53028ed2934ef961890767bbc95907d1f25c482089996dfb46519b109",
+  "evidence/report-layout-audit.json": "ac355698ffb6c835dddc2f0c8baf64dc221bcbf8bd7ba7b6359e25f8b33670e2",
+  "evidence/final-summary-location.txt": "2d988ed3027db8672b2537d17cc0eaa284e6e382a8e03d0353f9593803041ec6",
+  "evidence/BlanchetFnTPS16.pdf": "28fe0ca7e0cdc810d971f112c5b2a5a3b36a93a25a910baae2e7fb1fefb0a622",
+  "evidence/AbadiBlanchetFournetJACM17.html": "c72538f14d31a3cb7a40337f4a26052297dd71086c0562c9e7d4a8a82adfebeb"
 }

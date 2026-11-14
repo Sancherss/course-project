@@ -9,7 +9,7 @@
 - P1 baseline регистрации вернул **Observational equivalence is true**, что согласуется с §5.1 статьи ESORICS 2022.
 - Реализован experiment_manager: изолированная генерация через исходный Python API, полный raw/provenance, консервативный parser, CSV/JSON/Markdown snapshots.
 - Выполнены **27 модельных запусков**: первоначальные 24 и три дополнительные диагностики достижимости. Первоначальная серия: 12 основных + baseline/пилот/диагностика/проверки точности. В основной матрице 6 PROVED, 1 false A6 с trace, 5 UNKNOWN. UNKNOWN не считается атакой.
-- **35 тестов прошли**; проверены хеши всех inputs, идентичность библиотеки и чистота upstream.
+- **39 тестов прошли**; проверены хеши всех inputs, идентичность библиотеки и чистота upstream.
 - Подготовлены первоисточники, анализ требований БГУ, сравнение модели 2022 с WebAuthn Level 3 / CTAP 2.3, черновик записки Markdown/DOCX и сценарий демонстрации.
 
 Это законченный ограниченный исследовательский MVP и черновик записки, **не окончательно оформленная работа для сдачи**. Реквизиты, локальные требования, библиография и научные формулировки требуют проверки. Невакуозность доказанных A6 E0/E2 и A1 E0 подтверждена дополнительными положительными single-session traces; см. docs/nonvacuity_witnesses.md. Прежние UNKNOWN не переписываются.
@@ -19,6 +19,8 @@
 - `docs/results_analysis.md` — результаты и ограничения.
 - `experiments/processed/20261114T175612262785Z/summary.md` — итоговая таблица; рядом CSV/JSON, matrix_results.yaml и parser-provenance.json.
 - `report/coursework_draft.md`, `report/coursework_draft.docx` — редактируемый черновик записки.
+- `report/coursework_draft.pdf` — проверенный 23-страничный макет, `docs/formatting_audit.md` — соответствие приложенной методичке.
+- `evidence/report-layout-audit.json` — проверка страниц, оглавления и SHA256 Word/PDF.
 - `report/figures/matrix.png`, `report/figures/matrix.svg` — проверенная визуальная сводка основной матрицы.
 - `docs/baseline_reproduction.md` — один непосредственно сверенный со статьёй baseline.
 - `docs/repository_analysis.md`, `docs/paper_analysis.md`, `docs/specification_gap.md` — код, статья и современные спецификации.
@@ -67,8 +69,8 @@ python3 -m venv .venv
 # Аудит исходного сохранённого набора evidence
 .venv/bin/python scripts/verify_artifacts.py
 
-# Экспорт редактируемого черновика
-.venv/bin/python scripts/export_report.py
+# Экспорт Word и PDF с проверкой пагинации (нужен LibreOffice)
+.venv/bin/python scripts/render_report.py
 ```
 
 Эквивалентные цели: `make check baseline matrix diagnostics precision witnesses summary test report verify`. `make install` создаёт venv и ставит Python dependencies, `make tools` собирает verifier. После editable install доступна команда `fido2-experiments`.
@@ -98,4 +100,4 @@ README upstream упоминает version_1.0, но сервер не возв�
 
 Исходная модель и опубликованные результаты: Jingjing Guan, Hui Li, Haisong Ye, Ziming Zhao, «A Formal Analysis of the FIDO2 Protocols», ESORICS 2022, DOI 10.1007/978-3-031-17143-7_1, CactiLab/FIDO2Verif. Собственная часть проекта — надстройка, ограниченные измерения и документированный сравнительный анализ. Источники и дата обращения: docs/sources.md.
 
-Документы БГУ подтверждают структуру, форму задания/титула и нумерацию; численные параметры оформления КП по неизвестной кафедре не выдумываются. DOCX сохраняет стандартное оформление Word без утверждения о его соответствии локальной методичке.
+Документы БГУ подтверждают структуру, форму задания/титула и нумерацию; численные параметры оформления КП по неизвестной кафедре не выдумываются. Word/PDF исправлены по подтверждённой структуре приложенной методички: отдельные титул и задание, автоматическое оглавление, проверенная нумерация, фактические приложения. Численные нормы оформления кафедры не установлены; базовые параметры Word не объявляются обязательными.

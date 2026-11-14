@@ -25,6 +25,6 @@ test:
 	$(PYTHON) -m pytest -q
 report:
 	$(PYTHON) scripts/plot_results.py
-	$(PYTHON) scripts/export_report.py
+	$(PYTHON) scripts/render_report.py
 verify:
 	$(PYTHON) scripts/verify_artifacts.py

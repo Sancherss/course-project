@@ -1,0 +1,12 @@
+{
+  "access_date": "2026-11-14",
+  "remote": "https://github.com/CactiLab/FIDO2Verif",
+  "commit": "2d8eaf326117bd7e4706c48b2d24e27b4a006fa6",
+  "tags": [],
+  "remote_tags": [],
+  "python": "3.12.14",
+  "os": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "proverif_path": null,
+  "upstream_status": "",
+  "execution": "No ProVerif experiment executed. Research stage only."
+}

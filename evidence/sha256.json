@@ -1,0 +1,18 @@
+{
+  "evidence/bsu-course.pdf": "fdf7d156cfbd723febe99d3589386c4df2d4d015dfcce43184da289ee1cc0026",
+  "evidence/bsu-course.txt": "5fd1039084d94e01faedbcb990f4345b505f6027c73f03c13fc1d6f473c6b081",
+  "evidence/bsu-diploma.pdf": "384f9b4b439d6c64c1d9d25578d8f36333ce41b7ee378f35765b398cd44d37ae",
+  "evidence/bsu-diploma.txt": "91fbb0f4c302706a1204b0ff9ef3a2d9b86081ebaf6352a7fa74ab186d337316",
+  "evidence/bsu.html": "a4a8d0e7e9bf3ff0a68635c9d904b49016725120268d7698584f6f854628a956",
+  "evidence/ctap23.html": "bc23869f701edeae30dc0fb0dbfd3f97a19efcb31b36ce1622096bc08684757c",
+  "evidence/ctap23.txt": "4fa658275fd0c2857779c1f22b0f485d3c37ad07ed3d59bc8d53ae95c7208fa9",
+  "evidence/manual.pdf": "4e738b31a3193bf3aefe651f2ff22a10bc190de7d7f9e0a406d85eed5d557034",
+  "evidence/manual.txt": "a45811d082c144aff4a13d4147f67c07ff6ea9662ae8e83e798d484c17cfa38c",
+  "evidence/paper.pdf": "1a4d2a4e7db20d36f0489d2af360bba1da01bbce8f3d86a05ed808340e5b9fd8",
+  "evidence/paper.txt": "8769ffb7849fd9880769a93dd1f29808c10bbda264299170d5c14b2fe6193e92",
+  "evidence/provenance.json": "013993d803c49198a5ddda1906bb98633d262a2516dd72af98af53c0cb4a9ed1",
+  "evidence/proverif.html": "3f05b5bd2635f8564b110e5c0a921a193369965c47602bfb6441e0c55beb5166",
+  "evidence/publications.html": "eb95c7c4ae2de2dd071e85be09116ec71edcb3d27a8badd3a0f8185c28baf587",
+  "evidence/pv-install.html": "316eecaf5d5400a9b609242b0444f00c3051835db2637ee9be64f5d307af6a90",
+  "evidence/webauthn.html": "157030c980d44a3ce4b1ec5bcfaa16790c7dfefac20709af6ed2b11c7120970b"
+}

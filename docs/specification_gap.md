@@ -1,0 +1,24 @@
+# Историческая модель и спецификации на дату проверки
+
+VERIFIED FROM SOURCE · 14.11.2026. Аналитическое сравнение; формальная модель не модернизирована.
+
+Подтверждены официальными документами:
+
+- WebAuthn Level 3 — **W3C Recommendation, 25 August 2026**: https://www.w3.org/TR/webauthn-3/ ; заголовок документа #w3c-state, локально evidence/webauthn.html:971–972.
+- **CTAP 2.3 — Proposed Standard, February 26, 2026**: https://fidoalliance.org/specs/fido-v2.3-ps-20260226/fido-client-to-authenticator-protocol-v2.3-ps-20260226.html ; заголовок #subtitle. Тот же документ указан в нормативной библиографии WebAuthn Level 3, #biblio-fido-ctap. Поэтому утверждение исходного задания, что актуальна CTAP 2.2, не принимается. Это подтверждённая более новая опубликованная версия; отсутствие ещё более новых публикаций всего каталога независимо не доказано.
+- Запросы к CTAP 2.2 (20250714 и 20250228) и общему каталогу specs вернули 403. Это не означает отсутствия этих документов. Найденный по W3C точный URL CTAP 2.3 вернул HTTP 200.
+- Для ProVerif официальный install.html на дату проверки предлагает версию 2.05; получен официальный manual.pdf. Это не версия проведённого эксперимента: ProVerif не установлен.
+
+| Aspect | FIDO2Verif / ESORICS 2022 | Проверенная спецификация | Difference | Impact on interpretation | Possible future work |
+|---|---|---|---|---|---|
+| Терминология | PinToken, PinAuth, getToken; FIDO2.pvl / CTAP роли | CTAP 2.3 §6.5: pinUvAuthToken, pinUvAuthParam, ClientPIN и built-in UV | Общие понятия не равны идентичным состояниям и сообщениям | Имена современного протокола нельзя подставить в исторические queries | Явное отображение терминов и state machine |
+| Client PIN / PIN-UV | setPIN/chgPIN/getToken, таблицы Client_Token/Authnr_Token | §6.5.5.7: getPinToken помечен superseded; есть getPinUvAuthTokenUsingPinWithPermissions и …UsingUvWithPermissions | Разрешения, UV и RP ID связывание богаче старой модели | Утечка исторического токена не доказывает тот же эффект для всех современных токенов | Отдельно моделировать permissions и RP ID scope |
+| Жизненный цикл токена | Fresh PinToken в CTAP_Authnr и таблицы, без полного современного автомата | §6.5.2.1–2: pinUvAuthToken State, PersistentPinUvAuthToken State; §6.5.3.2 state maintenance | Современная модель содержит отдельные состояния/правила обслуживания | Исторические результаты не покрывают persistent token и все условия истечения/переиспользования | Верификация lifecycle и persistence как нового объекта |
+| Key agreement | associate/DH equation, hash_s, идеальное senc; FIDO2.pvl:22–68 | §6.5.6 Protocol One, §6.5.7 Protocol Two; P-256, SHA-256, HKDF, раздельные ключи HMAC/AES, IV-правила | Детали KDF, разделения ключей и шифрования абстрагированы | Ни наличие Protocol Two, ни HKDF сами по себе не доказывают устранение исследованного MITM | Отдельная модель каждого PIN/UV Auth Protocol и точных assumptions |
+| Authenticator behavior | client/server storage и empty/simple/generic transaction | CTAP §6.1–6.2 authenticatorMakeCredential/GetAssertion, §6.4 GetInfo, §6.5 ClientPIN | Современные опции, UV, permissions и обработка ошибок шире | Исторические ветви не являются полной реализацией API | Таблица покрытия современных состояний |
+| Регистрация/аутентификация | Reg/Auth роли, символические сообщения, CR private; A5 содержит Client_Init_Reg(u,r) | WebAuthn §5.1 create/get API, §6.3.2–3 authenticator operations, §7.1–2 RP verification | Browser/RP проверки и API не исчерпываются моделируемым correspondence | True для A5 не означает проверку всего WebAuthn create algorithm | Обосновать абстракцию каждого шага RP и origin |
+| Backup и синхронизация | Нет отдельной модели backup eligibility/state | WebAuthn §6.1.3 Credential Backup State, определения Backup и Backup Eligibility | Современный стандарт явно учитывает перенос/backup credentials | client/server storage не эквивалентны synced/device-bound passkeys | Отдельная модель копирования ключей и trust boundaries |
+| Privacy | P1 на biprocess choice[wk,wk1] | WebAuthn §14 Security, §15 Privacy Considerations | Одно формальное различие не покрывает всю privacy поверхность | Доказательство P1 нельзя называть отсутствием любого tracking | Уточнить наблюдателя, attestation и покрытие идентификаторов |
+| Семантика ProVerif | Upstream эвристически ищет слова в хвосте stdout | Manual §3.3.1, §4.3.1–2: RESULT true / false / cannot be proved; secrecy vs observational equivalence | Код классификации не равен семантике инструмента | Ошибку парсинга нельзя интерпретировать как атаку | Сохранять полный вывод, явно разбирать RESULT и diagnostics |
+
+Не устанавливаем по сравнению спецификаций, что современный FIDO2 уязвим или что опубликованные проблемы исправлены. Это требует новой формальной модели, проверки assumptions и экспериментального подтверждения.

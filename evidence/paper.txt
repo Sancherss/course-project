@@ -1,0 +1,1041 @@
+               A Formal Analysis of the FIDO2
+                         Protocols
+
+            Jingjing Guan1(B) , Hui Li1 , Haisong Ye1 , and Ziming Zhao2
+        1
+            Beijing University of Posts and Telecommunications, Beijing, China
+                        {GuanEr,lihuill,yeeys}@bupt.edu.cn
+                     2
+                       CactiLab, University at Buﬀalo, Buﬀalo, USA
+                                  zimingzh@buffalo.edu
+
+
+       Abstract. FIDO2 is the latest member of the Fast IDentity Online
+       (FIDO) protocol suite, which aims at providing uniﬁed password-less
+       authentication across the web. We present a formal security analysis
+       of the FIDO2 protocols. We extend the previously presented formaliza-
+       tion of the security assumptions and goals of FIDO with FIDO2 speciﬁc
+       requirements. We develop a formal model that considers both the CTAP2
+       and WebAuthn in FIDO2 as a whole. Our formal analysis identiﬁes the
+       minimal security assumptions required for each security goal of FIDO2
+       to hold. The veriﬁcation results show FIDO2 fails to achieve some strong
+       authentication properties. The results also reveal that the newly intro-
+       duced Client PIN mechanism has ﬂaws, and the discovered authenticator
+       rebinding attack and parallel session attacks in UAF still exist in FIDO2.
+
+       Keywords: FIDO2 · Formal analysis · Security protocol
+
+
+1    Introduction
+FIDO2 [16,35] is the latest member of the Fast IDentity Online (FIDO) protocol
+suite. It builds on top of the commercial success of the previous FIDO protocols,
+including the Universal Second Factor (U2F, a.k.a. CTAP1) [13] and the Univer-
+sal Authentication Framework (UAF) [20]. FIDO2 aims to support all U2F and
+UAF use cases and oﬀer a ubiquitous and uniﬁed strong authentication across the
+web. Extended from U2F and UAF, FIDO2 supports user identity veriﬁcation
+in 2nd-factor authentication scenarios. By Jan 2022, FIDO2 has been integrated
+into Android 7.0+ [18], Windows 10 [17], iOS and MacOS [19], Google Chrome,
+Mozilla Firefox, Microsoft Edge [14], etc.
+    FIDO2 includes multi-factor and password-less authentication and ﬁxes some
+discovered ﬂaws in U2F and UAF [32]. Therefore, the protocol architecture and
+procedures of FIDO2 diﬀer from the counterparts of U2F and UAF signiﬁcantly.
+FIDO2 consists of the Client to Authenticator Protocol v2.0 (CTAP2) [16] and
+the Web Authentication protocol (WebAuthn) [35]. With the Client PIN mech-
+anism in CTAP2, FIDO2 oﬀers user identity veriﬁcation in 2nd-factor use cases
+when the authenticator does not have a user interface. WebAuthn provides a
+standard web API that enables online services to implement FIDO2 authentica-
+tion into browsers and web platforms.
+c The Author(s), under exclusive license to Springer Nature Switzerland AG 2022
+V. Atluri et al. (Eds.): ESORICS 2022, LNCS 13556, pp. 3–21, 2022.
+https://doi.org/10.1007/978-3-031-17143-7_1
+4        J. Guan et al.
+
+    To automatically verify the security of UAF, Feng et al. [12] presented a
+formalization of UAF’s security assumptions, goals, and protocol process. Even
+though FIDO2 and UAF share the same natural language security goals, their
+semantics and formalization are not the same in the diﬀerent protocol con-
+texts. For example, the relevant data ﬁelds in the security properties need to
+be adjusted to the messages in FIDO2, and more properties need to be veri-
+ﬁed in the Client PIN mechanism. In particular, the conﬁdentiality of the key
+ﬁelds, such as the Client PIN provided by the user and the token issued by the
+authenticator, must be veriﬁed. To the best of our knowledge, there is no formal
+treatment of the two FIDO2 protocols as a whole. Barbosa et al. [3] consid-
+ered CTAP2 and WebAuthn as independent modules and only analyzed several
+authentication goals. Guirat et al. [23] only veriﬁed WebAuthn and considered
+privacy goals. Moreover, neither of them considered the scenarios with diﬀerent
+authenticator types and transaction authorization modes.
+    In this paper, we present a formal veriﬁcation of FIDO2, which shows the
+security goals of FIDO2 cannot be satisﬁed in some cases. In particular, we
+show FIDO2 does not provide stronger security in 2nd-factor scenarios despite
+its eﬀorts since the Client PIN and token can be exploited to undermine the
+validity of authentications in registration and authentication processes. The con-
+tributions of this paper are as follows:
+
+1. We present a faithful formal model of the FIDO2, which considers CTAP2
+   and WebAuthn as a whole and models scenarios with diﬀerent authenticator
+   types in registration, authentication, and transaction authorization. We open-
+   source our tool FIDO2Verif1 , which is a front-end to ProVerif [7].
+2. We reﬁne the formalization of FIDO security goals in the context of FIDO2.
+   In particular, we consider the secrecy of Client PIN and the token issued by
+   the authenticator in FIDO2 due to the newly introduced CTAP2 process. We
+   also formalize several security goals that were not modeled before [12].
+3. The veriﬁcation results show flaws in FIDO2. For example, due to the unau-
+   thenticated ECDH in CTAP2, FIDO2 fails to achieve the strong authentica-
+   tion property, and the previously discovered authenticator rebinding attack
+   and parallel session attack on UAF are still eﬀective on FIDO2.
+4. We present recommendations on how to ﬁx the discovered ﬂaws in FIDO2.
+
+
+
+2     Overview of FIDO2
+
+Table 1 presents the acronyms used throughout this paper. CTAP2 is the protocol
+between the authenticator and the client to share a token, which will be used in
+the operations of WebAuthn subsequently. There are two operations in WebAuth,
+namely authenticator registration and authentication. In authenticator registra-
+tion, users register their certiﬁed FIDO2 authenticator with a vendor-signed attes-
+
+
+
+1
+    https://github.com/CactiLab/FIDO2Verif.
+                                         A Formal Analysis of the FIDO2 Protocols                            5
+
+                                Table 1. Acronyms and descriptions.
+
+ Acronym Full Name                      Description
+ newPin    New client PIN               New client PIN that the user enters in FIDO Client when setting or
+                                        changing the Client PIN
+ curPin    Current client PIN           Current client PIN the user provides to FIDO Client to change a
+                                        new Client PIN or apply for a PinToken
+ RpID      Relying party identiﬁer      A domain that identiﬁes the WebAuthn relying party and determines
+                                        the set of origins on which the public key credential may be exercised
+ AAGUID Authenticator attestation       An identiﬁer that indicates the type (e.g. manufacturer and model)
+        globally unique identiﬁer       of the authenticator
+ UHandle   User handle                  A value speciﬁed by a relying party to map a public key credential to
+                                        a user account
+ Chlg      Relying party challenge      A random number provided by the relying party in registration and
+                                        authentication requests
+ Tr        Transaction text             Transaction information generated by the relying party that needs to
+                                        be authorized by the user
+ TBinding TLS token binding             A long-lived identiﬁer of TLS bindings spanning multiple TLS
+                                        sessions and connections from Token Binding protocol
+ PinToken Token controlled by client    A random token generated by authenticators and issued to FIDO
+          PIN                           Client
+ G         Elliptic-curve parameters    ECC parameters used to establish ECDH shared secret between
+                                        Authenticator and FIDO Client
+ K         Shared key                   The key established between Authenticator and FIDO Client
+                                        through ECDH, which is used for symmetric encryption, decryption,
+                                        and HMAC
+ CNTR      Signature counter            An integer that increments after each successful authentication
+ FCData    Client data object           The contextual binding of the WebAuthn relying party and the client
+ CreID     Credential ID                An identiﬁer to retrieve the credential private key stored in the
+                                        authenticator or with the credential private key wrapped in
+ CertAT    Attestation certiﬁcate       A certiﬁcate for the attestation key pair used by an authenticator to
+                                        attest to its manufacture and capabilities
+ skAT      Attestation private key      The private asymmetric key shared across a large number of FIDO
+                                        device units made by the same vendor
+ pkAT      Attestation public key       The public asymmetric key shared across a large number of FIDO
+                                        device units made by the same vendor
+ skCre     Credential private key       The private key portion of the credential key pair stored in FIDO
+                                        device or wrapped in CreID
+ pkCre     Credential public key        The public key portion of the credential key pair, generated by an
+                                        authenticator and returned to a relying party in registration
+ kW        Wrapping key                 A key known only to the FIDO device, which is used to encrypt the
+                                        public key credential source
+
+
+
+
+tation key for the accounts of remote service. The user provides the original cre-
+dential ﬁrst, usually a text-based password, and then selects a local authentica-
+tion mechanism such as swiping a ﬁnger, entering a PIN, etc. The authenticator
+generates a pair of asymmetric credential keys and signs the public part with the
+attestation private key. Then, it sends the credential public key, the signature, and
+the attestation certificate to the server. If the certiﬁcate and the signature pass the
+server’s veriﬁcation, binding between the user’s account and the authenticator will
+be established and recorded in the server and the registration process succeeds.
+In the authentication stage, the user performs the local authentication method
+selected before, and the authenticator runs a challenge-response protocol with the
+server using the credential private key.
+6         J. Guan et al.
+
+2.1     Architecture of FIDO2
+
+As shown in Fig. 1, the entities in
+FIDO2 include a FIDO Authentica-
+tor (FA), a FIDO Client (FC), and a
+Relying Party (RP). FA is a hardware
+or software cryptographic entity, which
+can be implemented on-device as plat-
+form authenticators, such as biomet-
+ric or PIN veriﬁcation modules, or oﬀ-                 Fig. 1. The FIDO2 architecture
+device as cross-platform authenticators,
+such as FIDO Security Keys, mobile devices, wearables, etc. FA stores a vendor-
+signed attestation private key (skAT ), the attestation certiﬁcate (CertAT ),
+and a model identiﬁer (AAGU ID). FA generates credential key pairs (skCre ,
+pkCre ) used in authentication. FAs with persistent storage to store skCre are
+called client-side storage authenticators, in which keys are identiﬁed by random
+CreIDs. Server-side storage authenticators are limited in storage capacity. They
+encrypt the credential private key skCre in CreID and send it to the server.
+    FIDO Client (FC) is implemented                         G                                            G
+                                                           FA                                           FC
+in whole or in part of the user agent,
+                                                         new ECDH key pair (a, aG)
+e.g., browser. FC stores the identiﬁers                  new random PinToken
+                                                                          getKeyAgreement
+of valid RPs as xRpIDs. RP consists KeyAgreement
+                                                                                  aG
+of a web server and a FIDO server                                                 new ECDH key pair (b, bG)
+that utilizes the WebAuthn API to                                                 K ← hash((baG).x)
+
+register and authenticate users. In OptionsetPIN
+                                                   1:
+                                                                              collect newPin from the user.
+                                                                              newPinEnc ←E (newPin)
+                                                                                            K
+authenticator registration, RP veri-                                          PinAuth ←HMAC(K, newPinEnc)
+                                                                  setPIN, bG, newPinEnc, PinAuth
+ﬁes the authenticator and records the
+                                                    K ←hash((abG).x)
+binding between the account and FA                  xPinAuth ←HMAC(K, newPinEnc)
+                                                    check xPinAuth == PinAuth, if right
+of the user. The binding will be veri-              newPin ←D (newPinEnc)
+                                                                        K
+
+ﬁed by RP in authentication.                        store xPinHash ←hash(newPin)
+                                                                           CTAP2-OK
+    The channel between authenti- Option 2:
+                                                                      collect curPin and newPin from the user
+cators and FC can be established changePIN                            PinHashEnc ←E (hash(curPin))
+                                                                                        K
+                                                                      newPinEnc ←E (newPin)
+                                                                                    K
+through cross-platform transports,                                    PinAuth ←HMAC(K, newPinEnc||PinHashEnc)
+such as Bluetooth and NFC, or                                 changePIN, bG, PinHashEnc, newPinEnc
+                                                                               PinAuth
+a platform-speciﬁc transport, such          K ←hash((abG).x)
+                                            xPinAuth ←HMAC(K, newPinEnc||PinHashEnc)
+as inter-process communication. The         check xPinAuth == PinAuth, if right
+communications        between     cross-    PinHash ←D (PinHashEnc) K
+                                            check xPinHash == PinHash, if right
+platform FA and FC are deﬁned in            newPin ←D (newPinEnc)
+                                                                K
+                                            store xPinHash ←hash(newPin)
+CTAP2, and the Client PIN mecha-                                           CTAP2-OK
+nism in CTAP2 should be enabled if getPINToken                                collect curPin from the user
+                                                                              PinHashEnc ←E (hash(curPin))
+user identity veriﬁcation is required in                                                        K
+
+                                                                   getPinToken, bG, PinHashEnc
+2nd-factor use cases. FC and RP usu-               K ←hash((abG).x)
+ally communicate over a TLS channel.               PinHash ←D (PinHashEnc)
+                                                                        K
+                                                   check xPinHash == PinHash, if right
+The optional steps in FIDO2 include                PinTokenEnc ←E (PinToken)K
+
+                                                                            PinTokenEnc
+using diﬀerent types of authentica-
+                                                                                PinToken ←D (PinTokenEnc)
+                                                                                            K
+tors, choosing diﬀerent CTAP2 pro-
+cesses, and using diﬀerent transac-
+tion authorization modes. Diﬀerent                         Fig. 2. CTAP2 operations
+                                        A Formal Analysis of the FIDO2 Protocols                                                                   7
+
+options result in diﬀerent protocol processes, which we will explain in detail
+in the subsequent sections.
+
+2.2    The CTAP2
+As shown in Fig. 2, the Client PIN mechanism in CTAP2 consists of the following
+operations. In KeyAgreement, FA and FC negotiate a shared ECDH secret K
+ﬁrst, which can be used for symmetric encryption, decryption, and HMAC. K
+is obtained by hashing the x-coordinate of the point abG on the elliptic curve.
+The user can choose to initialize or change the Client PIN via the FC on the
+device through the setPIN and changePIN process. If the Client PIN has already
+been set and does not need to be modiﬁed, the user enters the current Client
+PIN on the FC, then the FA and FC directly execute the getPINToken process,
+as long as the FA veriﬁes the Client PIN is correct, it will issue a P inT oken
+to the FC. Within the lifetime of P inT oken, FC can use this P inT oken for
+the subsequent authenticator registration and authentication with FA without
+requiring the user to enter the Client PIN again.
+
+2.3    The WebAuthn Protocol
+                                            AAGUID, skAT , CertAT
+                                               kW , PinToken                            xRpID, PinToken                       UHandle, RpID
+WebAuthn deﬁnes the oper-                             FA                                      FC                                   RP
+ations of authenticator reg-                                                                                   new random challenge: Chlg
+                                                                                                               get RpID, UHandle of this session
+istration and authentication,
+                                                                                                        UHandle, RpID, Chlg
+which are shown in Figs. 3                                                  check xRpID == RpID, if right
+                                                                            get T Binding of TLS connection
+and 4. The contents marked                                                  FCData ←Chlg, RpID, T Binding
+                                                                            FCHash ←hash(FCData)
+in blue are the operations                                                  PinAuth ←HMAC(PinToken, FCHash)
+and message ﬁelds when                                     UHandle, RpID, FCHash, PinAuth
+
+                                       xPinAuth ←HMAC(PinToken, FCHash)
+CTAP2 is enabled. We also              check xPinAuth == PinAuth, if right
+                                       request user permission to create a credential
+present the diﬀerent opera-            new credential key pair skCre , pkCre 
+tions using server-side stor-          new sign counter CNT RA
+                                       RHash ←hash(RpID)
+age and client-side stor-              CreID ← EkW (skCre , RpID, UHandle)
+                                       FAData ←RHash, CNT RA , AAGUID, CreID, pkCre 
+age authenticators in this             S ← SignskAT (FAData, FCHash)
+                                                                   FAData, S, CertAT
+section.                                                                                             FAData, S, CertAT , FCData
+                                                                                                   get T Binding of TLS connection
+                                                                                                   verify the validity of CertAT
+                                                                                                   FCHash←hash(FCData) check:
+                                                                                                    T Binding == FCData.T Binding
+Authenticator Registra-                                                                             Chlg == FCData.Chlg
+                                                                                                    RpID == FCData.RpID
+tion. After the user logs in                                                                        hash(RpID) == FAData.RHash
+                                                                                                    CheckSign pkAT (S, FAData, FCHash)
+with the original authenti-                            if all right:
+cation method, RP gener-                                CNT R ←CNT R
+                                                        store Uhandle, AAGUID, CreID, pk , CNT R 
+                                                                                                          S       A
+                                                                                                                                    Cre       S
+
+ates a registration request
+and forwards it to FC. FC Fig. 3. Authenticator registration (Color ﬁgure online)
+checks whether RpID is
+equal to the expected xRpID. FIDO2 mitigates the attack caused by a missing
+check of AppID in U2F (similar to the RpID in FIDO2) [32] and enforces the
+checking of RpID. Subsequently, FC assembles F CData as the contextual bind-
+ings of the FIDO session and the TLS session. Then FC calculates F CHash,
+the hash of F CData, and P inAuth, and forwards the request to FA.
+8            J. Guan et al.
+
+                                   Table 2. Deﬁnitions of authenticator types
+
+        Authenticator type                     Credential storage                      Authenticator       Authentication
+                                               modality                                attachment          factor
+                                                                                       modality            capability
+        1st factor platform                    Client-side                             Platform            Multi-factor
+        1st factor roaming                     Client-side                             Cross-platform      Multi-factor
+        2nd factor platform                    Server-side                             Platform            Single-factor
+        2nd factor roaming                     Server-side                             Cross-platform      Single-factor
+        User-verifying platform Server-side                                            Platform            Multi-factor
+        User-verifying roaming                 Server-side                             Cross-platform      Multi-factor
+
+
+    FA checks P inAuth and generates a credential key pair skCre , pkCre , and
+a random signature counter CN T RA for this account. FA assembles F AData,
+calculates signature S, and returns the response to FC. FC adds F CData to
+the response from FA and forwards it to RP. RP checks the validity of CertAT ,
+inspects the ﬁelds in F CData, compares RHash in F AData, and veriﬁes the
+signature S with skAT to validate the legitimacy of FA.
+
+
+Authentication. The two transaction conﬁrmation modes of FIDO2 extend
+the authentication process, and some message ﬁelds are added (enclosed with
+‘[]’). The messages in Generic Transaction Authorization Mode take the value
+on the left of ‘/’, and the messages in Simple Transaction Authorization Mode
+take the value on the right of ‘/’.
+     RP generates the authen-
+                                       AAGUID, k , CNT R                       W   A                                 UHandle, RpID, CNT R S
+tication request and forwards                PinToken                            xRpID, PinToken                          CreID, pk AU
+
+                                                FA                                      FC                                    RP
+it to FC. After receiving the
+                                                                                                            new random challenge: Chlg
+request, FC checks RpID and                                                                                 get RpID, CreID, [Tr]of this session
+                                                                                                            [xTr ← Tr]
+constructs F CData. Then                                                                          RpID, Chlg, CreID, [Tr]
+                                                                     check xRpID == RpID, if right
+FC calculates P inAuth, the                                          get T Binding of TLS connection
+                                                                     FCData ←Chlg, RpID, T Binding
+HMAC of F CHash with                                                 FCHash ←hash(FCData)
+                                                                     PinAuth ←HMAC(PinToken, FCHash)
+the P inT oken obtained in                         CreID, RpID, CHash, PinAuth, [Tr]
+CTAP2. Finally, FC sends the xPinAuth ←HMAC(PinToken, FCHash)
+                                  check xPinAuth == PinAuth, if right
+request to FA. Upon receiv- sk , RpID, UHandle← D (CreID)  Cre                       kW
+                                  RHash ←hash(RpID)
+ing the request, FA checks CNT R ←CNT R +1                         A           A
+                                  [T Hash ←hash(Tr)]
+the P inAuth and asks for FAData ←RHash, CNT R , AAGUID, CreID, pk               A              Cre
+                                  S ← Sign     (FAData, FCHash, [T Hash/Tr])
+                                                                       skCre
+the user’s permission to per-                       FAData, S, UHandle, [T Hash/Tr]
+                                                                                            FAData, S, UHandle, [T Hash/Tr]
+                                                                                                         FCData
+form authentication. Then FA                                                                locate pk by UHandle, AAGUID, CreID
+                                                                                                                Cre
+                                                                                            get T Binding of TLS connection
+decrypts the CreID with kW                                                                  [xT Hash ←hash(xTr)]
+                                                                                            FCHash←hash(FCData) check:
+and calculates RHash.                                                                         T Binding == FCData.T Binding
+                                                                                              Chlg == FCData.Chlg
+     In Generic Transaction                                                                   RpID == FCData.RpID
+                                                                                              hash(RpID) == FAData.RHash
+Authorization Mode, T Hash                                                                    [xT Hash == T Hash/xTr == Tr]
+                                                                                              CNT R > CNT R A                 S
+is included in the response,                                                                  CheckSign        (S, FAData, FCHash, [T Hash/Tr])
+                                                                                                                      pkCre
+                                                                                            if all right
+while in Simple Transaction                                                                   CNT R ←CNT R   S            A
+
+
+Authorization Mode, the cor-
+                                                                   Fig. 4. Authentication (Color ﬁgure online)
+                                        A Formal Analysis of the FIDO2 Protocols               9
+
+             Table 3. Protocol operations of diﬀerent types of authenticators
+
+    Server-side storage Reg.   CreID ←EkW (skCre , RpID, UHandle)
+                       Auth. skCre , RpID, UHandle←DkW (CreID)
+    Client-side storage Reg.   new random CreID store CreID, skCre , RpID, Uhandle, CNTRA 
+                       Auth. get CreID, skCre , RpID, Uhandle, CNTRA  using CreID
+
+
+
+
+responding value is T r. FA increases the signature counter CN T RA , usually by
+one, forms the F AData, calculates signature S, and sends the response to FC.
+FC adds F CData to the response from FA and returns it to RP. RP locates the
+previously stored record by the triple U Handle, AAGU ID, CreID, checks the
+ﬁelds in F CData, and compares RHash in F AData. If the received T Hash or
+T r equals the expected value, the transaction data will be displayed and con-
+ﬁrmed by the user. RP veriﬁes the signature S and compares the value of the
+signature counter. If CN T RA is greater than CN T RS , RP updates its internally
+stored CN T RS with CN T RA .
+
+Operations of Diﬀerent Types of Authenticators. As shown in Table 2,
+WebAuthn deﬁnes six types of authenticators. Based on how the authentication
+method is implemented, they can be divided into 1st/2nd/user-verifying authen-
+ticators, so as the credential storage capability, access method, and authenti-
+cation factor. Among them, 1st factor platform authenticators and 1st factor
+roaming authenticators are client-side storage authenticators, while the other
+four types of authenticators are server-side storage authenticators. The storage
+type is determined by where the authentication credential, i.e., skCre generated
+during the authenticator registration phase, is stored. Client-side storage authen-
+ticators store the authentication credential skCre on the authenticator. As thus,
+the credential will not leave the user’s device and the CreID is a random number
+that serves as an index to access credentials. A server-side storage authentica-
+tor is limited in storage capacity; therefore, it wraps skCre in CreID with a
+wrapping key kW and sends it to the RP. The diﬀerent protocol operations of
+client-side and server-side storage authenticators are shown in Table 3.
+
+3      Formal Verification of FIDO2
+The FIDO Security Reference [15] presents informal descriptions of assump-
+tions and security goals in English, which are lengthy and sometimes ambiguous.
+Because the assumptions in the speciﬁcations are strong and often impractical,
+we reﬁne these descriptions to derive a practical and realistic threat model in
+our formalization and give formal interpretations of security goals.
+
+3.1     Assumptions and Threat Model
+Assumptions on Cryptographic Primitives. We assume cryptographic
+functions are secure, and attacks on cryptographic algorithms and parameters
+10      J. Guan et al.
+
+                     Table 4. Formalization of FIDO2 security goals
+
+Type Goals Label     Formal description
+C.    SG-2    C1∼C8 The wrapping key kW (C1), the private keys skAT (C2), skCre (C3), the signature
+                    counter CNTR(C4), the authentication key reference CreID(C5), user transaction
+                    data Tr (C6), curPin and newPin(C7) and PinToken(C8) should be secret in FIDO2.
+      SG-3
+      SG-8
+      SG-15
+A.    SG-10 A0       Attack Resistance: The authentication between entities should be injective
+                     agreement on the data ﬁelds.
+      SG-11
+      SG-12
+      SG-13
+      SG-1    A1     Strong User Authentication: The RP must obtain injective agreement on RpID,
+                     UHandle, AAGUID, and CreID with the FA after authentication
+      SG-14 A2       Transaction Non-Repudiation: The RP must obtain injective agreement on T r with
+                     the authenticator after transaction authorization
+      SG-5    A3     Verifier Leak Resilience: Supposing that user A has registered on both RP and
+                     RP with the authenticator FA, even if the RP leaks the information of user A, the
+                     RP should still obtain injective agreement on RpID, UHandle, AAGUID, and CreID
+                     with the FA after authentication
+      SG-6    A4     Authenticator Leak Resilience: Supposing that both user A and user B have
+                     registered on the RP and RP with their FA respectively, even if an attacker can
+                     steal the information of user B from the FA, the RP should still obtain injective
+                     agreement on RpID, UHandle, AAGUID, and CreID with A FA after
+                     authentication
+      SG-7    A5     User Consent: The RP must obtain injective agreement on RpID, UHandle,
+                     AAGUID, and CreID with the FC after registration
+      SG-9    A6     Attestable Properties: The RP must obtain injective agreement on RpID,
+                     UHandle, AAGUID, and pkAT with the authenticator after registration.
+P.    SG-4    P1     Unlinkability: FIDO2 processes initiated by the same user on diﬀerent RPs should
+                     be observational equivalent to the RPs
+
+
+
+
+are beyond our consideration. Assumptions on Channels and Entities. Two
+types of channels are involved in FIDO2: the channel between FC and FA is
+established through IPC, while the channel between FC and RP is relying on
+TLS. Similar to the security assumptions for channels and entities in UAF,
+we assume that the IPC and TLS channels provide both conﬁdentiality and
+integrity, hence a Dolev-Yao attacker has no control of messages exchanged over
+the channel established between honest entities. However, the attackers can ini-
+tiate a conversation through malicious entities under their control and intercept
+the information in these sessions. Assumptions on Data Protections. We
+assume the identiﬁers, including U Handle, AAGU ID, and RpID, the public
+keys pkAT and pkAU , and the elliptic curve parameter G are public. CreID,
+CN T R, kW , or skAT are not public but can be compromised.
+
+3.2   Security Goals
+[SG-1, 4, 5∼7, 9, 10∼14] have been formalized in literature [12], and we formalize
+[SG-2∼3, 8, 15] for the ﬁrst time. As shown in Table 4, we formally interpret the
+goals [SG-1∼15] in the FIDO2 context. We denote the conﬁdentiality, authenti-
+cation, and privacy goals as ‘C.’, ‘A.’, and ‘P.’, respectively. Because C1∼C6 in
+                                A Formal Analysis of the FIDO2 Protocols       11
+
+FIDO2 are similar to those of UAF, we focus on C7 and C8, which should be
+considered because of the newly introduced Client PIN mechanism.
+    In CTAP2, a shared secret is negotiated between the FA and FC. The user
+sets the Client PIN on the FC, and then the FC encrypts and forwards it to the
+FA. Once the Client PIN is leaked, the attacker can initiate the CTAP2 process
+with a malicious FC and invoke the FA on the user’s device. Formally, C7: the
+current Client PIN curP in and the newly set Client PIN newP in should be
+secret in the presence of the active attacker during the CTAP2 process.
+    The CTAP2 process runs before authenticator registration or authentication.
+After the FA veriﬁes the validity of the Client PIN entered by the user on the
+FC, the FA will issue a P inT oken to the FC. Subsequently, the FC needs to
+use P inT oken to calculate an HMAC P inAuth and add it to the registration or
+authentication requests sent to the FA. If the veriﬁcation of P inAuth fails, the
+FA will terminate this operation. Once P inT oken is leaked, the attacker will be
+able to forge a request and deceive the user’s authenticator to communicate with
+it. Formally, C8: The P inT oken should be secret in the presence of the active
+attacker during the CTAP2 process.
+
+
+4     Formal Models
+
+To formally analyze FIDO2, we use ProVerif [7]. Compared with other commonly
+used tools, such as Tamarin [30], Scyther [11], AVISPA [1], DEEPSEC [10], CL-
+AtSe [34], OFMC [5], FDR [29], SATMC [2], Cryptyc [22], ProVerif solved the
+problem of state explosion under unlimited sessions and provides a user-friendly
+interface for interactive operation and attack path display. It has been used to
+analyze multiple security protocols including UAF [12], TLS 1.3 Draft 18 [6],
+ARINC823 avionic protocols [8], and e-voting protocols [24].
+
+
+4.1   ProVerif Models of FIDO2
+
+To cover all possible scenarios of FIDO2, we deﬁne the following three types of
+constants: CT AP T ype, AuT ype, and T rT ype, to identify which CTAP2 pro-
+cess the users go through in this protocol, which authenticator is used, and
+under which authentication mode. The four values, noCT AP , setP IN , chgP IN ,
+and getT oken, of CT AP T ype identify the four processes in the CTAP2 process
+respectively: without enabling the CTAP2 protocol, going through setPIN or
+changePIN process in CTAP2, and directly perform the getPINToken operation.
+The values client and server of AuT ype identify the scenarios using client or
+server-side storage FA. The value empty, simple, and generic of T rT ype are used
+to distinguish the scenarios of authentication, simple transaction authorization
+mode, and generic transaction authorization mode. As a result, we analyze 32 dif-
+ferent scenarios, including eight scenarios in authenticator registration (4×2 = 8
+scenarios in total, as the transmission of transaction authorization data is not
+transmitted in registration), and 24 scenarios in authentication (4 × 2 × 3 = 24).
+Each scenario is identiﬁed by a speciﬁc value of the tuple (CT AP T ype, AuT ype)
+12      J. Guan et al.
+
+or the triple (CT AP T ype, AuT ype, T rT ype), which will determine the branches
+to go through in this run of the process. When the CTAP2 option is enabled,
+P inT oken will be shared between FA and FC after CTAP2 is completed. The
+token will be used in subsequent authenticator registration and authentication
+operations. We model this feature using tables and phases in ProVerif. FA and
+FC maintain a table for P inT oken. When the CTAP2 operation is completed,
+both parties will store the P inT oken in the table.
+
+4.2   Verifying Leak Resilience Goals of FIDO2
+SG-5 (Veriﬁer Leak Resilience) and SG-6 (Authenticator Leak Resilience) were
+formalized but not veriﬁed in the previous UAF formal analysis [12]. To verify
+these two goals, we design a scenario with three sets of sessions, which need to be
+modeled and analyzed separately. User A registers the FA on RP and RP , while
+user B registers the FA on RP. There are three sets of data after registration:
+the data between FA and RP, FA and RP , FA and RP. We verify whether the
+authentication between RP and FA can be satisﬁed in the case that the FA of
+user B leaks its data registered on RP while RP leaks the data of FA.
+
+5     Security Analysis
+To identify the minimal assumptions of each security goal of FIDO2, we develop
+a tool FIDO2Verif, which is a front-end to ProVerif. Our tool is based on the idea
+proposed by Basin et al. [4], which was also used in the analysis of multi-factor
+authentication protocols [26] and the Noise framework [21]. The tool ﬁrst veriﬁes
+whether a security goal is satisﬁed without any assumptions, then increases the
+number of assumptions until the state of the security property is changed from
+false to true. If the state of the security properties has not changed after adding
+all the assumptions about the entity, then we add the assumptions about the data
+ﬁelds. The tool automatically generates 78,336 test cases covering all CTAP2
+process options, authenticator types and transaction authorization modes, and
+the combinations of assumptions on entities and ﬁelds.
+
+5.1   Results
+Table 5 and Table 6 show the analysis results. ‘Reg.’ means the results of authen-
+ticator registration and ‘Auth.’ means the results of authentication. The results
+show the minimum assumptions required for each security goal in our threat
+model. ‘’ means the goal can be met in all conditions, ‘−’ means not applica-
+ble. ‘¬’ before the ﬁled, e.g., ‘¬kW ’, indicates the property only holds when kW is
+not revealed. ‘¬X[Y ]’ denotes the attackers cannot use their compromised entity
+X to communicate with entity Y . Since the transaction authorization data T r
+can only be transmitted in authentication, and the attestation private key skAT
+is only used in registration, there is no veriﬁcation result for C6 in Table 5, and
+no veriﬁcation result for C2 in Table 6.
+                                     A Formal Analysis of the FIDO2 Protocols             13
+
+Conﬁdentiality Properties. As shown in Table 5, the Table 5. Veriﬁcation
+attackers have no access to kW and skAT , since these results in registration.
+ﬁelds are stored and used only inside FA in authenti- Reg. Client-Side Server-Side
+                                                                  C1   −          
+cator registration. As for client-side storage authentica- C2                    
+                                                                  C3             ¬kW ∨¬C [A]
+tors, skCre is stored inside FA and cannot be obtained C4
+                                                                       ¬C [A]
+                                                                  C5
+by the attacker. While for server-side storage authenti- C7 ¬A[C ]
+cators, skCre is encrypted in the CreID by kW . CreID C8          A5
+                                                                       ¬C [A]
+                                                                       ¬A[C ]∧¬C [R]
+and CN T R are exposed on the channel as part of the A6           P1             
+registration response from FA. Therefore, if attackers
+compromise C[A], they can eavesdrop on the registra-
+tion response to obtain CreID and CN T R. As long as
+the attacker cannot obtain kW (the assumption ¬kW is met) or CreID (the
+assumption ¬C[A] is met), the secrecy of skCre will hold. Since CTAP2 relies
+on unauthenticated ECDH to negotiate a shared secret between FA and FC,
+the two participants cannot conﬁrm the validity of their identities. Therefore, if
+there is a malicious FA in the CTAP2 session (breaking assumption ¬A[C]), the
+FA can complete the CTAP2 process with the FC and obtain the curP in and
+newP in entered by the user on FC. In the same way, a malicious FC (breaking
+the assumption ¬C[A]) can intercept the P inT oken issued by the FA.
+    Table 6 shows that skCre of client-side storage authenticators and kW of
+server-side storage authenticators are secure as they are only used within FA in
+authentication. For server-side storage authenticators, skCre is encrypted with
+kW as CreID, which is part of the authentication request from RP and the
+authentication response from FA. To protect CreID, it is necessary to prevent
+attackers from obtaining the above messages and the assumptions ¬A[C] (there
+is no malicious FA to obtain the authentication request relayed from FC) and
+¬C[R] (there is no malicious FC to obtain the authentication request sent from
+RP) and ¬C[A] (there is no malicious FC to obtain the authentication response
+returned from FA) should be met. As for CN T R, which is retrieved from the stor-
+age from FA with corresponding CreID and included in the message returned
+from FA, the assumptions ¬C[R] or ¬C[A] should be met.
+    In other words, if the Table 6. Veriﬁcation results in authentication.
+attacker cannot get the cor- Type Client-Side                   Server-Side
+rect CreID or the authentica- Mode Simple Generic               Simple Generic
+tion response sent by the FA, C1 −                              
+                                     C3                        ¬kW ∨(¬A[C ]∧¬C [R]∧¬C [A])
+CN T R will not be intercepted. C4 ¬C [R]∨¬C [A]
+The assumption required to C5 ¬A[C ]∧¬C [R]∧¬C [A]
+                                     C6   (CreID) ¬A[C ]∧¬C [R] (CreID) ¬A[C ]∧¬C [R]
+maintain the conﬁdentiality of C7 ¬A[C ]
+T r in Simple Transaction Autho- C8 ¬C [A]
+rization Mode is the same A1         A2
+                                          ¬C [R]∨¬C [A]
+as that of CreID, which is A3                                                
+¬A[C] and ¬C[R] and ¬C[A]. A4
+                                     P1                                      
+Because both CreID and T r
+are included in the request from the RP and the response returned by the FA.
+To maintain the secrecy of T r in Generic Transaction Authorization Mode the
+14     J. Guan et al.
+
+protocol should satisfy ¬A[C] and ¬C[R] as T r is only involved in the request
+from the RP.
+
+Authentication Properties. As shown in Table 5, to achieve the authenti-
+cation goals in authenticator registration, the minimal assumption ¬A[C] and
+¬C[R] should be met. Whether skAT is leaked or not has little eﬀect on the
+authentication in authenticator registration. RP veriﬁes the validity of FA by
+checking the signature S, which is signed by skAT , and inspects the ﬁelds in
+F CData to conﬁrm the binding relationship between a FIDO2 session and a
+TLS session. As the same skAT is manufactured in a batch, the attacker can
+simply use an FA from the same batch as the user’s FA. Once ¬A[C] and
+¬C[R] is violated, the attackers can use their FA to generate a valid response
+and forward it to the FC on the user’s device with a compromised FC . The
+response will pass the inspection of RP and be considered a legitimate response.
+Thereafter, the user’s account will be bound to the FA held by the attacker
+instead of the FA of the user, and the user is not aware of it.
+    After successful registration, the binding between the user account and
+the FA has been established and RP has recorded the binding as U Handle,
+AAGU ID, CreID, pkCre , CN T RS . RP veriﬁes the signature S with pkCre
+and checks the value of CN T R. Since the private key skCre and the counter
+CN T R are stored in the user’s FA, which can only be retrieved with the cor-
+responding CreID in the authentication request. If the assumption ¬C[A] or
+¬C[R] is not satisﬁed, the attacker will be able to intercept CreID an authenti-
+cation request with a malicious FC, with the correct CreID, the malicious FC
+can receive a valid authentication response from the user’s FA and forward it to
+RP.
+    Our analysis results show that there is no data leakage on RP or FA, i.e.,
+the authentication goals A3 and A4 are satisﬁed. Even if the RP leaks user
+B’s data, it still does not aﬀect the RP’s authentication of other users. For
+the same user, even if the user’s authentication data of an RP is leaked, the
+user’s authentication on other RPs can still be guaranteed. The RP authenticates
+the user by verifying the binding relationship of the triple: the user account
+(identiﬁed by U Handle), the authenticator (identiﬁed by AAGU ID), and the
+RP (identiﬁed by RpID), which is associated with the asymmetric key pair
+(skCre , pkCre ) generated by FA. The public key pkCre will be sent to RP, while
+FA saves the private key skCre . As long as the private key bound between user
+A and RP is not leaked, even if RP leaks user A’s information, including the
+public key of user A on RP , or user B who has registered on the same RP leaks
+the private key, the authentication of user A from the RP will not be aﬀected.
+
+Privacy Properties. Our results show that FIDO2 satisﬁes unlinkability in
+authenticator registration and authentication. RHash, CN T RA , AAGU ID,
+CreID, pkCre , S, CertAT , F CData No ﬁeld in the registration response is
+associated with the user. As both AAGU ID and the corresponding CertAT are
+shared by a large batch of authenticators, it is diﬃcult, even impossible for the
+                                           A Formal Analysis of the FIDO2 Protocols                      15
+
+RP to locate the sessions of the same AAGU ID and CertAT to a single user.
+CN T RA records the number of times of authentication for a single user at the
+speciﬁc RP, but cannot directly link the session between diﬀerent RPs.
+   RP receives the authentication response RHash, CN T RA , AAGU ID,
+CreID, pkCre , S, U Handle, [T Hash /T r], F CData. Note that it is pointed
+out in Sect. 4 of WebAuthn [35]: ”U Handle should be an opaque byte sequence
+and not contain any personally identifying information about the user”. The RPs
+cannot infer the user’s personal identiﬁcation information from any instance of
+U Handle. And U Handle is the user identiﬁer speciﬁed by an RP that can be
+used to map the conversations to a speciﬁc user only within this RP but diﬀer-
+ent RPs cannot link the session to the speciﬁc user with U Handle. CN T RA ,
+CreID, and pkCre  are unique for each binding RpID, AAGU ID, U Handle
+and cannot be used to distinguish user sessions across diﬀerent RPs.
+
+5.2     Attacks
+MITM Attack in CTAP2. FIDO2 intro-                  FA                  Attacker                   FC
+
+duces the Client PIN mechanism to improve new ECDH key pair (a, aG)
+the security in 2nd-factor authentication new random PinToken
+                                                         getKeyAgreement
+                                                                                getKeyAgreement
+
+scenarios. However, the veriﬁcation results                     aG
+                                                                new ECDH key pair (c, cG)
+show that this goal cannot be achieved.                         K ← hash((caG).x)
+                                                                               1
+                                                                                        cG
+Since FA and FC negotiate a shared secret
+                                                                               new ECDH key pair (b, bG)
+with unauthenticated ECDH, FA and FC                                           K ← hash((cbG).x)
+                                                                                          2
+                                                                               collect newPin from the user.
+cannot establish any trust through this                                        newPinEnc ←E (newPin)
+                                                                                                  K2
+
+process, making it vulnerable to man-in-                                         bG, newPinEnc
+                                                                K ← hash((cbG).x)
+the-middle (MITM) attacks. In CTAP2,                                           2
+                                                                newPin ←D (newPinEnc)K2
+
+if the assumption ¬A[C] is not satisﬁed,                  cG, newPinEnc
+                                                ← hash((caG).x)
+the attacker can obtain the curP in and KPinTokenEnc            1
+                                                         ←E (PinToken)    K1
+
+newP in. If the assumption ¬C[A] is not                    PinTokenEnc
+                                                              PinToken ←D (PinTokenEnc)
+satisﬁed, the attacker can intercept the                                             K1
+
+
+
+P inT oken. The process of MITM Attack
+in CTAP2 is shown in Fig. 5. The attacker       Fig. 5. MITM Attack in CTAP2
+forwards the getKeyAgreement request ini-
+tiated by FC, intercepts the ECDH public key aG sent by FA, replaces it with
+the cG generated by itself, and forwards it to FC. The shared secret negotiated
+between the FA and the attacker is caG, and the attacker can derive a shared key
+K1 with FA. The FC generates the ECDH key pair (b, bG), and uses the secret
+cbG shared with the attacker to derive the shared key K2 . After collecting the
+newP in from the user, the FC encrypts it with K2 and sends the message bG,
+newP inEnc to FA. After receiving the message from FC containing the ECDH
+public key bG, attackers can replace it with their public key cG and send it to
+FA. Therefore, the attacker negotiates shared secrets caG and cbG with FA and
+FC respectively, and then derives a shared key K1 with FA and a shared key K2
+with FC. After that, the attacker can decrypt the newP inEnc and curP inEnc
+sent by FC, and the P inT okenEnc from FA to obtain the plaintext newP in,
+curP in, and P inT oken respectively.
+16     J. Guan et al.
+
+Authenticator Rebinding Attack. In registration, if the assumptions ¬A[C]
+and ¬C[R] are not satisﬁed, the attackers can implement the authenticator
+rebinding attack to bind the victim’s account to the FA under their control. We
+consider an attacker who has the same model of authenticator as the user (with
+the same skAT in it) and can compromise the FC on the victim’s device (to get
+access to the channel CA and CR). We denote the FIDO Client on the victim’s
+device as client FC and the FIDO Client on the adversary’s device as client FC .
+The adversaries can bind the victim’s account to their authenticators through
+the following steps: 1) The victim initiates a registration, and the malicious FC
+on the victim’s device establishes a connection with the RP to obtain the regis-
+tration request; 2) FC redirects the request to FC ; 3) FC continue the FIDO2
+registration operations with the authenticator to bind the victim’s account with
+FA held by the attacker; 4) The FC pretends to complete subsequent opera-
+tions with the user, making the user believe the binding was successful; 5) The
+FC forwards the response to FC; 6) FC sends the response to the RP to com-
+plete subsequent operations in registration. In the operations above, F CData is
+generated by the FC on the victim’s device, and the authenticator used by the
+attacker has the same skAT as the user’s, the returned registration response can
+be successfully veriﬁed by the RP and the user account is bound to the attacker’s
+authenticator. Thereafter, the attackers can log in to the victim’s account with
+their credential and bypass the biometric veriﬁcation in FIDO2.
+
+
+Parallel Session Attack. This attack breaks the authentication properties if
+the assumptions ¬C[A] or ¬C[R] are not satisﬁed. RP accepted an authenti-
+cation response after verifying the signature S signed by skCre and checking
+CN T RA . After successful registration, skCre and CN T RA are stored inside the
+FA and the response with the correct S and CN T RA will be returned only if A
+receives a correct CreID. With the following steps, the attacker does not need
+to compromise the FA of the user to obtain skCre or kW , but tamper with FC
+and initiates a “parallel session” to impersonate a legitimate user.
+    We assume users have installed a malicious FC on their devices. The attacker
+can implement the parallel session attack with the following steps: 1) Once a
+victim launches an authentication session, the attackers can be informed by the
+malicious FC and initiated their own session on FC with the victim’s identiﬁer
+U Handle to the same RP to get the correct CreID; 2) FC sends the request
+generated by itself to client FC. F CHash is the hash of F CData generated from
+the connection established between FC and the RP; 3) FC forwards the request
+to the FA on the victim’s device and obtains the response. As CreID in the
+request corresponds to the U Handle of the victim, FA can successfully retrieve
+the skCre to generate the signature S and get the CN T R; 4) FC redirects the
+response to FC and FC appends its own F CData to the response; 5) FC
+returns the response to the RP to complete the authentication.
+    Since the F CData in the response corresponds to the connection established
+between F C  and the RP and the signature is, in eﬀect, generated by the victim’s
+                                 A Formal Analysis of the FIDO2 Protocols        17
+
+authenticator with correct skCre , the attackers will pass the veriﬁcations in RP
+and gain access to the victim’s account on their own device.
+
+
+Privacy Disclosure Attack. Attackers can intercept the user’s personal data
+with a malicious FC. In registration, if the assumption ¬C[A] is not satisﬁed, the
+original CN T R will be exposed to attackers in the registration response from
+FA. Later in authentication, if the protocol does not satisfy the assumption
+¬C[R]∨¬C[A], attackers can get the increased CN T R to estimate the num-
+ber of times of the completed authentication and infer user behavior based on
+this. Additionally, with the malicious FC, attackers can also distinguish whether
+the user is performing authentication or transaction authorization by checking
+whether the ﬁeld T r is involved in the response from RP. Thereafter, attackers
+can also intercept the victim’s transaction authorization text T r.
+
+
+5.3   Recommendations
+
+Explicit Deﬁnitions of Threat Model. We suggest that the standard explic-
+itly requires the assumptions of channel and component compromise. A clearly
+speciﬁed threat model can provide constructive guidance for the design and
+implementation of the protocol. On the contrary, an ambiguous threat model
+may introduce problems in the design process and even introduce vulnerabilities
+in potential practical implementations. Our analysis results show that the secu-
+rity of FIDO2 relies on the security of the channel between entities and the secure
+storage module inside the entities. However, there is a lack of a clear deﬁnition
+of entity and channel compromise scenarios in the speciﬁcations. Therefore, the
+compromise scenarios should be considered in the protocol design, and the rec-
+ommended implementation of the secure channel and secure storage should be
+clearly given in the speciﬁcations.
+
+
+Enhancing the security of CTAP2. We suggest enhancing the authentica-
+tion of FA and FC in the CTAP2 process. The current design of CTAP2 relies
+on unauthenticated ECDH to negotiate the shared secret between FA and FC,
+making it vulnerable to man-in-the-middle attacks. The attacker can manipulate
+the shared secret between FA and FC and then decrypt the ciphertext message
+transmitted between FA and FC, while the user is unaware of it. It is necessary
+to add the veriﬁcation of the validity of FA and FC in CTAP2, and conﬁrm
+that the FA and FC in the CTAP2 session are the same FA and FC used in
+authenticator registration or authentication subsequently.
+
+
+Authenticating FC at RP. We suggest adding an authentication mechanism
+for FC. In particular, for some services with high security requirements, such as
+ﬁnancial transactions, it is necessary to enforce the authentication of FC. The
+authenticated channel between FC and RP is usually established by TLS. How-
+ever, client-side authentication is only optional in TLS. As there is no attestation
+18     J. Guan et al.
+
+or authentication mechanism of FC involved in FIDO2, there may be malicious
+FCs participating in the communication. Some security properties cannot hold
+if channel CA and CR are compromised.
+
+
+Protecting User’s PII. We suggest that some concealment mechanism should
+be applied to CN T R and T r before sending them on the channel. Based on the
+existing protocol process, with the encapsulation mechanism of Elliptic Curve
+Integrated Encryption Scheme (ECIES) [33] used to improve the privacy of 5G
+AKA [36], CN T R and T r be encrypted before sending on the channel. RP gen-
+erates an ephemeral ECC private-public key pair (r, R) for each session, such
+that R = rG, and adds the public portion R to the registration or authentica-
+tion request. Then RP generate a symmetric session key ks = KDF (r, P K),
+P K = pkAT in authenticator registration and P K = pkCre in authentica-
+tion. After receiving the request, FA can derive the corresponding session key
+ka = KDF (R, SK), SK = skAT in authenticator registration and SK = skCre
+in authentication. Both parties can use the symmetric keys ks and ka for con-
+cealment and de-concealment. The FC between FA and RP has no access to the
+private key, r, skAT , or skCre , and cannot derive correct ks and ka . Therefore,
+the attacker cannot intercept CN T R and T r by simply compromising the FC.
+
+
+6    Related Work
+
+Both manual analysis [9,25,27,28,31] and formal methods [12,26,32] have been
+applied to verify the security of FIDO protocols. Feng et al. provided a faith-
+ful formal model of the UAF protocol considering the use case with diﬀerent
+authenticator types and various optional steps and their analysis covers most
+of the security properties in UAF speciﬁcations. Their veriﬁcation results con-
+ﬁrmed previously found vulnerabilities and disclosed new attacks which can be
+exploited in real-world apps [12]. Pereira et al. formally modeled U2F but their
+oversimpliﬁed threat model only considered the option of checking AppID, which
+failed to ﬁnd out more underlying vulnerabilities [32]. Jacomme et al. deﬁned a
+ﬁne-grained threat model considering diﬀerent scenarios with the combinations
+of malware, phishing, and TLS ﬁngerprint spooﬁng in U2F but they mainly
+focused on the authentication goals, ignoring the conﬁdentiality properties in
+U2F. They did a simple veriﬁcation of unlinkability between two accounts on
+two diﬀerent authenticators and the two accounts on the same authenticator,
+which is diﬀerent from the unlinkability speciﬁed in the standard. And they did
+not verify the unlinkability in the registration phase. [26].
+    There have been several eﬀorts to formally verify FIDO2. Guirat et al. focused
+on formally analyzing WebAuth. They only presented the veriﬁcation results of
+privacy properties and lacked the description and veriﬁcation of conﬁdential-
+ity and authentication properties [23]. Barbosa et al. attempted to formally
+analyze FIDO2 in computational model and conducted a modular analysis of
+CTAP2 and WebAuthn separately. However, they did not consider the optional
+                                  A Formal Analysis of the FIDO2 Protocols         19
+
+steps in FIDO2, including using diﬀerent types of authenticators, choosing dif-
+ferent CTAP2 options, and diﬀerent transaction authorization modes, nor does
+it analyze the unlinkability properties in the speciﬁcations [3]. Diﬀerent from the
+previous work, we provide a formal model of FIDO2 that considers CTAP2 and
+WebAuthn as a whole and covers scenarios with diﬀerent types of authenticators
+and transaction authorization modes. We formally describe all the security goals
+mentioned in the FIDO2 speciﬁcations, including conﬁdentiality, authentication,
+and privacy properties, and analyze these goals in all the above scenarios.
+
+
+7   Conclusion
+
+In this paper, we formally analyze FIDO2, the latest member of the FIDO proto-
+col suite. We provide a detailed analysis of the speciﬁcations to formally interpret
+the security assumptions and goals and oﬀer a faithful formal model of FIDO2.
+Our model is substantially more detailed than those of previous work, as the
+model views CTAP2 and WebAuthn as a whole and can cover the scenarios
+using diﬀerent types of authenticators in diﬀerent authentication modes. We use
+the ProVerif tool to automate the analysis of FIDO2 in symbolic model and
+identiﬁed the minimal assumptions required for each property. Our analysis in
+ProVerif shows that FIDO2 still fails to achieve the strong authentication prop-
+erty in some cases and the attacks previously discovered in UAF still exist in
+FIDO2. We also present several concrete recommendations to ﬁx the issues in
+FIDO2. In future work, we plan to make improvements to the issues found in
+the FIDO protocol suits to defend against the attacks found in this paper and
+to formally verify the improved version of the protocol.
+
+Acknowledgements. The research of Beijing University and Posts and Telecommu-
+nications was supported by the Joint funds for Regional Innovation and Development of
+the National Natural Science Foundation of China (No. U21A20449) and the National
+Natural Science Foundation of China (Grant No. 61941105).
+
+
+References
+ 1. Armando, A., et al.: The AVISPA tool for the automated validation of internet
+    security protocols and applications. In: Etessami, K., Rajamani, S.K. (eds.) CAV
+    2005. LNCS, vol. 3576, pp. 281–285. Springer, Heidelberg (2005). https://doi.org/
+    10.1007/11513988 27
+ 2. Armando, A., Carbone, R., Compagna, L.: SATMC: a sat-based model checker
+    for security-critical systems. In: Ábrahám, E., Havelund, K. (eds.) TACAS 2014.
+    LNCS, vol. 8413, pp. 31–45. Springer, Heidelberg (2014). https://doi.org/10.1007/
+    978-3-642-54862-8 3
+ 3. Barbosa, M., Boldyreva, A., Chen, S., Warinschi, B.: Provable security analysis of
+    FIDO2. In: Malkin, T., Peikert, C. (eds.) CRYPTO 2021. LNCS, vol. 12827, pp.
+    125–156. Springer, Cham (2021). https://doi.org/10.1007/978-3-030-84252-9 5
+ 4. Basin, D., Cremers, C.: Know your enemy: compromising adversaries in protocol
+    analysis. ACM Trans. Inf. Syst. Secur. (TISSEC) 17(2), 1–31 (2014)
+20      J. Guan et al.
+
+ 5. Basin, D., Mödersheim, S., Viganò, L.: OFMC: a symbolic model checker for secu-
+    rity protocols. Int. J. Inf. Secur. 4(3), 181–208 (2004). https://doi.org/10.1007/
+    s10207-004-0055-7
+ 6. Bhargavan, K., Blanchet, B., Kobeissi, N.: Veriﬁed models and reference imple-
+    mentations for the TLS 1.3 standard candidate. In: IEEE Symposium on Security
+    and Privacy (S&P), pp. 483–502 (2017)
+ 7. Blanchet, B.: Modeling and verifying security protocols with the applied pi calculus
+    and ProVerif. Found. Trends Priv. Secur. 1(1–2), 1–135 (2016)
+ 8. Blanchet, B.: Symbolic and computational mechanized veriﬁcation of the
+    ARINC823 avionic protocols. In: IEEE Computer Security Foundations Sympo-
+    sium (CSF), pp. 68–82 (2017)
+ 9. Chang, D., Mishra, S., Sanadhya, S.K., Singh, A.P.: On making U2F protocol
+    leakage-resilient via re-keying. IACR Cryptol. ePrint Arch. 2017, 721 (2017)
+10. Cheval, V., Kremer, S., Rakotonirina, I.: DEEPSEC: deciding equivalence prop-
+    erties in security protocols theory and practice. In: IEEE Symposium on Security
+    and Privacy (S&P), pp. 529–546 (2018)
+11. Cremers, C.J.: Unbounded veriﬁcation, falsiﬁcation, and characterization of secu-
+    rity protocols by pattern reﬁnement. In: ACM Conference on Computer And Com-
+    munications Security (CCS), pp. 119–128 (2008)
+12. Feng, H., Li, H., Pan, X., Zhao, Z., Cactilab, T.: A formal analysis of the FIDO
+    UAF protocol. In: Network and Distributed Systems Security Symposium (NDSS),
+    pp. 1–15 (2021)
+13. FIDO Alliance: Universal 2nd factor U2F overview (2017). https://ﬁdoalliance.
+    org/specs/ﬁdo-u2f-v1.2-ps-20170411/ﬁdo-u2f-overview-v1.2-ps-20170411.html
+14. FIDO Alliance: CNET: password-free web security is coming to Chrome, Firefox,
+    Edge (2018). https://ﬁdoalliance.org/cnet-password-free-web-security-is-coming-
+    to-chrome-ﬁrefox-edge/
+15. FIDO Alliance: FIDO security reference 2018). https://ﬁdoalliance.org/specs/ﬁdo-
+    v2.0-id-20180227/ﬁdo-security-ref-v2.0-id-20180227.html
+16. FIDO Alliance: Client to authenticator protocol (CTAP) - proposed stan-
+    dard (2019). https://ﬁdoalliance.org/specs/ﬁdo-v2.0-ps-20190130/ﬁdo-client-to-
+    authenticator-protocol-v2.0-ps-20190130.html
+17. FIDO Alliance: Microsoft achieves FIDO2 certiﬁcation for Windows Hello (2019).
+    https://ﬁdoalliance.org/microsoft-achieves-ﬁdo2-certiﬁcation-for-windows-hello
+18. FIDO Alliance: News: your Google Android 7+ phone is now a FIDO2 security
+    key (2019). https://ﬁdoalliance.org/news-your-google-android-7-phone-is-now-a-
+    ﬁdo2-security-key
+19. FIDO Alliance: Expanded support for FIDO authentication in iOS and MacOS
+    (Jul 2020), https://ﬁdoalliance.org/expanded-support-for-ﬁdo-authentication-in-
+    ios-and-macos
+20. FIDO Alliance: FIDO UAF protocol speciﬁcation (2020). https://ﬁdoalliance.org/
+    specs/ﬁdo-uaf-v1.2-ps-20201020/ﬁdo-uaf-protocol-v1.2-ps-20201020.html
+21. Girol, G., Hirschi, L., Sasse, R., Jackson, D., Cremers, C., Basin, D.: A spectral
+    analysis of noise: a comprehensive, automated, formal analysis of Diﬃe-Hellman
+    protocols. In: USENIX Security Symposium (2020)
+22. Gordon, A.D., Jeﬀrey, A.: Types and eﬀects for asymmetric cryptographic proto-
+    cols. J. Comput Secur. (JCS) 12(3–4), 435–483 (2004)
+23. Guirat, I.B., Halpin, H.: Formal veriﬁcation of the W3C web authentication proto-
+    col. In: Annual Symposium and Bootcamp on Hot Topics in the Science of Security
+    (HoTSoS), pp. 1–10 (2018)
+                                   A Formal Analysis of the FIDO2 Protocols           21
+
+24. Hirschi, L., Cremers, C.: Improving automated symbolic analysis of ballot secrecy
+    for e-voting protocols: A method based on suﬃcient conditions. In: IEEE European
+    Symposium on Security and Privacy (EuroS&P), pp. 635–650 (2019)
+25. Hu, K., Zhang, Z.: Security analysis of an attractive online authentication standard:
+    FIDO UAF protocol. Chin. Commun. 13(12), 189–198 (2016)
+26. Jacomme, C., Kremer, S.: An extensive formal analysis of multi-factor authentica-
+    tion protocols. ACM Trans. Priv. Secur. (TOPS) 24(2), 1–34 (2021)
+27. Leoutsarakos, N.: What’s wrong with FIDO? https://zeropasswords.com/pdfs/
+    WHATisWRONG FIDO.pdf (2011)
+28. Loutﬁ, I., Jøsang, A.: FIDO trust requirements. In: Buchegger, S., Dam, M. (eds.)
+    Secure IT Systems. LNCS, vol 9417, pp. 139–155. Springer, Cham (2015). https://
+    doi.org/10.1007/978-3-319-26502-5 10
+29. Lowe, G.: Breaking and ﬁxing the Needham-Schroeder public-key protocol using
+    FDR. In: Margaria, T., Steﬀen, B. (eds.) TACAS 1996. LNCS, vol. 1055, pp. 147–
+    166. Springer, Heidelberg (1996). https://doi.org/10.1007/3-540-61042-1 43
+30. Meier, S., Schmidt, B., Cremers, C., Basin, D.: The TAMARIN prover for the
+    symbolic analysis of security protocols. In: Sharygina, N., Veith, H. (eds.) CAV
+    2013. LNCS, vol. 8044, pp. 696–701. Springer, Heidelberg (2013). https://doi.org/
+    10.1007/978-3-642-39799-8 48
+31. Panos, C., Malliaros, S., Ntantogian, C., Panou, A., Xenakis, C.: A security evalua-
+    tion of Fido’s uaf protocol in mobile and embedded devices. In: Piva, A., Tinnirello,
+    I., Morosi, S. (eds.) TIWDC 2017. CCIS, vol. 766, pp. 127–142. Springer, Cham
+    (2017). https://doi.org/10.1007/978-3-319-67639-5 11
+32. Pereira, O., Rochet, F., Wiedling, C.: Formal analysis of the FIDO 1.x protocol. In:
+    Imine, A., Fernandez, J.M., Marion, J.-Y., Logrippo, L., Garcia-Alfaro, J. (eds.)
+    FPS 2017. LNCS, vol. 10723, pp. 68–82. Springer, Cham (2018). https://doi.org/
+    10.1007/978-3-319-75650-9 5
+33. Standards for Eﬃcient Cryptography Group: SEC 1: Elliptic curve cryptography
+    version 2.0, standards for eﬃcient cryptography (2009). https://www.secg.org/
+    sec1-v2.pdf
+34. Turuani, M.: The CL-Atse protocol analyser. In: International Conference on
+    Rewriting Techniques and Applications (RTA). pp. 277–286. Springer (2006)
+35. W3C: Web authentication: An API for accessing public key credentials level 2
+    (2021). https://www.w3.org/TR/webauthn-2/
+36. Wang, Y., Zhang, Z., Xie, Y.: Privacy-preserving and standard-compatible AKA
+    protocol for 5G. In: USENIX Security Symposium, pp. 3595–3612 (2021)
+

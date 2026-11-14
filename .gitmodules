@@ -1,0 +1,3 @@
+[submodule "upstream/FIDO2Verif"]
+	path = upstream/FIDO2Verif
+	url = https://github.com/CactiLab/FIDO2Verif

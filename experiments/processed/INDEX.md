@@ -1,5 +1,3 @@
-# Final summary
+# Current summary
 
-Snapshot: `20261114T174057729115Z`.
-
-24 complete model runs. Read `20261114T174057729115Z/summary.md`, summary.csv, summary.json and parser-provenance.json. Earlier snapshots remain historical.
+`20261114T175612262785Z`: 27 model runs (24 original + 3 follow-up witnesses). Read summary.md/CSV/JSON, matrix_results.yaml, witness_results.yaml and parser-provenance.json. Older snapshots are historical.

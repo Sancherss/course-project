@@ -1,0 +1,63 @@
+upstream_commit: 2d8eaf326117bd7e4706c48b2d24e27b4a006fa6
+experiments:
+- id: W-reg-E0
+  description: 'Follow-up: executable single-session finish witness, not a security
+    proof'
+  scenario: reg_client
+  ctap: getToken
+  property: D-finish
+  entities: []
+  fields: []
+  changed_assumption: Restrict root !system to one system instance for positive reachability
+    only
+  expected_comparison: A false not-event query with an unconditional trace witnesses
+    reachability in the original replicated model
+  timeout_seconds: 15
+  diagnostic: true
+  precise_actions: true
+  single_session_witness: true
+  actual_result: ATTACK_OR_FALSE
+  interpretation: REACHABLE_SINGLE_SESSION_WITNESS
+  runtime_seconds: 0.11469994599974598
+  raw_directory: experiments/raw/20261114T175029853349Z-W-reg-E0-4823fee5
+- id: W-reg-E2
+  description: 'Follow-up: executable single-session finish witness, not a security
+    proof'
+  scenario: reg_client
+  ctap: getToken
+  property: D-finish
+  entities:
+  - 2
+  fields: []
+  changed_assumption: Restrict root !system to one system instance for positive reachability
+    only
+  expected_comparison: A false not-event query with an unconditional trace witnesses
+    reachability in the original replicated model
+  timeout_seconds: 15
+  diagnostic: true
+  precise_actions: true
+  single_session_witness: true
+  actual_result: ATTACK_OR_FALSE
+  interpretation: REACHABLE_SINGLE_SESSION_WITNESS
+  runtime_seconds: 0.11443150900004184
+  raw_directory: experiments/raw/20261114T175030082104Z-W-reg-E2-d3d778f7
+- id: W-auth-E0
+  description: 'Follow-up: executable single-session finish witness, not a security
+    proof'
+  scenario: auth_client_em
+  ctap: getToken
+  property: D-finish
+  entities: []
+  fields: []
+  changed_assumption: Restrict root !system to one system instance for positive reachability
+    only
+  expected_comparison: A false not-event query with an unconditional trace witnesses
+    reachability in the original replicated model
+  timeout_seconds: 15
+  diagnostic: true
+  precise_actions: true
+  single_session_witness: true
+  actual_result: ATTACK_OR_FALSE
+  interpretation: REACHABLE_SINGLE_SESSION_WITNESS
+  runtime_seconds: 0.11408287799986283
+  raw_directory: experiments/raw/20261114T175030271358Z-W-auth-E0-1cb77d67

@@ -1,0 +1,194 @@
+upstream_commit: 2d8eaf326117bd7e4706c48b2d24e27b4a006fa6
+experiments:
+- id: R01
+  description: 'registration: S-pintok, E0'
+  scenario: reg_client
+  ctap: getToken
+  property: S-pintok
+  entities: []
+  fields: []
+  changed_assumption: No additional roles
+  expected_comparison: Compare E1/E2 with E0 in the same phase/query; no preassigned
+    outcome
+  timeout_seconds: 60
+  actual_result: PROVED
+  interpretation: PROPERTY_PROVED
+  runtime_seconds: 0.03199450499982959
+  raw_directory: experiments/raw/20261114T173434426102Z-R01-9f18df06
+- id: R02
+  description: 'registration: S-pintok, E1'
+  scenario: reg_client
+  ctap: getToken
+  property: S-pintok
+  entities:
+  - 1
+  fields: []
+  changed_assumption: Additional client using public CA; CTAP_Client on cP also added
+    by upstream
+  expected_comparison: Compare E1/E2 with E0 in the same phase/query; no preassigned
+    outcome
+  timeout_seconds: 60
+  actual_result: UNKNOWN
+  interpretation: INCONCLUSIVE
+  runtime_seconds: 0.06414376099996844
+  raw_directory: experiments/raw/20261114T173434578546Z-R02-cae0394a
+- id: R03
+  description: 'registration: S-pintok, E2'
+  scenario: reg_client
+  ctap: getToken
+  property: S-pintok
+  entities:
+  - 2
+  fields: []
+  changed_assumption: Additional client using public CR and private CA
+  expected_comparison: Compare E1/E2 with E0 in the same phase/query; no preassigned
+    outcome
+  timeout_seconds: 60
+  actual_result: PROVED
+  interpretation: PROPERTY_PROVED
+  runtime_seconds: 0.06417721100001472
+  raw_directory: experiments/raw/20261114T173434736058Z-R03-b5e43887
+- id: R04
+  description: 'registration: A6, E0'
+  scenario: reg_client
+  ctap: getToken
+  property: A6
+  entities: []
+  fields: []
+  changed_assumption: No additional roles
+  expected_comparison: Compare E1/E2 with E0 in the same phase/query; no preassigned
+    outcome
+  timeout_seconds: 60
+  actual_result: PROVED
+  interpretation: PROPERTY_PROVED
+  runtime_seconds: 0.03184728700011874
+  raw_directory: experiments/raw/20261114T173434880387Z-R04-bad68d1b
+- id: R05
+  description: 'registration: A6, E1'
+  scenario: reg_client
+  ctap: getToken
+  property: A6
+  entities:
+  - 1
+  fields: []
+  changed_assumption: Additional client using public CA; CTAP_Client on cP also added
+    by upstream
+  expected_comparison: Compare E1/E2 with E0 in the same phase/query; no preassigned
+    outcome
+  timeout_seconds: 60
+  actual_result: ATTACK_OR_FALSE
+  interpretation: PROPERTY_FALSE
+  runtime_seconds: 0.2143451769998137
+  raw_directory: experiments/raw/20261114T173434989088Z-R05-db0e35c3
+- id: R06
+  description: 'registration: A6, E2'
+  scenario: reg_client
+  ctap: getToken
+  property: A6
+  entities:
+  - 2
+  fields: []
+  changed_assumption: Additional client using public CR and private CA
+  expected_comparison: Compare E1/E2 with E0 in the same phase/query; no preassigned
+    outcome
+  timeout_seconds: 60
+  actual_result: PROVED
+  interpretation: PROPERTY_PROVED
+  runtime_seconds: 0.11454182700003912
+  raw_directory: experiments/raw/20261114T173435277530Z-R06-0a3824cd
+- id: R07
+  description: 'authentication: S-pintok, E0'
+  scenario: auth_client_em
+  ctap: getToken
+  property: S-pintok
+  entities: []
+  fields: []
+  changed_assumption: No additional roles
+  expected_comparison: Compare E1/E2 with E0 in the same phase/query; no preassigned
+    outcome
+  timeout_seconds: 60
+  actual_result: PROVED
+  interpretation: PROPERTY_PROVED
+  runtime_seconds: 0.06391834600003676
+  raw_directory: experiments/raw/20261114T173435463593Z-R07-5c407b5e
+- id: R08
+  description: 'authentication: S-pintok, E1'
+  scenario: auth_client_em
+  ctap: getToken
+  property: S-pintok
+  entities:
+  - 1
+  fields: []
+  changed_assumption: Additional client using public CA; CTAP_Client on cP also added
+    by upstream
+  expected_comparison: Compare E1/E2 with E0 in the same phase/query; no preassigned
+    outcome
+  timeout_seconds: 60
+  actual_result: UNKNOWN
+  interpretation: INCONCLUSIVE
+  runtime_seconds: 0.11470927200002734
+  raw_directory: experiments/raw/20261114T173435605609Z-R08-216e1fee
+- id: R09
+  description: 'authentication: S-pintok, E2'
+  scenario: auth_client_em
+  ctap: getToken
+  property: S-pintok
+  entities:
+  - 2
+  fields: []
+  changed_assumption: Additional client using public CR and private CA
+  expected_comparison: Compare E1/E2 with E0 in the same phase/query; no preassigned
+    outcome
+  timeout_seconds: 60
+  actual_result: PROVED
+  interpretation: PROPERTY_PROVED
+  runtime_seconds: 0.06420204999994894
+  raw_directory: experiments/raw/20261114T173435807499Z-R09-fde86d5f
+- id: R10
+  description: 'authentication: A1, E0'
+  scenario: auth_client_em
+  ctap: getToken
+  property: A1
+  entities: []
+  fields: []
+  changed_assumption: No additional roles
+  expected_comparison: Compare E1/E2 with E0 in the same phase/query; no preassigned
+    outcome
+  timeout_seconds: 60
+  actual_result: UNKNOWN
+  interpretation: INCONCLUSIVE
+  runtime_seconds: 60.009970046000035
+  raw_directory: experiments/raw/20261114T173435950546Z-R10-f33724a8
+- id: R11
+  description: 'authentication: A1, E1'
+  scenario: auth_client_em
+  ctap: getToken
+  property: A1
+  entities:
+  - 1
+  fields: []
+  changed_assumption: Additional client using public CA; CTAP_Client on cP also added
+    by upstream
+  expected_comparison: Compare E1/E2 with E0 in the same phase/query; no preassigned
+    outcome
+  timeout_seconds: 60
+  actual_result: UNKNOWN
+  interpretation: INCONCLUSIVE
+  runtime_seconds: 60.00877848499999
+  raw_directory: experiments/raw/20261114T173536031996Z-R11-bfe9168d
+- id: R12
+  description: 'authentication: A1, E2'
+  scenario: auth_client_em
+  ctap: getToken
+  property: A1
+  entities:
+  - 2
+  fields: []
+  changed_assumption: Additional client using public CR and private CA
+  expected_comparison: Compare E1/E2 with E0 in the same phase/query; no preassigned
+    outcome
+  timeout_seconds: 60
+  actual_result: UNKNOWN
+  interpretation: INCONCLUSIVE
+  runtime_seconds: 60.008288414999924
+  raw_directory: experiments/raw/20261114T173636118122Z-R12-e7a68d0a

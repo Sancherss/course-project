@@ -34,6 +34,10 @@ def test_isolated_generation_no_overwrite_and_paths_with_spaces(tmp_path):
     a=summarize(project/'experiments/raw',project/'experiments/processed')
     b=summarize(project/'experiments/raw',project/'experiments/processed')
     assert a!=b and len(json.loads((a/'summary.json').read_text()))==2
+    import csv
+    with (a/'summary.csv').open() as stream:
+        assert {row['status'] for row in csv.DictReader(stream)} == {'PROVED'}
+    assert 'Status.PROVED' not in (a/'summary.md').read_text()
 
 
 def test_timeout_and_missing_executable_are_recorded(tmp_path):

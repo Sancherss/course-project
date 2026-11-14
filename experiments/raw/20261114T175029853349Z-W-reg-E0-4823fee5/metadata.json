@@ -1,0 +1,75 @@
+{
+  "run_id": "20261114T175029853349Z-W-reg-E0-4823fee5",
+  "experiment_id": "W-reg-E0",
+  "timestamp_utc": "2026-11-14T17:50:29.927834+00:00",
+  "commit": "2d8eaf326117bd7e4706c48b2d24e27b4a006fa6",
+  "manager_commit": "61275dd9a05dd087f61dcfbec649f7cf3f3068d9",
+  "config": {
+    "id": "W-reg-E0",
+    "description": "Follow-up: executable single-session finish witness, not a security proof",
+    "scenario": "reg_client",
+    "ctap": "getToken",
+    "property": "D-finish",
+    "entities": [],
+    "fields": [],
+    "changed_assumption": "Restrict root !system to one system instance for positive reachability only",
+    "expected_comparison": "A false not-event query with an unconditional trace witnesses reachability in the original replicated model",
+    "timeout_seconds": 15,
+    "diagnostic": true,
+    "token_binding": "upstream",
+    "precise_actions": true,
+    "single_session_witness": true
+  },
+  "command": [
+    "/workspace/work/course-project/.tools/proverif/proverif",
+    "-set",
+    "preciseActions",
+    "true",
+    "-lib",
+    "FIDO2.pvl",
+    "model.pv"
+  ],
+  "cwd": "/workspace/work/course-project/experiments/raw/20261114T175029853349Z-W-reg-E0-4823fee5",
+  "generator_command": [
+    "/workspace/work/course-project/.venv/bin/python",
+    "-m",
+    "experiment_manager.upstream",
+    "/workspace/work/course-project/experiments/raw/20261114T175029853349Z-W-reg-E0-4823fee5/config.json",
+    "/workspace/work/course-project/upstream/FIDO2Verif",
+    "/workspace/work/course-project/experiments/generated/20261114T175029853349Z-W-reg-E0-4823fee5"
+  ],
+  "generator_exit_code": 0,
+  "manager_sources_sha256": {
+    "experiment_manager/__init__.py": "66f942464bc3a1ad36f9954382fbb26fc5daa3aba29b0ac8811e5db75c4ab926",
+    "experiment_manager/__main__.py": "79ee6f134c5c5193377cf9b189cbdcc3e2095e49ba9cec310114441c15a917c4",
+    "experiment_manager/cli.py": "7af490bb51b183a9722517d9f06f4e56b52c627af74aaf62a8a2512b8c6900be",
+    "experiment_manager/config.py": "347d2c0c2f1e8e9fa2372d1c011a534b601c5816d97dd74e155ae551c16d2853",
+    "experiment_manager/matrix.py": "0d06452f70f684597ae107ab943a03161a2b3fb85fe6c9130b9672629cba8f35",
+    "experiment_manager/parser.py": "23e40308de0991442c1d0b112d7dbcea8566900d7d518f8d3c0178c34c3f6f97",
+    "experiment_manager/report.py": "f54d338a7d6878b840ae8831a3274cfc8047ecd3feac0e66f26d283c1e54b354",
+    "experiment_manager/results.py": "e53c46bd1d32b8247164cb3dc825b28fdca8b423f2163b49bccf229fd710b68c",
+    "experiment_manager/runner.py": "b40c111cca1d51dffe31d920fb0c819c486f36e0c1d156cc558dde261c9a8c66",
+    "experiment_manager/upstream.py": "c575d0682fa18b4a143630c4c8345ee62bf85f44fd36b4cc209556038a76010c"
+  },
+  "proverif_version": "2.05",
+  "os": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python": "3.12.14",
+  "executable_sha256": "379671406a2b12ca6ab461c15068de78763aa7903821fe4717a8d01e905c2fa2",
+  "input_sha256": {
+    "model.pv": "24f24867c5532b855b655610b542fa617b4713cb4b035ac855106b785a850897",
+    "FIDO2.pvl": "ec0728150dca77c616331e5d40e2a6f9767854289b9d68425dabce0ef8a25f47"
+  },
+  "exit_code": 0,
+  "timed_out": false,
+  "duration_seconds": 0.11469994599974598,
+  "status": "ATTACK_OR_FALSE",
+  "queries": [
+    {
+      "query": "not event(Server_Finish_Reg(u,r,a_1,c,pkau_8))",
+      "status": "ATTACK_OR_FALSE",
+      "raw_line": "RESULT not event(Server_Finish_Reg(u,r,a_1,c,pkau_8)) is false."
+    }
+  ],
+  "reason": "At least one RESULT is false; interpret the specific query",
+  "warnings": []
+}

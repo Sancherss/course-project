@@ -1,0 +1,6 @@
+{
+  "parser_sha256": "23e40308de0991442c1d0b112d7dbcea8566900d7d518f8d3c0178c34c3f6f97",
+  "report_sha256": "29659488455935db73f5f78ca10493bc8b8520c5b30eb435a65571e4ff3fa793",
+  "results_sha256": "15ef611d110ae0aa3a182731f0c7b4f44d44d0457635ed3edc7523bf17c360e6",
+  "classification": "Reparsed from immutable raw stdout/stderr/exit_code/timeout using the current parser; raw metadata retains its original classification."
+}

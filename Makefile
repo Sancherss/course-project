@@ -1,6 +1,6 @@
 PYTHON ?= .venv/bin/python
 
-.PHONY: install tools check baseline matrix diagnostics precision summary test report verify
+.PHONY: install tools check baseline matrix diagnostics precision witnesses summary test report verify
 install:
 	python3 -m venv .venv
 	$(PYTHON) -m pip install -r requirements.txt
@@ -17,6 +17,8 @@ diagnostics:
 	$(PYTHON) -m experiment_manager run experiments/configs/diagnostics.yaml
 precision:
 	$(PYTHON) -m experiment_manager run experiments/configs/precision.yaml
+witnesses:
+	$(PYTHON) -m experiment_manager run experiments/configs/witnesses.yaml
 summary:
 	$(PYTHON) -m experiment_manager summary
 test:

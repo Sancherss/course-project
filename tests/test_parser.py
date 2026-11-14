@@ -37,3 +37,9 @@ def test_diagnostic_false_means_query_false_not_automatic_security_attack():
 
 def test_conflicting_results_rejected():
     assert parse_output('RESULT not attacker(x) is true.\nRESULT not attacker(x) is false.').status==Status.ERROR
+
+
+def test_serialized_statuses_are_plain_strings_for_csv_and_markdown():
+    result=parse_output((F/'secret-true.stdout.txt').read_text()).to_dict()
+    assert type(result['status']) is str and result['status']=='PROVED'
+    assert all(type(q['status']) is str for q in result['queries'])

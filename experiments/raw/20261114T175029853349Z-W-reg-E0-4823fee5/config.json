@@ -1,0 +1,16 @@
+{
+  "id": "W-reg-E0",
+  "description": "Follow-up: executable single-session finish witness, not a security proof",
+  "scenario": "reg_client",
+  "ctap": "getToken",
+  "property": "D-finish",
+  "entities": [],
+  "fields": [],
+  "changed_assumption": "Restrict root !system to one system instance for positive reachability only",
+  "expected_comparison": "A false not-event query with an unconditional trace witnesses reachability in the original replicated model",
+  "timeout_seconds": 15,
+  "diagnostic": true,
+  "token_binding": "upstream",
+  "precise_actions": true,
+  "single_session_witness": true
+}

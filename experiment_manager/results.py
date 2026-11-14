@@ -22,4 +22,7 @@ class ParsedResult:
     warnings: tuple[str, ...] = ()
 
     def to_dict(self) -> dict:
-        return asdict(self)
+        result = asdict(self)
+        result['status'] = self.status.value
+        result['queries'] = [dict(query=q.query, status=q.status.value, raw_line=q.raw_line) for q in self.queries]
+        return result

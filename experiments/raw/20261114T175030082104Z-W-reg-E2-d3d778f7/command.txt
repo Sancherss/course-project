@@ -1,0 +1,1 @@
+/workspace/work/course-project/.tools/proverif/proverif -set preciseActions true -lib FIDO2.pvl model.pv

@@ -9,7 +9,7 @@
 - P1 baseline регистрации вернул **Observational equivalence is true**, что согласуется с §5.1 статьи ESORICS 2022.
 - Реализован experiment_manager: изолированная генерация через исходный Python API, полный raw/provenance, консервативный parser, CSV/JSON/Markdown snapshots.
 - Выполнены **27 модельных запусков**: первоначальные 24 и три дополнительные диагностики достижимости. Первоначальная серия: 12 основных + baseline/пилот/диагностика/проверки точности. В основной матрице 6 PROVED, 1 false A6 с trace, 5 UNKNOWN. UNKNOWN не считается атакой.
-- **34 теста прошли**; проверены хеши всех inputs, идентичность библиотеки и чистота upstream.
+- **35 тестов прошли**; проверены хеши всех inputs, идентичность библиотеки и чистота upstream.
 - Подготовлены первоисточники, анализ требований БГУ, сравнение модели 2022 с WebAuthn Level 3 / CTAP 2.3, черновик записки Markdown/DOCX и сценарий демонстрации.
 
 Это законченный ограниченный исследовательский MVP и черновик записки, **не окончательно оформленная работа для сдачи**. Реквизиты, локальные требования, библиография и научные формулировки требуют проверки. Невакуозность доказанных A6 E0/E2 и A1 E0 подтверждена дополнительными положительными single-session traces; см. docs/nonvacuity_witnesses.md. Прежние UNKNOWN не переписываются.
@@ -17,7 +17,7 @@
 ## Быстрый просмотр
 
 - `docs/results_analysis.md` — результаты и ограничения.
-- `experiments/processed/20261114T174057729115Z/summary.md` — итоговая таблица; рядом CSV/JSON, matrix_results.yaml и parser-provenance.json.
+- `experiments/processed/20261114T175612262785Z/summary.md` — итоговая таблица; рядом CSV/JSON, matrix_results.yaml и parser-provenance.json.
 - `report/coursework_draft.md`, `report/coursework_draft.docx` — редактируемый черновик записки.
 - `report/figures/matrix.png`, `report/figures/matrix.svg` — проверенная визуальная сводка основной матрицы.
 - `docs/baseline_reproduction.md` — один непосредственно сверенный со статьёй baseline.
@@ -71,7 +71,7 @@ python3 -m venv .venv
 .venv/bin/python scripts/export_report.py
 ```
 
-Эквивалентные цели: `make check baseline matrix diagnostics precision summary test report verify`. `make install` создаёт venv и ставит Python dependencies, `make tools` собирает verifier. После editable install доступна команда `fido2-experiments`.
+Эквивалентные цели: `make check baseline matrix diagnostics precision witnesses summary test report verify`. `make install` создаёт venv и ставит Python dependencies, `make tools` собирает verifier. После editable install доступна команда `fido2-experiments`.
 
 Один случай: `.venv/bin/python -m experiment_manager run experiments/configs/matrix.yaml --only R05`. Это **дополнительный** запуск, он не подменяет сохранённый исходный R05.
 

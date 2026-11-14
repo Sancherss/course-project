@@ -12,7 +12,7 @@ def summarize(raw_root: Path, output: Path) -> Path:
     rows = []
     for metadata in sorted(raw_root.glob('*/metadata.json')):
         d = json.loads(metadata.read_text()); c = d.get('config', {})
-        if 'status' not in d:  # baseline script predates the manager
+        if d.get('generator_exit_code', 0) == 0:
             result = parse_output((metadata.parent/'stdout.txt').read_text(errors='replace'),
                                   (metadata.parent/'stderr.txt').read_text(errors='replace'),
                                   exit_code=d['exit_code'], timed_out=d['timed_out'])
@@ -25,6 +25,8 @@ def summarize(raw_root: Path, output: Path) -> Path:
     # New directory per summary invocation; no historical summaries overwritten.
     destination = output / datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
     destination.mkdir(exist_ok=False)
+    import hashlib
+    (destination/'parser-provenance.json').write_text(json.dumps({'parser_sha256': hashlib.sha256((Path(__file__).parent/'parser.py').read_bytes()).hexdigest(), 'classification': 'Reparsed from immutable raw stdout/stderr/exit_code/timeout using the current parser; raw metadata retains its original classification.'}, indent=2)+'\n')
     (destination/'summary.json').write_text(json.dumps(rows,ensure_ascii=False,indent=2)+'\n')
     with (destination/'summary.csv').open('w',newline='') as f:
         writer=csv.DictWriter(f,fieldnames=COLUMNS);writer.writeheader();writer.writerows(rows)

@@ -4,6 +4,7 @@ import re
 from .results import Status, QueryResult, ParsedResult
 
 RECORD = re.compile(r'^RESULT\s+(.+?)\s+(is true|is false|cannot be proved)\.\s*$', re.MULTILINE)
+SUPPLEMENTAL = re.compile(r'^RESULT \((?:(?:but|even) .+ (?:is true|is false|cannot be proved)\.\)|query encoded as .+\))\s*$')
 ERROR = re.compile(r'(?im)^\s*(?:Error:|Fatal error:|Syntax error\b)')
 
 def parse_output(stdout: str, stderr: str = '', *, exit_code: int = 0, timed_out: bool = False) -> ParsedResult:
@@ -17,7 +18,8 @@ def parse_output(stdout: str, stderr: str = '', *, exit_code: int = 0, timed_out
     if exit_code != 0:
         return ParsedResult(Status.ERROR, queries, f'Nonzero process exit code: {exit_code}', warnings)
     all_records = [x for x in stdout.splitlines() if x.startswith('RESULT ')]
-    if len(all_records) != len(queries):
+    supplemental = [line for line in all_records if SUPPLEMENTAL.fullmatch(line)]
+    if len(all_records) != len(queries) + len(supplemental):
         return ParsedResult(Status.UNKNOWN, queries, 'Unrecognized RESULT format; raw output retained', warnings)
     if not queries:
         return ParsedResult(Status.UNKNOWN, (), 'No documented RESULT record', warnings)

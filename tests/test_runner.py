@@ -17,7 +17,9 @@ def test_isolated_generation_no_overwrite_and_paths_with_spaces(tmp_path):
     config=ExperimentConfig(id='test',description='Harness test with fake verifier, not a model result',scenario='reg_client',ctap='getToken',property='S-pintok')
     sentinel=project/'LOG';sentinel.mkdir();(sentinel/'keep').write_text('preserve')
     before=subprocess.check_output(['git','-C',str(ROOT/'upstream/FIDO2Verif'),'status','--porcelain'])
-    paths=[run_experiment(config,str(fake),'fake-test-only',root=project) for _ in range(2)]
+    from dataclasses import replace
+    configs=[config,replace(config,precise_actions=True)]
+    paths=[run_experiment(c,str(fake),'fake-test-only',root=project) for c in configs]
     assert paths[0]!=paths[1]
     assert (sentinel/'keep').read_text()=='preserve'
     for p in paths:
@@ -26,6 +28,7 @@ def test_isolated_generation_no_overwrite_and_paths_with_spaces(tmp_path):
         assert meta['input_sha256'] and (p/'model.pv').is_file()
         assert meta['command'][0]==str(fake)
         assert (p/'FIDO2.pvl').read_bytes()==(ROOT/'upstream/FIDO2Verif/FIDO2.pvl').read_bytes()
+    assert json.loads((paths[1]/'metadata.json').read_text())['command'][1:4]==['-set','preciseActions','true']
     after=subprocess.check_output(['git','-C',str(ROOT/'upstream/FIDO2Verif'),'status','--porcelain'])
     assert before==after==b''
     a=summarize(project/'experiments/raw',project/'experiments/processed')

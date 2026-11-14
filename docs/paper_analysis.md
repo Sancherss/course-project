@@ -1,5 +1,7 @@
 # Статья ESORICS 2022: конспект и соответствие коду
 
+> Исторический отчёт до реализации. Текущее состояние и реальные результаты: docs/baseline_reproduction.md, docs/results_analysis.md, PROGRESS.md. Первоначальные NOT RUN ниже сохранены как план, не как итог.
+
 VERIFIED FROM SOURCE · 14.11.2026. Не экспериментальные результаты этого проекта.
 
 Jingjing Guan, Hui Li, Haisong Ye, Ziming Zhao. A Formal Analysis of the FIDO2 Protocols. ESORICS 2022, LNCS 13556, pp. 3–21. DOI подтверждён первой страницей PDF: https://doi.org/10.1007/978-3-031-17143-7_1 . Авторская копия: https://cactilab.github.io/assets/pdf/jingjing2022fido2.pdf ; связана с GitHub на https://cactilab.github.io/publications/ .

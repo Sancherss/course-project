@@ -14,5 +14,13 @@
   "evidence/proverif.html": "3f05b5bd2635f8564b110e5c0a921a193369965c47602bfb6441e0c55beb5166",
   "evidence/publications.html": "eb95c7c4ae2de2dd071e85be09116ec71edcb3d27a8badd3a0f8185c28baf587",
   "evidence/pv-install.html": "316eecaf5d5400a9b609242b0444f00c3051835db2637ee9be64f5d307af6a90",
-  "evidence/webauthn.html": "157030c980d44a3ce4b1ec5bcfaa16790c7dfefac20709af6ed2b11c7120970b"
+  "evidence/webauthn.html": "157030c980d44a3ce4b1ec5bcfaa16790c7dfefac20709af6ed2b11c7120970b",
+  "evidence/environment.json": "baefb79f80ed8db3b6abe3bcb4da479518b0f3839798a8e3baff7206a92cfdd5",
+  "evidence/python-packages.txt": "24698f51826eaef9c98f0bbacb4ec7925dddf7da002fc1e976a7de58b4b9bb79",
+  "evidence/ocaml-configure.log": "38b35c60ff35928650020da3d58a728d7e50ebaafc002151d6d41ba8edb39b7b",
+  "evidence/ocaml-version.txt": "adb2e521b42258280c3d33f0baa7a21ec82c893443fcd1b44ebda0e92af5dd2d",
+  "evidence/proverif-build.log": "6e9aaa0cbaf8aa0740a197f4db1e259615929108485b41fd027272b4f2105f77",
+  "evidence/proverif-help.txt": "46b498c4b3d698a4cbc97efca5fdf6ff4c8d89bbaaa4a234bacb9bef2e1771da",
+  "evidence/pytest.txt": "501ae56e9bcf291499e8a9cbd412937dd6edd884a0a8b5990a5465883e3f02d6",
+  "evidence/final-audit.json": "d77912e244c4fbb2132eba8fe23baa69da273e7d006b8030f93eb9adcb9bf243"
 }

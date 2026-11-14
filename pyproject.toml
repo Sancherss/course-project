@@ -11,7 +11,7 @@ dependencies = ["PyYAML==6.0.2"]
 
 [project.optional-dependencies]
 test = ["pytest==8.3.5"]
-report = ["python-docx==1.1.2"]
+report = ["python-docx==1.1.2", "matplotlib==3.10.1"]
 
 [project.scripts]
 fido2-experiments = "experiment_manager.cli:main"

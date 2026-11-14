@@ -193,6 +193,8 @@ VERIFIED EXPERIMENTALLY. В основной матрице получены с�
 | Аутентификация / S-pintok | PROVED | UNKNOWN: cannot be proved | PROVED |
 | Аутентификация / A1 | UNKNOWN: timeout | UNKNOWN: timeout | UNKNOWN: timeout |
 
+![Рисунок 1. Результаты основной матрицы в исторической модели](figures/matrix.png)
+
 Основная серия содержит 6 PROVED, 1 ATTACK_OR_FALSE и 5 UNKNOWN. Default timeout — 60 s. В E1 для secrecy окончательный RESULT — cannot be proved, хотя вывод содержит trace с дополнительной hypothesis. Подтверждённой утечкой это не является.
 
 R05 установил false A6 и построил trace без оговорки hypothesis: RP завершает регистрацию после пересылки ответа через дополнительного клиента без требуемого matching Authnr_Finish_Reg. Это контрпример свойству исторической модели; вывод об эксплуатации современного устройства не делается.

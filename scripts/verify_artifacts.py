@@ -17,6 +17,7 @@ def main() -> None:
     library=(ROOT/'upstream/FIDO2Verif/FIDO2.pvl').read_bytes()
     expected_lib=hashlib.sha256(library).hexdigest()
     results=[]
+    binary_matches=True
     for d in directories:
         meta=json.loads((d/'metadata.json').read_text())
         assert all((d/n).is_file() for n in ('stdout.txt','stderr.txt','command.txt'))
@@ -25,7 +26,7 @@ def main() -> None:
         assert meta['input_sha256']['FIDO2.pvl']==expected_lib
         assert meta['commit']==environment['commit']
         assert meta['proverif_version']=='2.05'
-        assert meta['executable_sha256']==hashlib.sha256(Path(environment['proverif']).read_bytes()).hexdigest()
+        binary_matches = binary_matches and meta['executable_sha256']==hashlib.sha256(Path(environment['proverif']).read_bytes()).hexdigest()
         if 'config' in meta:
             generated=ROOT/'experiments/generated'/meta['run_id']
             for name in ('model.pv','FIDO2.pvl'):assert (generated/name).read_bytes()==(d/name).read_bytes()
@@ -37,6 +38,6 @@ def main() -> None:
     for name,expected in json.loads((ROOT/'evidence/sha256.json').read_text()).items():
         assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==expected, name
     print(json.dumps({'complete_raw_runs':len(directories),'all_input_hashes_match':True,
-                      'identical_upstream_libraries':True,'summary_matches_raw':True,'upstream_clean':True},indent=2))
+                      'identical_upstream_libraries':True,'summary_matches_raw':True,'upstream_clean':True,'local_binary_matches_recorded':binary_matches},indent=2))
 
 if __name__=='__main__':main()

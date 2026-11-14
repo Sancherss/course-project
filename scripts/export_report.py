@@ -3,7 +3,7 @@
 from pathlib import Path
 import re
 from docx import Document
-from docx.shared import Pt
+from docx.shared import Pt, Inches
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -28,6 +28,11 @@ def export() -> Path:
                 for cell,text in zip(cells,lines[i].strip('|').split('|')):cell.text=text.strip()
                 i+=1
             continue
+        elif line.startswith('!['):
+            match=re.fullmatch(r'!\[(.*?)\]\((.*?)\)',line)
+            if match:
+                doc.add_picture(str(source.parent/match[2]),width=Inches(6.2))
+                doc.add_paragraph(match[1])
         elif line.startswith('#'):
             level=len(line)-len(line.lstrip('#'))
             doc.add_heading(line[level:].strip(),level=min(level-1,3))

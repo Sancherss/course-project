@@ -19,6 +19,7 @@
 - `docs/results_analysis.md` — результаты и ограничения.
 - `experiments/processed/20261114T174057729115Z/summary.md` — итоговая таблица; рядом CSV/JSON, matrix_results.yaml и parser-provenance.json.
 - `report/coursework_draft.md`, `report/coursework_draft.docx` — редактируемый черновик записки.
+- `report/figures/matrix.png`, `report/figures/matrix.svg` — проверенная визуальная сводка основной матрицы.
 - `docs/baseline_reproduction.md` — один непосредственно сверенный со статьёй baseline.
 - `docs/repository_analysis.md`, `docs/paper_analysis.md`, `docs/specification_gap.md` — код, статья и современные спецификации.
 - `docs/bsu_formatting_requirements.md`, `report/format_checklist.md` — только подтверждённые нормы БГУ и открытые вопросы.
